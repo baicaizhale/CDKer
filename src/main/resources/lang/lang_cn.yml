@@ -1,0 +1,7 @@
+# lang_cn.yml
+messages:
+  success: "兑换成功."
+  already_used: "&c您已经使用过该兑换码！"
+  invalid_code: "&c无效的礼品码！"
+  max_usage: "&c该兑换码已达到使用次数上限，不能再使用！"
+  usage_info: "使用方法: /cdk <cdkCode>"

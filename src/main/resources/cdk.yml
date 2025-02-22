@@ -1,5 +1,12 @@
-# cdk.yml 配置文件示例
 # 礼品码示例
+# ------------------------------------------
+# 礼品码:
+#   command: "命令"
+#   remainingUses: 剩余次数
+# ------------------------------------------
 
-giftcode1: "say 1"
-giftcode2: "say 2"
+giftcode:
+  commands:
+    - "say 这是一个礼品"
+    - "give %player% diamond"
+  remainingUses: 3

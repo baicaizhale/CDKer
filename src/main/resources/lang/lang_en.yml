@@ -1,0 +1,7 @@
+# lang_en.yml
+messages:
+  success: "Successfully redeemed."
+  already_used: "&cYou have already used this code!"
+  invalid_code: "&cInvalid gift code!"
+  max_usage: "&cThis gift code has reached its usage limit and cannot be used again!"
+  usage_info: "Usage: /cdk <cdkCode>"
