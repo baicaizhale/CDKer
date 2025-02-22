@@ -56,6 +56,7 @@ public class CDKer extends JavaPlugin {
 
         // 注册命令
         this.getCommand("cdk").setExecutor(new CDKCommandExecutor(this));
+        this.getCommand("mcdk").setExecutor(new CDKListCommandExecutor(this));  // 处理 /mcdk list
     }
 
     @Override

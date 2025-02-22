@@ -6,4 +6,15 @@ commands:
   cdk:
     description: 用于兑换礼品码
     usage: /cdk <cdkCode>
-depend: [PlaceholderAPI]
+  mcdk:
+    description: 管理兑换码的命令
+    usage: /mcdk <subcommand>
+    permission: cdk.list
+    subcommands:
+      list:
+        description: 查看兑换码列表
+        usage: /mcdk list
+permissions:
+  cdk.list:
+    description: 允许查看兑换码列表
+    default: op
