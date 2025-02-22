@@ -52,7 +52,9 @@ public class CDKCommandExecutor implements CommandExecutor {
                     if (remainingUses > 0) {
                         // 执行命令
                         for (String commandText : reservedCommands) {
-                            player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandText);
+                            // 替换 %player% 占位符为玩家的名字
+                            String commandToExecute = commandText.replace("%player%", player.getName());
+                            player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandToExecute);
                         }
 
                         // 减少剩余次数

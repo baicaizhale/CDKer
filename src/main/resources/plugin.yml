@@ -6,3 +6,4 @@ commands:
   cdk:
     description: 用于兑换礼品码
     usage: /cdk <cdkCode>
+depend: [PlaceholderAPI]
