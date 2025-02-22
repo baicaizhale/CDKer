@@ -2,7 +2,6 @@ package org.baicaizhale.cDKer;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.File;
 
 public class CDKer extends JavaPlugin {
@@ -11,14 +10,17 @@ public class CDKer extends JavaPlugin {
     public void onEnable() {
         getLogger().info("CDKer 插件已启用！");
 
-        // 加载配置文件
-        saveDefaultConfig(); // 创建默认的配置文件（config.yml）
-        saveResource("cdk.yml", false); // 不存在时复制默认的 cdk.yml 文件到 plugins/cdker 目录
+        // 加载默认的配置文件 config.yml
+        saveDefaultConfig();
 
-        // 确认 cdk.yml 是否成功加载
+        // 确保 cdk.yml 存在，如果不存在则从 JAR 文件复制默认的 cdk.yml 文件
+        saveResource("cdk.yml", false);
+
+        // 加载 cdk.yml 配置文件
+        reloadConfig(); // 确保配置文件被重新加载
+
+        // 确保 cdk.yml 文件加载成功
         File cdkFile = new File(getDataFolder(), "cdk.yml");
-        getLogger().info("检查 cdk.yml 是否存在...");
-
         if (cdkFile.exists()) {
             getLogger().info("cdk.yml 文件已成功加载。");
         } else {
