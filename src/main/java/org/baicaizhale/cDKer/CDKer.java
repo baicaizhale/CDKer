@@ -70,6 +70,11 @@ public class CDKer extends JavaPlugin {
         return cdkConfig;
     }
 
+    // 设置 cdk.yml 配置文件
+    public void setCDKConfig(FileConfiguration cdkConfig) {
+        this.cdkConfig = cdkConfig;
+    }
+
     // 获取玩家使用记录的配置文件
     public FileConfiguration getUsedCodesConfig() {
         return usedCodesConfig;

@@ -14,6 +14,10 @@ commands:
       list:
         description: 查看兑换码列表
         usage: /mcdk list
+      reload:
+        description: 重载插件配置
+        usage: /mcdk reload
+        permission: cdk.reload
     tab-completer: org.baicaizhale.cDKer.CDKTabCompleter
 permissions:
   cdk.list:
