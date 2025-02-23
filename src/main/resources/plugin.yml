@@ -1,5 +1,5 @@
 name: CDKer
-version: '2.0'
+version: '2.2'
 main: org.baicaizhale.cDKer.CDKer
 api-version: '1.20'
 commands:
@@ -14,6 +14,7 @@ commands:
       list:
         description: 查看兑换码列表
         usage: /mcdk list
+    tab-completer: org.baicaizhale.cDKer.CDKTabCompleter
 permissions:
   cdk.list:
     description: 允许查看兑换码列表
