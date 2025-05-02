@@ -5,7 +5,7 @@
 #   remainingUses: 剩余次数
 # ------------------------------------------
 
-giftcode:
+examplecode:
   commands:
     - "say 这是一个礼品"
     - "give %player% diamond"
