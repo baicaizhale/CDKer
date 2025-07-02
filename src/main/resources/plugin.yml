@@ -1,7 +1,7 @@
 name: CDKer
-version: '3.0.0'  # 更新版本号
+version: '4.0.0'
 main: org.baicaizhale.cDKer.CDKer
-api-version: '1.18'  # 修改为最低支持版本
+api-version: '1.18'
 commands:
   cdk:
     description: 用于兑换礼品码
