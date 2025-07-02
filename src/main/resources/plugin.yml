@@ -12,7 +12,7 @@ commands:
     permission: cdk.list
     subcommands:
       list:
-        description: 查看兑���码列表
+        description: 查看兑换码列表
         usage: /mcdk list
       reload:
         description: 重载插件配置
