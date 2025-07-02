@@ -4,9 +4,11 @@
 
 ---
 
+### **v4版本贡献者：[咡如夏](https://github.com/baicaizhale/CDKer/discussions/1)**
+
 # CDKer 插件
 
-**CDKer** 是一个功能 **少得可怜** 的 Minecraft 服务器礼品码管理插件，允许服务器管理员创建、管理和分发各种类型的礼品码，玩家则可以通过简单的命令兑换奖励。插件支持灵活的配置，包括多语言、自定义消息前缀、一次性或多次使用的礼品码，以及过期时间设置。
+**CDKer** 是一个功能 [~~丰富~~](https://github.com/baicaizhale/CDKer/discussions/1) 的 Minecraft 服务器礼品码管理插件，允许服务器管理员创建、管理和分发各种类型的礼品码，玩家则可以通过简单的命令兑换奖励。插件支持灵活的配置，包括多语言、自定义消息前缀、一次性或多次使用的礼品码，以及过期时间设置。
 
 ## 特性
 
@@ -221,7 +223,9 @@ save_log_error: "&c保存日志数据时出错！"
 
 ## 贡献
 
-欢迎通过提交 Pull Request 来改进此插件。如果您有任何问题或建议，可以通过 GitHub Issues 进行反馈。
+欢迎通过提交 Pull Request 来改进此插件。如果您有任何问题或建议，可以通过 [GitHub Issues](https://github.com/baicaizhale/CDKer/issues) 进行反馈。
+
+# `不要加QQ压力我，我真的会害怕TAT`
 
 ## License
 
