@@ -5,7 +5,7 @@
 ---
 
 ### **v4版本贡献者：[咡如夏](https://github.com/baicaizhale/CDKer/discussions/1)**
-
+### **v4大量使用：[Gemini 2.5 Flash](https://gemini.google.com/app) ，并且对其他插件(如AnCDK)功能尝试还原**
 # CDKer 插件
 
 **CDKer** 是一个功能 [~~丰富~~](https://github.com/baicaizhale/CDKer/discussions/1) 的 Minecraft 服务器礼品码管理插件，允许服务器管理员创建、管理和分发各种类型的礼品码，玩家则可以通过简单的命令兑换奖励。插件支持灵活的配置，包括多语言、自定义消息前缀、一次性或多次使用的礼品码，以及过期时间设置。
