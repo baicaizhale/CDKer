@@ -1,12 +1,31 @@
 # 礼品码示例
 # ------------------------------------------
-# 礼品码:
-#   command: "命令"
-#   remainingUses: 剩余次数
+# 礼品码结构:
+#   type: "single" 或 "multiple" (一次性或多次使用)
+#   commands: ["命令1", "命令2", ...]
+#   remainingUses: 剩余使用次数
+#   expiration: "YYYY-MM-dd HH:mm" (可选，过期时间)
 # ------------------------------------------
 
-examplecode:
+ONETIME_DIAMOND_CDK:
+  type: "single"
   commands:
-    - "say 这是一个礼品"
-    - "give %player% diamond"
-  remainingUses: 3
+    - "say %player% 兑换了一个一次性钻石CDK！"
+    - "give %player% diamond 1"
+  remainingUses: 1
+
+VIP_REWARD_CDK:
+  type: "multiple"
+  commands:
+    - "say %player% 兑换了VIP奖励！"
+    - "give %player% gold_ingot 5"
+  remainingUses: 999
+  expiration: "2025-12-31 23:59"
+
+LIMITED_TIME_SWORD:
+  type: "single"
+  commands:
+    - "say %player% 获得了一把限时宝剑！"
+    - "give %player% iron_sword 1"
+  remainingUses: 1
+  expiration: "2024-07-15 18:00"

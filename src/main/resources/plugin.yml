@@ -1,25 +1,37 @@
 name: CDKer
-version: '4.0.0'
+version: '3.0.0'
 main: org.baicaizhale.cDKer.CDKer
 api-version: '1.18'
+
 commands:
   cdk:
-    description: 用于兑换礼品码
-    usage: /cdk <cdkCode>
-  mcdk:
-    description: 管理兑换码的命令
-    usage: /mcdk <subcommand>
-    permission: cdk.list
-    subcommands:
-      list:
-        description: 查看兑换码列表
-        usage: /mcdk list
-      reload:
-        description: 重载插件配置
-        usage: /mcdk reload
-        permission: cdk.reload
+    description: 管理和使用礼品码的命令
+    usage: /cdk <help|create|add|delete|list|reload|export|use>
+    aliases: [cdkadmin, giftcode]
     tab-completer: org.baicaizhale.cDKer.CDKTabCompleter
+
 permissions:
-  cdk.list:
-    description: 允许查看兑换码列表
+  cdk.help:
+    description: 允许查看CDK帮助信息
+    default: true
+  cdk.create:
+    description: 允许创建新的CDK
     default: op
+  cdk.add:
+    description: 允许增加CDK数量或创建新CDK
+    default: op
+  cdk.delete:
+    description: 允许删除CDK
+    default: op
+  cdk.list:
+    description: 允许查看CDK列表
+    default: op
+  cdk.reload:
+    description: 允许重载插件配置
+    default: op
+  cdk.export:
+    description: 允许导出CDK数据
+    default: op
+  cdk.use:
+    description: 允许玩家使用CDK
+    default: true
