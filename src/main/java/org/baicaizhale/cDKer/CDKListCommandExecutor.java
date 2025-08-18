@@ -17,17 +17,30 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.util.Set;
 
-// CDK 列表命令执行器类，实现 CommandExecutor 接口
+/**
+ * CDK 列表命令执行器，实现 CommandExecutor 接口。
+ * 支持 list 和 reload 子命令。
+ */
 public class CDKListCommandExecutor implements CommandExecutor {
     // 插件主类实例
     private final CDKer plugin;
 
-    // 构造方法，注入插件主类
+    /**
+     * 构造方法，注入插件主类。
+     * @param plugin 插件主类实例
+     */
     public CDKListCommandExecutor(CDKer plugin) {
         this.plugin = plugin;
     }
 
-    // 命令处理主入口
+    /**
+     * 命令处理主入口。
+     * @param sender 命令发送者
+     * @param command 命令对象
+     * @param label 命令标签
+     * @param args 命令参数
+     * @return 是否成功处理命令
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         // 参数为空时不处理
@@ -46,12 +59,21 @@ public class CDKListCommandExecutor implements CommandExecutor {
         return false;
     }
 
-    // 检查权限，控制台默认有权限
+    /**
+     * 检查权限，控制台默认有权限。
+     * @param sender 命令发送者
+     * @param permission 权限节点
+     * @return 是否有权限
+     */
     private boolean hasPermission(CommandSender sender, String permission) {
         return sender.hasPermission(permission) || !(sender instanceof Player);
     }
 
-    // 显示所有 CDK 列表
+    /**
+     * 显示所有 CDK 列表。
+     * @param sender 命令发送者
+     * @return 是否成功显示
+     */
     private boolean showCDKList(CommandSender sender) {
         FileConfiguration langConfig = plugin.getLangConfig(); // 获取语言配置
         String prefix = plugin.getPrefix(); // 获取消息前缀
@@ -76,7 +98,11 @@ public class CDKListCommandExecutor implements CommandExecutor {
         return true;
     }
 
-    // 重载插件配置
+    /**
+     * 重载插件配置。
+     * @param sender 命令发送者
+     * @return 是否成功重载
+     */
     private boolean reloadConfig(CommandSender sender) {
         FileConfiguration langConfig = plugin.getLangConfig(); // 获取语言配置
         String prefix = plugin.getPrefix(); // 获取消息前缀

@@ -33,7 +33,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         this.plugin = plugin;
     }
 
-    // 命令处理主��口
+    // 命令处理主���口
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         FileConfiguration langConfig = plugin.getLangConfig(); // 获取语言配置
@@ -93,13 +93,9 @@ public class CDKCommandExecutor implements CommandExecutor {
     // 处理 create 命令，创建新的 CDK
     private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
+        if (!validateCreateArgs(args, sender, prefix, langConfig)) return true;
 
-        if (args.length < 5) {
-            sendHelpMessage(sender, prefix, langConfig);
-            return true;
-        }
-
-        String cdkType = args[1].toLowerCase(); // CDK 类型
+        String cdkType = args[1].toLowerCase();
         String id;
         int quantity;
         String commandsString;
@@ -137,21 +133,39 @@ public class CDKCommandExecutor implements CommandExecutor {
         }
 
         FileConfiguration cdkConfig = plugin.getCDKConfig(); // 获取 CDK 配置
-
-        if (cdkConfig.contains(id)) {
+        if (cdkExists(cdkConfig, id)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_already_exists").replace("%cdk%", id)));
             return true;
         }
 
-        cdkConfig.set(id + ".type", cdkType); // 设置 CDK 类型
-        cdkConfig.set(id + ".commands", commands); // 设置命令
-        cdkConfig.set(id + ".remainingUses", quantity); // 设置可用次数
-        if (expirationDate != null) cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate)); // 设置过期时间
-        plugin.saveCDKConfig(); // 保存配置
+        // 设置 CDK 属性
+        cdkConfig.set(id + ".type", cdkType);
+        cdkConfig.set(id + ".commands", commands);
+        cdkConfig.set(id + ".remainingUses", quantity);
+        if (expirationDate != null) cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate));
+        plugin.saveCDKConfig();
 
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(cdkType.equals("single") ? "create_success_single" : "create_success_multiple")
                 .replace("%quantity%", String.valueOf(quantity)).replace("%id%", id).replace("%cdk%", id)));
         return true;
+    }
+
+    /**
+     * 校验 create 命令参数
+     */
+    private boolean validateCreateArgs(String[] args, CommandSender sender, String prefix, FileConfiguration langConfig) {
+        if (args.length < 5) {
+            sendHelpMessage(sender, prefix, langConfig);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 校验 CDK 是否已存在
+     */
+    private boolean cdkExists(FileConfiguration cdkConfig, String id) {
+        return cdkConfig.contains(id);
     }
 
     // 解析命令字符串，支持多条命令

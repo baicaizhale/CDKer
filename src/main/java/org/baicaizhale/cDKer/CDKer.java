@@ -7,7 +7,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 
-// CDKer 主插件类，继承自 JavaPlugin
+/**
+ * CDKer 主插件类，负责插件生命周期管理和配置文件加载。
+ */
 public class CDKer extends JavaPlugin {
     // CDK 配置文件对象
     private File cdkFile;
@@ -24,7 +26,9 @@ public class CDKer extends JavaPlugin {
     // 插件消息前缀
     private String prefix;
 
-    // 插件启用时调用的方法
+    /**
+     * 插件启用时调用的方法，负责初始化和注册命令。
+     */
     @Override
     public void onEnable() {
         getLogger().info("CDKer 插件已启用！"); // 输出插件启用日志
@@ -52,7 +56,10 @@ public class CDKer extends JavaPlugin {
         this.getCommand("cdk").setTabCompleter(new CDKTabCompleter(this)); // 注册 cdk 命令补全器
     }
 
-    // 加载或保存资源文件的方法
+    /**
+     * 加载或保存资源文件的方法。
+     * @param resourcePath 资源文件路径
+     */
     private void loadOrSaveResource(String resourcePath) {
         File file = new File(getDataFolder(), resourcePath); // 获取资源文件对象
         if (!file.exists()) {
