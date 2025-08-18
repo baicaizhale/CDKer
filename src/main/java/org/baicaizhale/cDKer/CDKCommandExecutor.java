@@ -1,12 +1,17 @@
 package org.baicaizhale.cDKer;
 
+// 导入 Bukkit 聊天颜色工具类
 import org.bukkit.ChatColor;
+// 导入 Bukkit 命令相关接口
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+// 导入 Bukkit 配置文件处理类
 import org.bukkit.configuration.file.FileConfiguration;
+// 导入 Bukkit 玩家类
 import org.bukkit.entity.Player;
 
+// 导入 Java IO、日期、集合等工具类
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,25 +20,32 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+// CDK 命令执行器类，实现 CommandExecutor 接口
 public class CDKCommandExecutor implements CommandExecutor {
 
+    // 插件主类实例
     private final CDKer plugin;
+    // 日期格式化工具，用于处理过期时间
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
+    // 构造方法，注入插件主类
     public CDKCommandExecutor(CDKer plugin) {
         this.plugin = plugin;
     }
 
+    // 命令处理主��口
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        FileConfiguration langConfig = plugin.getLangConfig();
-        String prefix = plugin.getPrefix();
+        FileConfiguration langConfig = plugin.getLangConfig(); // 获取语言配置
+        String prefix = plugin.getPrefix(); // 获取消息前缀
 
+        // 无参数或 help 命令时，发送帮助信息
         if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
             sendHelpMessage(sender, prefix, langConfig);
             return true;
         }
 
+        // 根据命令参数分发到不同处理方法
         switch (args[0].toLowerCase()) {
             case "create":
                 return handleCreateCommand(sender, args, prefix, langConfig);
@@ -55,11 +67,13 @@ public class CDKCommandExecutor implements CommandExecutor {
         }
     }
 
+    // 发送未知命令提示及帮助信息
     private void sendUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
         sendHelpMessage(sender, prefix, langConfig);
     }
 
+    // 检查权限，若无权限则发送提示
     private boolean checkPermission(CommandSender sender, String permission, String prefix, FileConfiguration langConfig) {
         if (!sender.hasPermission(permission)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
@@ -68,6 +82,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // 发送帮助信息
     private void sendHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
         String[] helpKeys = {"help_header", "help_create", "help_create_multiple", "help_add", "help_delete", "help_list", "help_reload", "help_export", "help_use", "help_footer"};
         for (String key : helpKeys) {
@@ -75,6 +90,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         }
     }
 
+    // 处理 create 命令，创建新的 CDK
     private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
 
@@ -83,7 +99,7 @@ public class CDKCommandExecutor implements CommandExecutor {
             return true;
         }
 
-        String cdkType = args[1].toLowerCase();
+        String cdkType = args[1].toLowerCase(); // CDK 类型
         String id;
         int quantity;
         String commandsString;
@@ -109,35 +125,36 @@ public class CDKCommandExecutor implements CommandExecutor {
             return true;
         }
 
-        List<String> commands = parseCommands(commandsString);
+        List<String> commands = parseCommands(commandsString); // 解析命令字符串
         Date expirationDate = null;
         if (expirationTime != null) {
             try {
-                expirationDate = DATE_FORMAT.parse(expirationTime);
+                expirationDate = DATE_FORMAT.parse(expirationTime); // 解析过期时间
             } catch (ParseException e) {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_date_format")));
                 return true;
             }
         }
 
-        FileConfiguration cdkConfig = plugin.getCDKConfig();
+        FileConfiguration cdkConfig = plugin.getCDKConfig(); // 获取 CDK 配置
 
         if (cdkConfig.contains(id)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_already_exists").replace("%cdk%", id)));
             return true;
         }
 
-        cdkConfig.set(id + ".type", cdkType);
-        cdkConfig.set(id + ".commands", commands);
-        cdkConfig.set(id + ".remainingUses", quantity);
-        if (expirationDate != null) cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate));
-        plugin.saveCDKConfig();
+        cdkConfig.set(id + ".type", cdkType); // 设置 CDK 类型
+        cdkConfig.set(id + ".commands", commands); // 设置命令
+        cdkConfig.set(id + ".remainingUses", quantity); // 设置可用次数
+        if (expirationDate != null) cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate)); // 设置过期时间
+        plugin.saveCDKConfig(); // 保存配置
 
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(cdkType.equals("single") ? "create_success_single" : "create_success_multiple")
                 .replace("%quantity%", String.valueOf(quantity)).replace("%id%", id).replace("%cdk%", id)));
         return true;
     }
 
+    // 解析命令字符串，支持多条命令
     private List<String> parseCommands(String commandsString) {
         if (commandsString.startsWith("\"") && commandsString.endsWith("\"")) {
             String rawCommands = commandsString.substring(1, commandsString.length() - 1);
@@ -150,6 +167,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         }
     }
 
+    // 处理 add 命令，增加 CDK 使用次数
     private boolean handleAddCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.add", prefix, langConfig)) return true;
 
@@ -187,6 +205,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // 处理 delete 命令，删除 CDK 或按 ID 批量删除
     private boolean handleDeleteCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.delete", prefix, langConfig)) return true;
 
@@ -195,8 +214,8 @@ public class CDKCommandExecutor implements CommandExecutor {
             return true;
         }
 
-        String deleteType = args[1].toLowerCase();
-        String content = args[2];
+        String deleteType = args[1].toLowerCase(); // 删除类型
+        String content = args[2]; // CDK 或 ID
 
         FileConfiguration cdkConfig = plugin.getCDKConfig();
         FileConfiguration usedCodesConfig = plugin.getUsedCodesConfig();
@@ -241,6 +260,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // 处理 list 命令，列出所有 CDK 信息
     private boolean handleListCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.list", prefix, langConfig)) return true;
 
@@ -269,6 +289,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // 处理 reload 命令，重载插件配置
     private boolean handleReloadCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.reload", prefix, langConfig)) return true;
 
@@ -277,6 +298,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // 处理 export 命令，导出所有 CDK 到文本文件
     private boolean handleExportCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
         if (!checkPermission(sender, "cdk.export", prefix, langConfig)) return true;
 
@@ -313,6 +335,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
+    // 处理 use 命令，玩家使用 CDK
     private boolean handleUseCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("use_player_only")));
