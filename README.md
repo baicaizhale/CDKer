@@ -225,66 +225,69 @@ save_log_error: "&c保存日志数据时出错！"
 
 欢迎通过提交 Pull Request 来改进此插件。如果您有任何问题或建议，可以通过 [GitHub Issues](https://github.com/baicaizhale/CDKer/issues) 进行反馈。
 
-## 本项目屎山指数：59.59
+## 本项目屎山指数：48.18
  ```
+PS C:\Users\baicaizhale\source\repos\CDKer> fuck-u-code analyze
+🔍 开始嗅探：.
+🔍 正在搜索源代码文件......
+📂 已找到文件数: 4
+
 ────────────────────────────────────────────────────────────────────────────────e\cDKer\CDKer.java
 
-🌸 屎山代码分析报告 🌸
+  🌸 屎山代码分析报告 🌸
 ────────────────────────────────────────────────────────────────────────────────
 
-总体评分: 59.59 / 100 - 毒气缭绕，代码审查犹如酷刑
-屎山等级: 重度屎山 - 毒气弥漫，建议戴防毒面具
+  总体评分: 48.18 / 100 - 臭气扑鼻，建议佩戴口罩阅读
+  屎山等级: 中度屎山 - 臭味明显，开窗也救不了
 
 
 ◆ 评分指标详情
 
-✓ 错误处理             25.00分    有处理，但处理得跟没处理一样
-✓ 代码结构             30.00分    结构还行，但有点混乱
-✓ 状态管理             34.11分    状态管理一般，存在部分全局状态或状态变化不明确的情况
-○ 代码重复度            35.00分    有点重复，抽象一下不难吧
-✗ 注释覆盖率            90.00分    没有注释，靠缘分理解吧
-✗ 循环复杂度            100.00分   函数像迷宫，维护像打副本
+  ✓✓ 注释覆盖率            13.86分    注释不错，能靠它活下来
+  ✓ 错误处理             25.00分    有处理，但处理得跟没处理一样
+  ✓ 代码结构             30.00分    结构还行，但有点混乱
+  ✓ 状态管理             31.28分    状态管理一般，存在部分全局状态或状态变化不明确的情况
+  ○ 代码重复度            35.00分    有点重复，抽象一下不难吧
+  ✗ 循环复杂度            100.00分   函数像迷宫，维护像打副本
 
-评分计算: (25.00×0.10 + 30.00×0.15 + 34.11×0.20 + 35.00×0.15 + 90.00×0.15 + 100.00×0.30) ÷ 1.05 = 59.59
+  评分计算: (13.86×0.15 + 25.00×0.10 + 30.00×0.15 + 31.28×0.20 + 35.00×0.15 + 100.00×0.30) ÷ 1.05 = 48.18
 
 
 ◆ 最屎代码排行榜
 
-1. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKTabCompleter.java(屎气指数: 60.81)
-   🔄 复杂度问题: 4   📝 注释问题: 1   ⚠️  其他问题: 1
+  1. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKCommandExecutor.java(屎气指数: 54.85)
+     🔄 复杂度问题: 30   📝 注释问题: 1   ⚠️  其他问题: 3
 
-   🔄 函数 CDKTabCompleter 的循环复杂度过高 (21)，考虑重构
-   🔄 函数 onTabComplete 的循环复杂度过高 (21)，考虑重构
-   🔄 函数 'CDKTabCompleter' () 复杂度严重过高 (21)，必须简化
-   ⚠️  函数 'onTabComplete' () 较长 (56 行)，可考虑重构
-   🔄 函数 'onTabComplete' () 复杂度严重过高 (21)，必须简化
-   🔍 ...还有 1 个问题实在太屎，列不完了
+     🔄 函数 SimpleDateFormat 的循环复杂度过高 (62)，考虑重构
+     🔄 函数 onCommand 的循环复杂度过高 (62)，考虑重构
+     🔄 函数 sendUnknownCommand 的循环复杂度过高 (62)，考虑重构
+     🔄 函数 checkPermission 的循环复杂度过高 (62)，考虑重构
+     🔄 函数 sendHelpMessage 的循环复杂度过高 (62)，考虑重构
+     🔍 ...还有 29 个问题实在太屎，列不完了
 
-2. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKCommandExecutor.java(屎气指数: 59.94)
-   🔄 复杂度问题: 26   📝 注释问题: 1   ⚠️  其他问题: 3
+  2. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKer.java(屎气指数: 45.95)
 
-   🔄 函数 SimpleDateFormat 的循环复杂度过高 (61)，考虑重构
-   🔄 函数 onCommand 的循环复杂度过高 (61)，考虑重构
-   🔄 函数 sendUnknownCommand 的循环复杂度过高 (61)，考虑重构
-   🔄 函数 checkPermission 的循环复杂度过高 (61)，考虑重构
-   🔄 函数 sendHelpMessage 的循环复杂度过高 (61)，考虑重构
-   🔍 ...还有 25 个问题实在太屎，列不完了
+     ✓ 代码质量良好，没有明显问题
 
-3. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKListCommandExecutor.java(屎气指数: 58.81)
-   📝 注释问题: 1
+  3. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKListCommandExecutor.java(屎气指数: 45.95)
 
-   📝 代码注释率极低 (0.00%)，几乎没有注释
+     ✓ 代码质量良好，没有明显问题
 
-4. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKer.java(屎气指数: 58.81)
-   📝 注释问题: 1
+  4. C:\Users\baicaizhale\source\repos\CDKer\src\main\java\org\baicaizhale\cDKer\CDKTabCompleter.java(屎气指数: 45.95)
+     🔄 复杂度问题: 10
 
-   📝 代码注释率极低 (0.00%)，几乎没有注释
+     🔄 函数 CDKTabCompleter 的循环复杂度过高 (20)，考虑重构
+     🔄 函数 onTabComplete 的循环复杂度过高 (20)，考虑重构
+     🔄 函数 getPrimarySuggestions 的循环复杂度过高 (20)，考虑重构
+     🔄 函数 getSubCommandSuggestions 的循环复杂度过高 (20)，考虑重构
+     🔄 函数 filterSuggestions 的循环复杂度过高 (20)，考虑重构
+     🔍 ...还有 5 个问题实在太屎，列不完了
 
 ◆ 诊断结论
 
-🌸 重度屎山 - 毒气弥漫，建议戴防毒面具
+  🌸 中度屎山 - 臭味明显，开窗也救不了
 
-🧨 建议：删库跑路是唯一出路，或者封印它，等下辈子再维护
+  🔧 建议：这代码像个叛逆期的青少年，需要适当管教才能成才
 
 ────────────────────────────────────────────────────────────────────────────────
 ```
