@@ -13,11 +13,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class CDKCommandExecutor implements CommandExecutor {
 
@@ -54,36 +50,36 @@ public class CDKCommandExecutor implements CommandExecutor {
             case "use":
                 return handleUseCommand(sender, args, prefix, langConfig);
             default:
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
-                sendHelpMessage(sender, prefix, langConfig);
+                sendUnknownCommand(sender, prefix, langConfig);
                 return true;
         }
     }
 
+    private void sendUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
+        sendHelpMessage(sender, prefix, langConfig);
+    }
+
+    private boolean checkPermission(CommandSender sender, String permission, String prefix, FileConfiguration langConfig) {
+        if (!sender.hasPermission(permission)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
+            return false;
+        }
+        return true;
+    }
+
     private void sendHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_header")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_create")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_create_multiple")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_add")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_delete")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_list")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_reload")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_export")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_use")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("help_footer")));
+        String[] helpKeys = {"help_header", "help_create", "help_create_multiple", "help_add", "help_delete", "help_list", "help_reload", "help_export", "help_use", "help_footer"};
+        for (String key : helpKeys) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
+        }
     }
 
     private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission("cdk.create")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return true;
-        }
+        if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
 
         if (args.length < 5) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_usage_single")));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_usage_multiple")));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_example_single")));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_example_multiple")));
+            sendHelpMessage(sender, prefix, langConfig);
             return true;
         }
 
@@ -93,59 +89,27 @@ public class CDKCommandExecutor implements CommandExecutor {
         String commandsString;
         String expirationTime = null;
 
-        if (cdkType.equals("single")) {
-            if (args.length < 5) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_usage_single")));
-                return true;
-            }
-            id = args[2];
-            try {
+        try {
+            if (cdkType.equals("single")) {
+                id = args[2];
                 quantity = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_quantity")));
-                return true;
-            }
-            commandsString = args[4];
-            if (args.length > 5) {
-                expirationTime = args[5] + " " + args[6];
-            }
-        } else if (cdkType.equals("multiple")) {
-            if (args.length < 6) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_usage_multiple")));
-                return true;
-            }
-            String nameOrRandom = args[2].toLowerCase();
-            if (nameOrRandom.equals("random")) {
-                id = UUID.randomUUID().toString().substring(0, 8);
-            } else {
-                id = args[3];
-            }
-            try {
+                commandsString = args[4];
+                if (args.length > 5) expirationTime = args[5] + (args.length > 6 ? " " + args[6] : "");
+            } else if (cdkType.equals("multiple")) {
+                id = args[2].equalsIgnoreCase("random") ? UUID.randomUUID().toString().substring(0, 8) : args[3];
                 quantity = Integer.parseInt(args[4]);
-            } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_quantity")));
+                commandsString = args[5];
+                if (args.length > 6) expirationTime = args[6] + (args.length > 7 ? " " + args[7] : "");
+            } else {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_cdk_type")));
                 return true;
             }
-            commandsString = args[5];
-            if (args.length > 6) {
-                expirationTime = args[6] + " " + args[7];
-            }
-        } else {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_cdk_type")));
+        } catch (Exception e) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_quantity")));
             return true;
         }
 
-        List<String> commands = new ArrayList<>();
-        if (commandsString.startsWith("\"") && commandsString.endsWith("\"")) {
-            String rawCommands = commandsString.substring(1, commandsString.length() - 1);
-            String[] splitCommands = rawCommands.split("\\|");
-            for (String cmd : splitCommands) {
-                commands.add(cmd.trim());
-            }
-        } else {
-            commands.add(commandsString);
-        }
-
+        List<String> commands = parseCommands(commandsString);
         Date expirationDate = null;
         if (expirationTime != null) {
             try {
@@ -166,29 +130,28 @@ public class CDKCommandExecutor implements CommandExecutor {
         cdkConfig.set(id + ".type", cdkType);
         cdkConfig.set(id + ".commands", commands);
         cdkConfig.set(id + ".remainingUses", quantity);
-        if (expirationDate != null) {
-            cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate));
-        }
+        if (expirationDate != null) cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate));
         plugin.saveCDKConfig();
 
-        if (cdkType.equals("single")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_success_single")
-                    .replace("%quantity%", String.valueOf(quantity))
-                    .replace("%id%", id)));
-        } else {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("create_success_multiple")
-                    .replace("%cdk%", id)
-                    .replace("%quantity%", String.valueOf(quantity))
-                    .replace("%id%", id)));
-        }
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(cdkType.equals("single") ? "create_success_single" : "create_success_multiple")
+                .replace("%quantity%", String.valueOf(quantity)).replace("%id%", id).replace("%cdk%", id)));
         return true;
     }
 
-    private boolean handleAddCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission("cdk.add")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return true;
+    private List<String> parseCommands(String commandsString) {
+        if (commandsString.startsWith("\"") && commandsString.endsWith("\"")) {
+            String rawCommands = commandsString.substring(1, commandsString.length() - 1);
+            String[] splitCommands = rawCommands.split("\\|");
+            List<String> commands = new ArrayList<>();
+            for (String cmd : splitCommands) commands.add(cmd.trim());
+            return commands;
+        } else {
+            return Collections.singletonList(commandsString);
         }
+    }
+
+    private boolean handleAddCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
+        if (!checkPermission(sender, "cdk.add", prefix, langConfig)) return true;
 
         if (args.length < 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_usage")));
@@ -211,15 +174,13 @@ public class CDKCommandExecutor implements CommandExecutor {
             int currentUses = cdkConfig.getInt(cdkCode + ".remainingUses", 0);
             cdkConfig.set(cdkCode + ".remainingUses", currentUses + quantity);
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_success")
-                    .replace("%id%", cdkCode)
-                    .replace("%quantity%", String.valueOf(currentUses + quantity))));
+                    .replace("%id%", cdkCode).replace("%quantity%", String.valueOf(currentUses + quantity))));
         } else {
             cdkConfig.set(cdkCode + ".type", "single");
             cdkConfig.set(cdkCode + ".commands", new ArrayList<String>());
             cdkConfig.set(cdkCode + ".remainingUses", quantity);
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_success")
-                    .replace("%id%", cdkCode)
-                    .replace("%quantity%", String.valueOf(quantity))));
+                    .replace("%id%", cdkCode).replace("%quantity%", String.valueOf(quantity))));
         }
 
         plugin.saveCDKConfig();
@@ -227,10 +188,7 @@ public class CDKCommandExecutor implements CommandExecutor {
     }
 
     private boolean handleDeleteCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission("cdk.delete")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return true;
-        }
+        if (!checkPermission(sender, "cdk.delete", prefix, langConfig)) return true;
 
         if (args.length < 3) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("delete_usage")));
@@ -246,8 +204,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         if (deleteType.equals("cdk")) {
             if (cdkConfig.contains(content)) {
                 cdkConfig.set(content, null);
-                Set<String> players = usedCodesConfig.getKeys(false);
-                for (String player : players) {
+                for (String player : usedCodesConfig.getKeys(false)) {
                     if (usedCodesConfig.contains(player + "." + content)) {
                         usedCodesConfig.set(player + "." + content, null);
                     }
@@ -259,13 +216,11 @@ public class CDKCommandExecutor implements CommandExecutor {
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_not_found").replace("%cdk%", content)));
             }
         } else if (deleteType.equals("id")) {
-            Set<String> allCdkCodes = cdkConfig.getKeys(false);
             int deletedCount = 0;
-            for (String cdkCode : allCdkCodes) {
+            for (String cdkCode : cdkConfig.getKeys(false)) {
                 if (cdkCode.startsWith(content)) {
                     cdkConfig.set(cdkCode, null);
-                    Set<String> players = usedCodesConfig.getKeys(false);
-                    for (String player : players) {
+                    for (String player : usedCodesConfig.getKeys(false)) {
                         if (usedCodesConfig.contains(player + "." + cdkCode)) {
                             usedCodesConfig.set(player + "." + cdkCode, null);
                         }
@@ -287,10 +242,7 @@ public class CDKCommandExecutor implements CommandExecutor {
     }
 
     private boolean handleListCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission("cdk.list")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return true;
-        }
+        if (!checkPermission(sender, "cdk.list", prefix, langConfig)) return true;
 
         FileConfiguration cdkConfig = plugin.getCDKConfig();
         Set<String> cdkCodes = cdkConfig.getKeys(false);
@@ -309,12 +261,8 @@ public class CDKCommandExecutor implements CommandExecutor {
                 String commandsDisplay = commands.isEmpty() ? "无命令" : String.join(", ", commands);
 
                 sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("list_item")
-                        .replace("%cdk%", cdkCode)
-                        .replace("%id%", id)
-                        .replace("%commands%", commandsDisplay)
-                        .replace("%expiration%", expiration)
-                        .replace("%remainingUses%", String.valueOf(remainingUses))
-                ));
+                        .replace("%cdk%", cdkCode).replace("%id%", id).replace("%commands%", commandsDisplay)
+                        .replace("%expiration%", expiration).replace("%remainingUses", String.valueOf(remainingUses))));
             }
         }
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("list_footer")));
@@ -322,10 +270,7 @@ public class CDKCommandExecutor implements CommandExecutor {
     }
 
     private boolean handleReloadCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission("cdk.reload")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return true;
-        }
+        if (!checkPermission(sender, "cdk.reload", prefix, langConfig)) return true;
 
         plugin.reloadConfig();
         sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("reload_success")));
@@ -333,10 +278,7 @@ public class CDKCommandExecutor implements CommandExecutor {
     }
 
     private boolean handleExportCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission("cdk.export")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return true;
-        }
+        if (!checkPermission(sender, "cdk.export", prefix, langConfig)) return true;
 
         FileConfiguration cdkConfig = plugin.getCDKConfig();
         File exportFile = new File(plugin.getDataFolder(), "cdk_export.txt");
@@ -359,9 +301,7 @@ public class CDKCommandExecutor implements CommandExecutor {
                     writer.println("剩余次数: " + remainingUses);
                     writer.println("过期时间: " + expiration);
                     writer.println("命令:");
-                    for (String cmd : commands) {
-                        writer.println("  - " + cmd);
-                    }
+                    for (String cmd : commands) writer.println("  - " + cmd);
                 }
                 writer.println("--------------------");
             }
@@ -453,3 +393,4 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 }
+
