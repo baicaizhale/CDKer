@@ -8,8 +8,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.FileConfiguration;
 // 导入 Bukkit 玩家类
 import org.bukkit.entity.Player;
-// 导入注解处理类
-import org.jetbrains.annotations.NotNull;
 
 // 导入 Java 集合与流工具类
 import java.util.ArrayList;
@@ -25,13 +23,13 @@ public class CDKTabCompleter implements TabCompleter {
     private final CDKer plugin;
 
     // 构造方法，注入插件主类
-    public CDKTabCompleter(@NotNull CDKer plugin) {
+    public CDKTabCompleter(CDKer plugin) {
         this.plugin = plugin;
     }
 
     // 命令补全主入口
     @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> suggestions = new ArrayList<>();
         FileConfiguration cdkConfig = plugin.getCDKConfig();
         // 仅对 cdk 命令进行补全
