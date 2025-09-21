@@ -1,12 +1,12 @@
-## 各路大佬，对不起！！！！！！！！！
-## 新手练手用插件，不是故意写成粪的，抱歉！！！！！！！！！！！
-## 4.0.0 更新作出大量破坏性改动，需要删除旧版插件文件夹(./plugins/CDKer)再安装新版本！！！！！！！！
+
+## v4 更新作出大量破坏性改动，需要删除旧版插件文件夹(./plugins/CDKer)再安装新版本！！！！！！！！
 
 ---
 
 ### **v4版本贡献者：[咡如夏](https://github.com/baicaizhale/CDKer/discussions/1)**
 ### **v4大量使用：[Gemini 2.5 Flash](https://gemini.google.com/app) 未经验证的代码 ，并且对其他插件(如AnCDK)功能尝试还原**
 # CDKer 插件
+## 详细使用教程请到[CDKer使用文档](https://baicaizhale.icu/notes/CDKer/)
 
 **CDKer** 是一个功能 [~~丰富~~](https://github.com/baicaizhale/CDKer/discussions/1) 的 Minecraft 服务器礼品码管理插件，允许服务器管理员创建、管理和分发各种类型的礼品码，玩家则可以通过简单的命令兑换奖励。插件支持灵活的配置，包括多语言、自定义消息前缀、一次性或多次使用的礼品码，以及过期时间设置。
 
