@@ -39,9 +39,15 @@ public class CDKCommandExecutor implements CommandExecutor {
         FileConfiguration langConfig = plugin.getLangConfig(); // 获取语言配置
         String prefix = plugin.getPrefix(); // 获取消息前缀
 
-        // 无参数或 help 命令时，发送帮助信息
+        // 根据命令标签和参数发送帮助信息
         if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            sendHelpMessage(sender, prefix, langConfig);
+            if ("cdkadmin".equalsIgnoreCase(label)) {
+                sendAdminHelpMessage(sender, prefix, langConfig);
+            } else if ("giftcode".equalsIgnoreCase(label)) {
+                sendGiftcodeHelpMessage(sender, prefix, langConfig);
+            } else {
+                sendHelpMessage(sender, prefix, langConfig);
+            }
             return true;
         }
 
@@ -62,7 +68,13 @@ public class CDKCommandExecutor implements CommandExecutor {
             case "use":
                 return handleUseCommand(sender, args, prefix, langConfig);
             default:
-                sendUnknownCommand(sender, prefix, langConfig);
+                if ("cdkadmin".equalsIgnoreCase(label)) {
+                    sendAdminUnknownCommand(sender, prefix, langConfig);
+                } else if ("giftcode".equalsIgnoreCase(label)) {
+                    sendGiftcodeUnknownCommand(sender, prefix, langConfig);
+                } else {
+                    sendUnknownCommand(sender, prefix, langConfig);
+                }
                 return true;
         }
     }
@@ -88,6 +100,34 @@ public class CDKCommandExecutor implements CommandExecutor {
         for (String key : helpKeys) {
             sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
         }
+    }
+
+    // 发送 cdkadmin 帮助信息
+    private void sendAdminHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
+        String[] helpKeys = {"help_admin_header", "help_admin_create", "help_admin_create_multiple", "help_admin_add", "help_admin_delete", "help_admin_list", "help_admin_reload", "help_admin_export", "help_admin_footer"};
+        for (String key : helpKeys) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
+        }
+    }
+
+    // 发送 giftcode 帮助信息
+    private void sendGiftcodeHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
+        String[] helpKeys = {"help_giftcode_header", "help_giftcode_use", "help_giftcode_footer"};
+        for (String key : helpKeys) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
+        }
+    }
+
+    // 发送 cdkadmin 未知命令提示及帮助信息
+    private void sendAdminUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
+        sendAdminHelpMessage(sender, prefix, langConfig);
+    }
+
+    // 发送 giftcode 未知命令提示及帮助信息
+    private void sendGiftcodeUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
+        sendGiftcodeHelpMessage(sender, prefix, langConfig);
     }
 
     // 处理 create 命令，创建新的 CDK
