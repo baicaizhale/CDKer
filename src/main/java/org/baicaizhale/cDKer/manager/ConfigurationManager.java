@@ -43,8 +43,8 @@ public class ConfigurationManager {
      */
     public void loadAllConfigs() {
         loadPluginConfig();
-        loadCdkConfig();
-        loadUsedCodesConfig();
+        // loadCdkConfig(); // 懒加载
+        // loadUsedCodesConfig(); // 懒加载
         loadLanguageConfigs();
     }
 
@@ -206,6 +206,9 @@ public class ConfigurationManager {
      * @return CDK 映射
      */
     public Map<String, CDK> getCdkMap() {
+        if (cdkMap.isEmpty()) {
+            loadCdkConfig();
+        }
         return cdkMap;
     }
 
@@ -214,6 +217,9 @@ public class ConfigurationManager {
      * @return 已使用的 CDK 记录集合
      */
     public Set<UsedCodeRecord> getUsedCodeRecords() {
+        if (usedCodeRecords.isEmpty()) {
+            loadUsedCodesConfig();
+        }
         return usedCodeRecords;
     }
 
