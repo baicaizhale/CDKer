@@ -181,23 +181,44 @@ public class CDKCommandExecutor implements CommandExecutor {
         String cdkType = args[1].toLowerCase();
         String cdkCode;
         int quantity;
+        int commandStartIndex = 0;
 
         if (cdkType.equals("multiple")) {
-            if (args.length < 6) { // create multiple <name|random> <id> <数量> "<命令1|命令2|...>" [有效时间]
-                String createUsageMultipleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple"));
-                sender.sendMessage(createUsageMultipleMessage);
-                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleMessage);
-                return true;
-            }
-            String nameOrRandomValue = args[2]; // 使用不同的变量名
-            cdkCode = args[3];
-            try {
-                quantity = Integer.parseInt(args[4]);
-            } catch (NumberFormatException e) {
-                String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
-                sender.sendMessage(invalidQuantityMessage);
-                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
-                return true;
+            String nameOrRandomValue = args[2];
+            if (nameOrRandomValue.equalsIgnoreCase("random")) {
+                if (args.length < 5) { // create multiple random <数量> "<命令1|命令2|...>" [有效时间]
+                    String createUsageMultipleRandomMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_random"));
+                    sender.sendMessage(createUsageMultipleRandomMessage);
+                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleRandomMessage);
+                    return true;
+                }
+                cdkCode = generateRandomCdkCode(8); // 生成8位随机CDK代码
+                try {
+                    quantity = Integer.parseInt(args[3]);
+                } catch (NumberFormatException e) {
+                    String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
+                    sender.sendMessage(invalidQuantityMessage);
+                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
+                    return true;
+                }
+                commandStartIndex = 4; // args[4] is the start of commands for 'multiple random'
+            } else {
+                if (args.length < 6) { // create multiple <name> <id> <数量> "<命令1|命令2|...>" [有效时间]
+                    String createUsageMultipleNameMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_name"));
+                    sender.sendMessage(createUsageMultipleNameMessage);
+                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleNameMessage);
+                    return true;
+                }
+                cdkCode = args[3];
+                try {
+                    quantity = Integer.parseInt(args[4]);
+                } catch (NumberFormatException e) {
+                    String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
+                    sender.sendMessage(invalidQuantityMessage);
+                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
+                    return true;
+                }
+                commandStartIndex = 5; // args[5] is the start of commands for 'multiple <name>'
             }
         } else if (cdkType.equals("single")) {
             if (args.length < 5) { // create single <id> <数量> "<命令1|命令2|...>" [有效时间]
@@ -215,6 +236,7 @@ public class CDKCommandExecutor implements CommandExecutor {
                 plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
                 return true;
             }
+            commandStartIndex = 4; // args[4] is the start of commands for 'single'
         } else {
             String invalidCdkTypeMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type"));
             sender.sendMessage(invalidCdkTypeMessage);
@@ -228,15 +250,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         // Determine the command string and optional expiration
         StringBuilder commandStringBuilder = new StringBuilder();
         String potentialExpiration = null;
-        int commandStartIndex;
         int commandEndIndex;
-
-        if (cdkType.equals("multiple")) {
-            commandStartIndex = 5; // args[5] is the start of commands for 'multiple'
-        } else { // single
-            commandStartIndex = 4; // args[4] is the start of commands for 'single'
-        }
-        commandEndIndex = args.length - 1;
 
         // Check if the last argument could be an expiration date
         if (args.length > commandStartIndex + 1) { // Only consider expiration if there are enough arguments after commands
@@ -247,7 +261,10 @@ public class CDKCommandExecutor implements CommandExecutor {
                 commandEndIndex = args.length - 2; // Command string ends before the expiration
             } catch (ParseException ignored) {
                 // Not a valid date format, so it's part of the command string
+                commandEndIndex = args.length - 1;
             }
+        } else {
+            commandEndIndex = args.length - 1;
         }
 
         // Reconstruct the command string
