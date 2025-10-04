@@ -1,0 +1,7 @@
+* [cdkadmin 命令](cdkadmin/index.md)
+  * [create 命令](cdkadmin/create.md)
+  * [add 命令](cdkadmin/add.md)
+  * [delete 命令](cdkadmin/delete.md)
+  * [list 命令](cdkadmin/list.md)
+  * [reload 命令](cdkadmin/reload.md)
+  * [export 命令](cdkadmin/export.md)
