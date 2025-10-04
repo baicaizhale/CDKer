@@ -1,58 +1,79 @@
 package org.baicaizhale.cDKer;
 
-// 导入 Bukkit 聊天颜色工具类
+import org.baicaizhale.cDKer.manager.ConfigurationManager;
+import org.baicaizhale.cDKer.model.CDK;
+import org.baicaizhale.cDKer.model.LanguageConfig;
 import org.bukkit.ChatColor;
-// 导入 Bukkit 命令相关接口
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-// 导入 Bukkit 配置文件处理类
-import org.bukkit.configuration.file.FileConfiguration;
-// 导入 Bukkit 玩家类
 import org.bukkit.entity.Player;
 
-// 导入 Java IO、日期、集合等工具类
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
-// CDK 命令执行器类，实现 CommandExecutor 接口
+/**
+ * CDK 命令执行器，处理所有与 CDK 相关的命令。
+ */
 public class CDKCommandExecutor implements CommandExecutor {
 
-    // 插件主类实例
     private final CDKer plugin;
-    // 日期格式化工具，用于处理过期时间
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private final ConfigurationManager configManager;
+    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    // 构造方法，注入插件主类
+    /**
+     * 构造函数
+     * @param plugin 插件主类实例
+     */
     public CDKCommandExecutor(CDKer plugin) {
         this.plugin = plugin;
+        this.configManager = plugin.getConfigurationManager();
     }
 
-    // 命令处理主���口
+    /**
+     * 检查命令发送者是否拥有指定权限。
+     * @param sender 命令发送者
+     * @param permission 所需权限
+     * @param prefix 消息前缀
+     * @param langConfig 语言配置
+     * @return 如果拥有权限则返回 true，否则返回 false
+     */
+    private boolean checkPermission(CommandSender sender, String permission, String prefix, LanguageConfig langConfig) {
+        if (!sender.hasPermission(permission)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("no_permission")));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 处理命令逻辑。
+     * @param sender 命令发送者
+     * @param command 命令对象
+     * @param label 命令标签
+     * @param args 命令参数
+     * @return 如果命令被正确处理则返回 true，否则返回 false
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        FileConfiguration langConfig = plugin.getLangConfig(); // 获取语言配置
-        String prefix = plugin.getPrefix(); // 获取消息前缀
+        String prefix = configManager.getPluginConfig().getPrefix();
+        LanguageConfig langConfig = configManager.getLanguageConfig(configManager.getPluginConfig().getLanguage());
 
-        // 根据命令标签和参数发送帮助信息
         if (args.length == 0 || args[0].equalsIgnoreCase("help")) {
-            if ("cdkadmin".equalsIgnoreCase(label)) {
-                sendAdminHelpMessage(sender, prefix, langConfig);
-            } else if ("giftcode".equalsIgnoreCase(label)) {
-                sendGiftcodeHelpMessage(sender, prefix, langConfig);
-            } else {
-                sendHelpMessage(sender, prefix, langConfig);
-            }
-            return true;
+            return handleHelpCommand(sender, prefix, langConfig);
         }
 
-        // 根据命令参数分发到不同处理方法
-        switch (args[0].toLowerCase()) {
+        String subCommand = args[0].toLowerCase();
+        switch (subCommand) {
             case "create":
                 return handleCreateCommand(sender, args, prefix, langConfig);
             case "add":
@@ -68,406 +89,306 @@ public class CDKCommandExecutor implements CommandExecutor {
             case "use":
                 return handleUseCommand(sender, args, prefix, langConfig);
             default:
-                if ("cdkadmin".equalsIgnoreCase(label)) {
-                    sendAdminUnknownCommand(sender, prefix, langConfig);
-                } else if ("giftcode".equalsIgnoreCase(label)) {
-                    sendGiftcodeUnknownCommand(sender, prefix, langConfig);
-                } else {
-                    sendUnknownCommand(sender, prefix, langConfig);
-                }
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("unknown_command")));
                 return true;
         }
     }
 
-    // 发送未知命令提示及帮助信息
-    private void sendUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
-        sendHelpMessage(sender, prefix, langConfig);
-    }
+    /**
+     * 处理 help 命令。
+     */
+    private boolean handleHelpCommand(CommandSender sender, String prefix, LanguageConfig langConfig) {
+        if (!checkPermission(sender, "cdk.help", prefix, langConfig)) return true;
 
-    // 检查权限，若无权限则发送提示
-    private boolean checkPermission(CommandSender sender, String permission, String prefix, FileConfiguration langConfig) {
-        if (!sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission")));
-            return false;
-        }
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_header")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_create")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_create_multiple")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_add")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_delete")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_list")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_reload")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_export")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_use")));
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_footer")));
         return true;
     }
 
-    // 发送帮助信息
-    private void sendHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        String[] helpKeys = {"help_header", "help_create", "help_create_multiple", "help_add", "help_delete", "help_list", "help_reload", "help_export", "help_use", "help_footer"};
-        for (String key : helpKeys) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
-        }
-    }
-
-    // 发送 cdkadmin 帮助信息
-    private void sendAdminHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        String[] helpKeys = {"help_admin_header", "help_admin_create", "help_admin_create_multiple", "help_admin_add", "help_admin_delete", "help_admin_list", "help_admin_reload", "help_admin_export", "help_admin_footer"};
-        for (String key : helpKeys) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
-        }
-    }
-
-    // 发送 giftcode 帮助信息
-    private void sendGiftcodeHelpMessage(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        String[] helpKeys = {"help_giftcode_header", "help_giftcode_use", "help_giftcode_footer"};
-        for (String key : helpKeys) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(key)));
-        }
-    }
-
-    // 发送 cdkadmin 未知命令提示及帮助信息
-    private void sendAdminUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
-        sendAdminHelpMessage(sender, prefix, langConfig);
-    }
-
-    // 发送 giftcode 未知命令提示及帮助信息
-    private void sendGiftcodeUnknownCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("unknown_command")));
-        sendGiftcodeHelpMessage(sender, prefix, langConfig);
-    }
-
-    // 处理 create 命令，创建新的 CDK
-    private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 create 命令。
+     */
+    private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
-        if (!validateCreateArgs(args, sender, prefix, langConfig)) return true;
+
+        if (args.length < 5) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple")));
+            return true;
+        }
 
         String cdkType = args[1].toLowerCase();
-        String id;
+        String cdkCode = args[2];
         int quantity;
-        String commandsString;
-        String expirationTime = null;
-
         try {
-            if (cdkType.equals("single")) {
-                id = args[2];
-                quantity = Integer.parseInt(args[3]);
-                commandsString = args[4];
-                if (args.length > 5) expirationTime = args[5] + (args.length > 6 ? " " + args[6] : "");
-            } else if (cdkType.equals("multiple")) {
-                id = args[2].equalsIgnoreCase("random") ? UUID.randomUUID().toString().substring(0, 8) : args[3];
-                quantity = Integer.parseInt(args[4]);
-                commandsString = args[5];
-                if (args.length > 6) expirationTime = args[6] + (args.length > 7 ? " " + args[7] : "");
-            } else {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_cdk_type")));
-                return true;
-            }
-        } catch (Exception e) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_quantity")));
+            quantity = Integer.parseInt(args[3]);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
             return true;
         }
+        List<String> commands;
+        String expiration = null;
 
-        List<String> commands = parseCommands(commandsString); // 解析命令字符串
-        Date expirationDate = null;
-        if (expirationTime != null) {
+        // Determine the command string and optional expiration
+        StringBuilder commandStringBuilder = new StringBuilder();
+        String potentialExpiration = null;
+        int commandEndIndex = args.length - 1;
+
+        // Check if the last argument could be an expiration date
+        if (args.length > 5) { // Only consider expiration if there are enough arguments
             try {
-                expirationDate = DATE_FORMAT.parse(expirationTime); // 解析过期时间
+                DATE_FORMAT.parse(args[args.length - 1]);
+                // If parsing succeeds, it's likely an expiration date
+                potentialExpiration = args[args.length - 1];
+                commandEndIndex = args.length - 2; // Command string ends before the expiration
+            } catch (ParseException ignored) {
+                // Not a valid date format, so it's part of the command string
+            }
+        }
+
+        // Reconstruct the command string
+        for (int i = 4; i <= commandEndIndex; i++) {
+            commandStringBuilder.append(args[i]);
+            if (i < commandEndIndex) {
+                commandStringBuilder.append(" ");
+            }
+        }
+        commands = Arrays.asList(commandStringBuilder.toString().split("\\|"));
+
+        expiration = potentialExpiration;
+        if (expiration != null) {
+            try {
+                DATE_FORMAT.parse(expiration);
             } catch (ParseException e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_date_format")));
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_date_format")));
                 return true;
             }
         }
 
-        FileConfiguration cdkConfig = plugin.getCDKConfig(); // 获取 CDK 配置
-        if (cdkExists(cdkConfig, id)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_already_exists").replace("%cdk%", id)));
+        if (configManager.getCdkMap().containsKey(cdkCode)) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_exists").replace("%cdk%", cdkCode)));
             return true;
         }
 
-        // 设置 CDK 属性
-        cdkConfig.set(id + ".type", cdkType);
-        cdkConfig.set(id + ".commands", commands);
-        cdkConfig.set(id + ".remainingUses", quantity);
-        if (expirationDate != null) cdkConfig.set(id + ".expiration", DATE_FORMAT.format(expirationDate));
-        plugin.saveCDKConfig();
+        CDK newCdk = new CDK(cdkType, commands, quantity, expiration);
+        configManager.getCdkMap().put(cdkCode, newCdk);
+        configManager.saveCdkConfig();
 
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString(cdkType.equals("single") ? "create_success_single" : "create_success_multiple")
-                .replace("%quantity%", String.valueOf(quantity)).replace("%id%", id).replace("%cdk%", id)));
-        return true;
-    }
-
-    /**
-     * 校验 create 命令参数
-     */
-    private boolean validateCreateArgs(String[] args, CommandSender sender, String prefix, FileConfiguration langConfig) {
-        if (args.length < 5) {
-            sendHelpMessage(sender, prefix, langConfig);
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 校验 CDK 是否已存在
-     */
-    private boolean cdkExists(FileConfiguration cdkConfig, String id) {
-        return cdkConfig.contains(id);
-    }
-
-    // 解析命令字符串，支持多条命令
-    private List<String> parseCommands(String commandsString) {
-        if (commandsString.startsWith("\"") && commandsString.endsWith("\"")) {
-            String rawCommands = commandsString.substring(1, commandsString.length() - 1);
-            String[] splitCommands = rawCommands.split("\\|");
-            List<String> commands = new ArrayList<>();
-            for (String cmd : splitCommands) commands.add(cmd.trim());
-            return commands;
+        if (cdkType.equals("single")) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_single")
+                    .replace("%quantity%", String.valueOf(quantity))
+                    .replace("%id%", cdkCode)));
+        } else if (cdkType.equals("multiple")) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_multiple")
+                    .replace("%cdk%", cdkCode)
+                    .replace("%quantity%", String.valueOf(quantity))
+                    .replace("%id%", cdkCode)));
         } else {
-            return Collections.singletonList(commandsString);
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type")));
         }
+        return true;
     }
 
-    // 处理 add 命令，增加 CDK 使用次数
-    private boolean handleAddCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 add 命令。
+     */
+    private boolean handleAddCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.add", prefix, langConfig)) return true;
 
         if (args.length < 3) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_usage")));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_example")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("add_usage")));
             return true;
         }
 
         String cdkCode = args[1];
-        int quantity;
+        int quantityToAdd;
         try {
-            quantity = Integer.parseInt(args[2]);
+            quantityToAdd = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_quantity")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
             return true;
         }
 
-        FileConfiguration cdkConfig = plugin.getCDKConfig();
-
-        if (cdkConfig.contains(cdkCode)) {
-            int currentUses = cdkConfig.getInt(cdkCode + ".remainingUses", 0);
-            cdkConfig.set(cdkCode + ".remainingUses", currentUses + quantity);
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_success")
-                    .replace("%id%", cdkCode).replace("%quantity%", String.valueOf(currentUses + quantity))));
-        } else {
-            cdkConfig.set(cdkCode + ".type", "single");
-            cdkConfig.set(cdkCode + ".commands", new ArrayList<String>());
-            cdkConfig.set(cdkCode + ".remainingUses", quantity);
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("add_success")
-                    .replace("%id%", cdkCode).replace("%quantity%", String.valueOf(quantity))));
+        CDK cdk = configManager.getCdkMap().get(cdkCode);
+        if (cdk == null) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode)));
+            return true;
         }
 
-        plugin.saveCDKConfig();
+        cdk.setRemainingUses(cdk.getRemainingUses() + quantityToAdd);
+        configManager.saveCdkConfig();
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("add_success")
+                .replace("%id%", cdkCode)
+                .replace("%quantity%", String.valueOf(quantityToAdd))));
         return true;
     }
 
-    // 处理 delete 命令，删除 CDK 或按 ID 批量删除
-    private boolean handleDeleteCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 delete 命令。
+     */
+    private boolean handleDeleteCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.delete", prefix, langConfig)) return true;
 
-        if (args.length < 3) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("delete_usage")));
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("delete_usage")));
             return true;
         }
 
-        String deleteType = args[1].toLowerCase(); // 删除类型
-        String content = args[2]; // CDK 或 ID
-
-        FileConfiguration cdkConfig = plugin.getCDKConfig();
-        FileConfiguration usedCodesConfig = plugin.getUsedCodesConfig();
-
-        if (deleteType.equals("cdk")) {
-            if (cdkConfig.contains(content)) {
-                cdkConfig.set(content, null);
-                for (String player : usedCodesConfig.getKeys(false)) {
-                    if (usedCodesConfig.contains(player + "." + content)) {
-                        usedCodesConfig.set(player + "." + content, null);
-                    }
-                }
-                plugin.saveCDKConfig();
-                plugin.saveUsedCodesConfig();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("delete_success").replace("%cdk%", content)));
-            } else {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_not_found").replace("%cdk%", content)));
-            }
-        } else if (deleteType.equals("id")) {
-            int deletedCount = 0;
-            for (String cdkCode : cdkConfig.getKeys(false)) {
-                if (cdkCode.startsWith(content)) {
-                    cdkConfig.set(cdkCode, null);
-                    for (String player : usedCodesConfig.getKeys(false)) {
-                        if (usedCodesConfig.contains(player + "." + cdkCode)) {
-                            usedCodesConfig.set(player + "." + cdkCode, null);
-                        }
-                    }
-                    deletedCount++;
-                }
-            }
-            if (deletedCount > 0) {
-                plugin.saveCDKConfig();
-                plugin.saveUsedCodesConfig();
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("delete_success").replace("%cdk%", "所有ID为 " + content + " 的CDK (共 " + deletedCount + " 个)")));
-            } else {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_not_found").replace("%cdk%", "ID为 " + content + " 的CDK")));
-            }
+        String cdkCode = args[1];
+        if (configManager.getCdkMap().remove(cdkCode) != null) {
+            configManager.saveCdkConfig();
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("delete_success").replace("%cdk%", cdkCode)));
         } else {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("delete_usage")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode)));
         }
         return true;
     }
 
-    // 处理 list 命令，列出所有 CDK 信息
-    private boolean handleListCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 list 命令。
+     */
+    private boolean handleListCommand(CommandSender sender, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.list", prefix, langConfig)) return true;
 
-        FileConfiguration cdkConfig = plugin.getCDKConfig();
-        Set<String> cdkCodes = cdkConfig.getKeys(false);
-
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("list_header")));
-
-        if (cdkCodes.isEmpty()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("list_empty")));
-        } else {
-            for (String cdkCode : cdkCodes) {
-                String id = cdkConfig.getString(cdkCode + ".id", cdkCode);
-                List<String> commands = cdkConfig.getStringList(cdkCode + ".commands");
-                String expiration = cdkConfig.getString(cdkCode + ".expiration", langConfig.getString("never_expires", "永不"));
-                int remainingUses = cdkConfig.getInt(cdkCode + ".remainingUses", 0);
-
-                String commandsDisplay = commands.isEmpty() ? "无命令" : String.join(", ", commands);
-
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("list_item")
-                        .replace("%cdk%", cdkCode).replace("%id%", id).replace("%commands%", commandsDisplay)
-                        .replace("%expiration%", expiration).replace("%remainingUses", String.valueOf(remainingUses))));
-            }
+        Map<String, CDK> cdkMap = configManager.getCdkMap();
+        if (cdkMap.isEmpty()) {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("list_empty")));
+            return true;
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("list_footer")));
+
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_header")));
+        for (Map.Entry<String, CDK> entry : cdkMap.entrySet()) {
+            String cdkCode = entry.getKey();
+            CDK cdk = entry.getValue();
+            String commandsStr = String.join(", ", cdk.getCommands());
+            String expirationStr = cdk.getExpiration() != null ? cdk.getExpiration() : "永不";
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_item")
+                    .replace("%cdk%", cdkCode)
+                    .replace("%id%", cdkCode) // Assuming id is the same as cdkCode for now
+                    .replace("%commands%", commandsStr)
+                    .replace("%expiration%", expirationStr)));
+        }
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_footer")));
         return true;
     }
 
-    // 处理 reload 命令，重载插件配置
-    private boolean handleReloadCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 reload 命令。
+     */
+    private boolean handleReloadCommand(CommandSender sender, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.reload", prefix, langConfig)) return true;
 
-        plugin.reloadConfig();
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("reload_success")));
+        configManager.reloadAllConfigs();
+        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("reload_success")));
         return true;
     }
 
-    // 处理 export 命令，导出所有 CDK 到文本文件
-    private boolean handleExportCommand(CommandSender sender, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 export 命令。
+     */
+    private boolean handleExportCommand(CommandSender sender, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.export", prefix, langConfig)) return true;
 
-        FileConfiguration cdkConfig = plugin.getCDKConfig();
-        File exportFile = new File(plugin.getDataFolder(), "cdk_export.txt");
+        java.io.File exportFile = new java.io.File(plugin.getDataFolder(), "cdk_export.txt");
 
         try (PrintWriter writer = new PrintWriter(new FileWriter(exportFile))) {
-            Set<String> cdkCodes = cdkConfig.getKeys(false);
-            if (cdkCodes.isEmpty()) {
+            Map<String, CDK> cdkMap = configManager.getCdkMap();
+            if (cdkMap.isEmpty()) {
                 writer.println("当前没有任何CDK可导出。");
             } else {
                 writer.println("CDK 导出列表:");
-                for (String cdkCode : cdkCodes) {
-                    String type = cdkConfig.getString(cdkCode + ".type", "unknown");
-                    List<String> commands = cdkConfig.getStringList(cdkCode + ".commands");
-                    int remainingUses = cdkConfig.getInt(cdkCode + ".remainingUses", 0);
-                    String expiration = cdkConfig.getString(cdkCode + ".expiration", "永不");
-
+                for (Map.Entry<String, CDK> entry : cdkMap.entrySet()) {
+                    String cdkCode = entry.getKey();
+                    CDK cdk = entry.getValue();
                     writer.println("--------------------");
                     writer.println("CDK码: " + cdkCode);
-                    writer.println("类型: " + type);
-                    writer.println("剩余次数: " + remainingUses);
-                    writer.println("过期时间: " + expiration);
+                    writer.println("类型: " + cdk.getType());
+                    writer.println("剩余次数: " + cdk.getRemainingUses());
+                    writer.println("过期时间: " + (cdk.getExpiration() != null ? cdk.getExpiration() : "永不"));
                     writer.println("命令:");
-                    for (String cmd : commands) writer.println("  - " + cmd);
+                    for (String cmd : cdk.getCommands()) writer.println("  - " + cmd);
                 }
                 writer.println("--------------------");
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("export_success").replace("%file%", exportFile.getName())));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("export_success").replace("%file%", exportFile.getName())));
         } catch (IOException e) {
-            plugin.getLogger().severe("导出CDK时出错: " + e.getMessage());
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("export_failed")));
+            plugin.getLogger().log(Level.SEVERE, "导出CDK时出错: " + e.getMessage(), e);
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("export_failed")));
         }
         return true;
     }
 
-    // 处理 use 命令，玩家使用 CDK
-    private boolean handleUseCommand(CommandSender sender, String[] args, String prefix, FileConfiguration langConfig) {
+    /**
+     * 处理 use 命令。
+     */
+    private boolean handleUseCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("use_player_only")));
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_player_only")));
             return true;
         }
         Player player = (Player) sender;
 
-        if (!player.hasPermission("cdk.use")) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("no_permission_use")));
-            return true;
-        }
+        if (!checkPermission(player, "cdk.use", prefix, langConfig)) return true;
 
         if (args.length < 2) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("use_usage")));
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_usage")));
             return true;
         }
 
         String cdkCode = args[1];
-        FileConfiguration cdkConfig = plugin.getCDKConfig();
-        FileConfiguration usedCodesConfig = plugin.getUsedCodesConfig();
+        CDK cdk = configManager.getCdkMap().get(cdkCode);
 
-        if (!cdkConfig.contains(cdkCode)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("invalid_code")));
+        if (cdk == null) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode)));
             return true;
         }
 
-        String expirationStr = cdkConfig.getString(cdkCode + ".expiration");
-        if (expirationStr != null) {
-            try {
-                Date expirationDate = DATE_FORMAT.parse(expirationStr);
-                if (new Date().after(expirationDate)) {
-                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_expired").replace("%cdk%", cdkCode)));
-                    cdkConfig.set(cdkCode, null);
-                    plugin.saveCDKConfig();
-                    return true;
-                }
-            } catch (ParseException e) {
-                plugin.getLogger().warning("CDK " + cdkCode + " 的过期时间格式错误: " + expirationStr);
-            }
-        }
-
-        String cdkType = cdkConfig.getString(cdkCode + ".type", "single");
-        if (cdkType.equalsIgnoreCase("single") && usedCodesConfig.contains(player.getName() + "." + cdkCode)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("cdk_already_used").replace("%cdk%", cdkCode)));
+        if (configManager.isCdkExpired(cdk)) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_expired").replace("%cdk%", cdkCode)));
+            // 不再删除过期CDK，仅提示过期
             return true;
         }
 
-        int remainingUses = cdkConfig.getInt(cdkCode + ".remainingUses", 0);
-        if (remainingUses <= 0) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("max_usage")));
-            cdkConfig.set(cdkCode, null);
-            plugin.saveCDKConfig();
+        if (cdk.getType().equalsIgnoreCase("single") && configManager.hasPlayerUsedCdk(player.getName(), cdkCode)) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_used").replace("%cdk%", cdkCode)));
             return true;
         }
 
-        List<String> commands = cdkConfig.getStringList(cdkCode + ".commands");
-        for (String commandText : commands) {
+        if (cdk.getRemainingUses() <= 0) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage")));
+            return true;
+        }
+
+        // 执行命令
+        for (String commandText : cdk.getCommands()) {
             String commandToExecute = commandText.replace("%player%", player.getName());
             player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandToExecute);
         }
 
-        cdkConfig.set(cdkCode + ".remainingUses", remainingUses - 1);
+        // 更新剩余使用次数
+        cdk.setRemainingUses(cdk.getRemainingUses() - 1);
+        configManager.saveCdkConfig();
 
-        if (cdkType.equalsIgnoreCase("single")) {
-            usedCodesConfig.set(player.getName() + "." + cdkCode, true);
+        // 标记玩家已使用一次性 CDK
+        if (cdk.getType().equalsIgnoreCase("single")) {
+            configManager.markPlayerUsedCdk(player.getName(), cdkCode);
+            configManager.saveUsedCodesConfig();
         }
 
-        plugin.saveCDKConfig();
-        plugin.saveUsedCodesConfig();
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_success").replace("%cdk%", cdkCode)));
 
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("use_success").replace("%cdk%", cdkCode)));
-
-        if (remainingUses - 1 == 0) {
-            cdkConfig.set(cdkCode, null);
-            plugin.saveCDKConfig();
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getString("max_usage")));
+        if (cdk.getRemainingUses() == 0) {
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage")));
         }
         return true;
     }
 }
-
