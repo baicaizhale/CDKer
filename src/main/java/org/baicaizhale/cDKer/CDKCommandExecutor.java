@@ -537,6 +537,10 @@ public class CDKCommandExecutor implements CommandExecutor {
         // 执行命令
         for (String commandText : cdk.getCommands()) {
             String commandToExecute = commandText.replace("%player%", player.getName());
+            // 检查命令是否被双引号包裹，并移除它们
+            if (commandToExecute.startsWith("\"") && commandToExecute.endsWith("\"")) {
+                commandToExecute = commandToExecute.substring(1, commandToExecute.length() - 1);
+            }
             player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandToExecute);
             plugin.getLogger().info("Player " + player.getName() + " executed command: " + commandToExecute);
         }

@@ -47,10 +47,6 @@ public class CDKTabCompleter implements TabCompleter {
                 case "delete":
                 case "add":
                 case "use":
-                    // 补全 CDK 码
-                    completions.addAll(configManager.getCdkMap().keySet().stream()
-                            .map(Object::toString)
-                            .collect(Collectors.toList()));
                     break;
                 case "create":
                     // 补全 CDK 类型
