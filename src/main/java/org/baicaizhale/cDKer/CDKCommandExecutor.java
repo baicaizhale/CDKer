@@ -15,10 +15,8 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -168,7 +166,6 @@ public class CDKCommandExecutor implements CommandExecutor {
         String cdkType = args[1].toLowerCase();
         String cdkCode;
         int quantity;
-        String nameOrRandom = null; // For 'multiple' type
 
         if (cdkType.equals("multiple")) {
             if (args.length < 6) { // create multiple <name|random> <id> <数量> "<命令1|命令2|...>" [有效时间]
@@ -177,7 +174,7 @@ public class CDKCommandExecutor implements CommandExecutor {
                 plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleMessage);
                 return true;
             }
-            nameOrRandom = args[2];
+            String nameOrRandomValue = args[2]; // 使用不同的变量名
             cdkCode = args[3];
             try {
                 quantity = Integer.parseInt(args[4]);
