@@ -49,7 +49,10 @@ public class CDKCommandExecutor implements CommandExecutor {
      */
     private boolean checkPermission(CommandSender sender, String permission, String prefix, LanguageConfig langConfig) {
         if (!sender.hasPermission(permission)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("no_permission")));
+            String message = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("no_permission"));
+            sender.sendMessage(message);
+            // 将发送给玩家的消息也输出到控制台，方便调试
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + message);
             return false;
         }
         return true;
@@ -89,7 +92,10 @@ public class CDKCommandExecutor implements CommandExecutor {
             case "use":
                 return handleUseCommand(sender, args, prefix, langConfig);
             default:
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("unknown_command")));
+                String message = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("unknown_command"));
+                sender.sendMessage(message);
+                // 将发送给玩家的消息也输出到控制台，方便调试
+                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + message);
                 return true;
         }
     }
@@ -100,16 +106,45 @@ public class CDKCommandExecutor implements CommandExecutor {
     private boolean handleHelpCommand(CommandSender sender, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.help", prefix, langConfig)) return true;
 
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_header")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_create")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_create_multiple")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_add")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_delete")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_list")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_reload")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_export")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_use")));
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_footer")));
+        String helpHeaderMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_header"));
+        sender.sendMessage(helpHeaderMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpHeaderMessage);
+
+        String helpCreateMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_create"));
+        sender.sendMessage(helpCreateMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpCreateMessage);
+
+        String helpCreateMultipleMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_create_multiple"));
+        sender.sendMessage(helpCreateMultipleMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpCreateMultipleMessage);
+
+        String helpAddMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_add"));
+        sender.sendMessage(helpAddMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpAddMessage);
+
+        String helpDeleteMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_delete"));
+        sender.sendMessage(helpDeleteMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpDeleteMessage);
+
+        String helpListMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_list"));
+        sender.sendMessage(helpListMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpListMessage);
+
+        String helpReloadMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_reload"));
+        sender.sendMessage(helpReloadMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpReloadMessage);
+
+        String helpExportMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_export"));
+        sender.sendMessage(helpExportMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpExportMessage);
+
+        String helpUseMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_use"));
+        sender.sendMessage(helpUseMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpUseMessage);
+
+        String helpFooterMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("help_footer"));
+        sender.sendMessage(helpFooterMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + helpFooterMessage);
         return true;
     }
 
@@ -120,8 +155,13 @@ public class CDKCommandExecutor implements CommandExecutor {
         if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
 
         if (args.length < 5) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single")));
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple")));
+            String createUsageSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single"));
+            sender.sendMessage(createUsageSingleMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageSingleMessage);
+
+            String createUsageMultipleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple"));
+            sender.sendMessage(createUsageMultipleMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleMessage);
             return true;
         }
 
@@ -132,7 +172,9 @@ public class CDKCommandExecutor implements CommandExecutor {
 
         if (cdkType.equals("multiple")) {
             if (args.length < 6) { // create multiple <name|random> <id> <数量> "<命令1|命令2|...>" [有效时间]
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple")));
+                String createUsageMultipleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple"));
+                sender.sendMessage(createUsageMultipleMessage);
+                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleMessage);
                 return true;
             }
             nameOrRandom = args[2];
@@ -140,23 +182,31 @@ public class CDKCommandExecutor implements CommandExecutor {
             try {
                 quantity = Integer.parseInt(args[4]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
+                String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
+                sender.sendMessage(invalidQuantityMessage);
+                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
                 return true;
             }
         } else if (cdkType.equals("single")) {
             if (args.length < 5) { // create single <id> <数量> "<命令1|命令2|...>" [有效时间]
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single")));
+                String createUsageSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single"));
+                sender.sendMessage(createUsageSingleMessage);
+                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageSingleMessage);
                 return true;
             }
             cdkCode = args[2];
             try {
                 quantity = Integer.parseInt(args[3]);
             } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
+                String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
+                sender.sendMessage(invalidQuantityMessage);
+                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
                 return true;
             }
         } else {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type")));
+            String invalidCdkTypeMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type"));
+            sender.sendMessage(invalidCdkTypeMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidCdkTypeMessage);
             return true;
         }
 
@@ -202,13 +252,17 @@ public class CDKCommandExecutor implements CommandExecutor {
             try {
                 DATE_FORMAT.parse(expiration);
             } catch (ParseException e) {
-                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_date_format")));
+                String invalidDateFormatMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_date_format"));
+                sender.sendMessage(invalidDateFormatMessage);
+                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidDateFormatMessage);
                 return true;
             }
         }
 
         if (configManager.getCdkMap().containsKey(cdkCode)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_exists").replace("%cdk%", cdkCode)));
+            String cdkAlreadyExistsMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_exists").replace("%cdk%", cdkCode));
+            sender.sendMessage(cdkAlreadyExistsMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + cdkAlreadyExistsMessage);
             return true;
         }
 
@@ -217,16 +271,22 @@ public class CDKCommandExecutor implements CommandExecutor {
         configManager.saveCdkConfig();
 
         if (cdkType.equals("single")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_single")
+            String createSuccessSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_single")
                     .replace("%quantity%", String.valueOf(quantity))
-                    .replace("%id%", cdkCode)));
+                    .replace("%id%", cdkCode));
+            sender.sendMessage(createSuccessSingleMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createSuccessSingleMessage);
         } else if (cdkType.equals("multiple")) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_multiple")
+            String createSuccessMultipleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_multiple")
                     .replace("%cdk%", cdkCode)
                     .replace("%quantity%", String.valueOf(quantity))
-                    .replace("%id%", cdkCode)));
+                    .replace("%id%", cdkCode));
+            sender.sendMessage(createSuccessMultipleMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createSuccessMultipleMessage);
         } else {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type")));
+            String invalidCdkTypeMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type"));
+            sender.sendMessage(invalidCdkTypeMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidCdkTypeMessage);
         }
         return true;
     }
@@ -238,7 +298,9 @@ public class CDKCommandExecutor implements CommandExecutor {
         if (!checkPermission(sender, "cdk.add", prefix, langConfig)) return true;
 
         if (args.length < 3) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("add_usage")));
+            String addUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("add_usage"));
+            sender.sendMessage(addUsageMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + addUsageMessage);
             return true;
         }
 
@@ -247,22 +309,28 @@ public class CDKCommandExecutor implements CommandExecutor {
         try {
             quantityToAdd = Integer.parseInt(args[2]);
         } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
+            String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
+            sender.sendMessage(invalidQuantityMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
             return true;
         }
 
         CDK cdk = configManager.getCdkMap().get(cdkCode);
         if (cdk == null) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode)));
+            String cdkNotFoundMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode));
+            sender.sendMessage(cdkNotFoundMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + cdkNotFoundMessage);
             return true;
         }
 
         cdk.setRemainingUses(cdk.getRemainingUses() + quantityToAdd);
         configManager.saveCdkConfig();
 
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("add_success")
+        String addSuccessMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("add_success")
                 .replace("%id%", cdkCode)
-                .replace("%quantity%", String.valueOf(quantityToAdd))));
+                .replace("%quantity%", String.valueOf(quantityToAdd)));
+        sender.sendMessage(addSuccessMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + addSuccessMessage);
         return true;
     }
 
@@ -273,16 +341,22 @@ public class CDKCommandExecutor implements CommandExecutor {
         if (!checkPermission(sender, "cdk.delete", prefix, langConfig)) return true;
 
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("delete_usage")));
+            String deleteUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("delete_usage"));
+            sender.sendMessage(deleteUsageMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + deleteUsageMessage);
             return true;
         }
 
         String cdkCode = args[1];
         if (configManager.getCdkMap().remove(cdkCode) != null) {
             configManager.saveCdkConfig();
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("delete_success").replace("%cdk%", cdkCode)));
+            String deleteSuccessMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("delete_success").replace("%cdk%", cdkCode));
+            sender.sendMessage(deleteSuccessMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + deleteSuccessMessage);
         } else {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode)));
+            String cdkNotFoundMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode));
+            sender.sendMessage(cdkNotFoundMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + cdkNotFoundMessage);
         }
         return true;
     }
@@ -295,23 +369,32 @@ public class CDKCommandExecutor implements CommandExecutor {
 
         Map<String, CDK> cdkMap = configManager.getCdkMap();
         if (cdkMap.isEmpty()) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("list_empty")));
+            String listEmptyMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("list_empty"));
+            sender.sendMessage(listEmptyMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + listEmptyMessage);
             return true;
         }
 
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_header")));
+        String listHeaderMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_header"));
+        sender.sendMessage(listHeaderMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + listHeaderMessage);
+
         for (Map.Entry<String, CDK> entry : cdkMap.entrySet()) {
             String cdkCode = entry.getKey();
             CDK cdk = entry.getValue();
             String commandsStr = String.join(", ", cdk.getCommands());
             String expirationStr = cdk.getExpiration() != null ? cdk.getExpiration() : "永不";
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_item")
+            String listItemMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_item")
                     .replace("%cdk%", cdkCode)
                     .replace("%id%", cdkCode) // Assuming id is the same as cdkCode for now
                     .replace("%commands%", commandsStr)
-                    .replace("%expiration%", expirationStr)));
+                    .replace("%expiration%", expirationStr));
+            sender.sendMessage(listItemMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + listItemMessage);
         }
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_footer")));
+        String listFooterMessage = ChatColor.translateAlternateColorCodes('&', langConfig.getMessage("list_footer"));
+        sender.sendMessage(listFooterMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + listFooterMessage);
         return true;
     }
 
@@ -322,7 +405,9 @@ public class CDKCommandExecutor implements CommandExecutor {
         if (!checkPermission(sender, "cdk.reload", prefix, langConfig)) return true;
 
         configManager.reloadAllConfigs();
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("reload_success")));
+        String reloadSuccessMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("reload_success"));
+        sender.sendMessage(reloadSuccessMessage);
+        plugin.getLogger().info("[To Player] " + sender.getName() + ": " + reloadSuccessMessage);
         return true;
     }
 
@@ -353,10 +438,14 @@ public class CDKCommandExecutor implements CommandExecutor {
                 }
                 writer.println("--------------------");
             }
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("export_success").replace("%file%", exportFile.getName())));
+            String exportSuccessMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("export_success").replace("%file%", exportFile.getName()));
+            sender.sendMessage(exportSuccessMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + exportSuccessMessage);
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "导出CDK时出错: " + e.getMessage(), e);
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("export_failed")));
+            String exportFailedMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("export_failed"));
+            sender.sendMessage(exportFailedMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + exportFailedMessage);
         }
         return true;
     }
@@ -366,7 +455,9 @@ public class CDKCommandExecutor implements CommandExecutor {
      */
     private boolean handleUseCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_player_only")));
+            String usePlayerOnlyMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_player_only"));
+            sender.sendMessage(usePlayerOnlyMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + usePlayerOnlyMessage);
             return true;
         }
         Player player = (Player) sender;
@@ -374,7 +465,9 @@ public class CDKCommandExecutor implements CommandExecutor {
         if (!checkPermission(player, "cdk.use", prefix, langConfig)) return true;
 
         if (args.length < 2) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_usage")));
+            String useUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_usage"));
+            player.sendMessage(useUsageMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + useUsageMessage);
             return true;
         }
 
@@ -382,23 +475,31 @@ public class CDKCommandExecutor implements CommandExecutor {
         CDK cdk = configManager.getCdkMap().get(cdkCode);
 
         if (cdk == null) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode)));
+            String cdkNotFoundMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode));
+            player.sendMessage(cdkNotFoundMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkNotFoundMessage);
             return true;
         }
 
         if (configManager.isCdkExpired(cdk)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_expired").replace("%cdk%", cdkCode)));
+            String cdkExpiredMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_expired").replace("%cdk%", cdkCode));
+            player.sendMessage(cdkExpiredMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkExpiredMessage);
             // 不再删除过期CDK，仅提示过期
             return true;
         }
 
         if (cdk.getType().equalsIgnoreCase("single") && configManager.hasPlayerUsedCdk(player.getName(), cdkCode)) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_used").replace("%cdk%", cdkCode)));
+            String cdkAlreadyUsedMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_used").replace("%cdk%", cdkCode));
+            player.sendMessage(cdkAlreadyUsedMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkAlreadyUsedMessage);
             return true;
         }
 
         if (cdk.getRemainingUses() <= 0) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage")));
+            String maxUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage"));
+            player.sendMessage(maxUsageMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + maxUsageMessage);
             return true;
         }
 
@@ -419,10 +520,14 @@ public class CDKCommandExecutor implements CommandExecutor {
             configManager.saveUsedCodesConfig();
         }
 
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_success").replace("%cdk%", cdkCode)));
+        String useSuccessMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_success").replace("%cdk%", cdkCode));
+        player.sendMessage(useSuccessMessage);
+        plugin.getLogger().info("[To Player] " + player.getName() + ": " + useSuccessMessage);
 
         if (cdk.getRemainingUses() == 0) {
-            player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage")));
+            String maxUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage"));
+            player.sendMessage(maxUsageMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + maxUsageMessage);
         }
         return true;
     }
