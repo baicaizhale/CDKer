@@ -126,24 +126,58 @@ public class CDKCommandExecutor implements CommandExecutor {
         }
 
         String cdkType = args[1].toLowerCase();
-        String cdkCode = args[2];
+        String cdkCode;
         int quantity;
-        try {
-            quantity = Integer.parseInt(args[3]);
-        } catch (NumberFormatException e) {
-            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
+        String nameOrRandom = null; // For 'multiple' type
+
+        if (cdkType.equals("multiple")) {
+            if (args.length < 6) { // create multiple <name|random> <id> <数量> "<命令1|命令2|...>" [有效时间]
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple")));
+                return true;
+            }
+            nameOrRandom = args[2];
+            cdkCode = args[3];
+            try {
+                quantity = Integer.parseInt(args[4]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
+                return true;
+            }
+        } else if (cdkType.equals("single")) {
+            if (args.length < 5) { // create single <id> <数量> "<命令1|命令2|...>" [有效时间]
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single")));
+                return true;
+            }
+            cdkCode = args[2];
+            try {
+                quantity = Integer.parseInt(args[3]);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity")));
+                return true;
+            }
+        } else {
+            sender.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type")));
             return true;
         }
+
         List<String> commands;
         String expiration = null;
 
         // Determine the command string and optional expiration
         StringBuilder commandStringBuilder = new StringBuilder();
         String potentialExpiration = null;
-        int commandEndIndex = args.length - 1;
+        int commandStartIndex;
+        int commandEndIndex;
+
+        if (cdkType.equals("multiple")) {
+            commandStartIndex = 5; // args[5] is the start of commands for 'multiple'
+        } else { // single
+            commandStartIndex = 4; // args[4] is the start of commands for 'single'
+        }
+        commandEndIndex = args.length - 1;
 
         // Check if the last argument could be an expiration date
-        if (args.length > 5) { // Only consider expiration if there are enough arguments
+        if (args.length > commandStartIndex + 1) { // Only consider expiration if there are enough arguments after commands
             try {
                 DATE_FORMAT.parse(args[args.length - 1]);
                 // If parsing succeeds, it's likely an expiration date
@@ -155,7 +189,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         }
 
         // Reconstruct the command string
-        for (int i = 4; i <= commandEndIndex; i++) {
+        for (int i = commandStartIndex; i <= commandEndIndex; i++) {
             commandStringBuilder.append(args[i]);
             if (i < commandEndIndex) {
                 commandStringBuilder.append(" ");
