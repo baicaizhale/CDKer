@@ -3,6 +3,8 @@ package org.baicaizhale.cDKer;
 import org.baicaizhale.cDKer.manager.ConfigurationManager;
 import org.baicaizhale.cDKer.model.CDK;
 import org.baicaizhale.cDKer.model.LanguageConfig;
+import org.baicaizhale.cDKer.command.CreateCommandExecutor;
+import org.baicaizhale.cDKer.command.UseCommandExecutor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -28,20 +30,7 @@ public class CDKCommandExecutor implements CommandExecutor {
     private final ConfigurationManager configManager;
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
-    /**
-     * 生成一个指定长度的随机字符串作为CDK代码。
-     * @param length 随机字符串的长度
-     * @return 生成的随机CDK代码
-     */
-    private String generateRandomCdkCode(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        StringBuilder sb = new StringBuilder();
-        java.util.Random random = new java.util.Random();
-        for (int i = 0; i < length; i++) {
-            sb.append(chars.charAt(random.nextInt(chars.length())));
-        }
-        return sb.toString();
-    }
+
 
     /**
      * 构造函数
@@ -52,24 +41,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         this.configManager = plugin.getConfigurationManager();
     }
 
-    /**
-     * 检查命令发送者是否拥有指定权限。
-     * @param sender 命令发送者
-     * @param permission 所需权限
-     * @param prefix 消息前缀
-     * @param langConfig 语言配置
-     * @return 如果拥有权限则返回 true，否则返回 false
-     */
-    private boolean checkPermission(CommandSender sender, String permission, String prefix, LanguageConfig langConfig) {
-        if (!sender.hasPermission(permission)) {
-            String message = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("no_permission"));
-            sender.sendMessage(message);
-            // 将发送给玩家的消息也输出到控制台，方便调试
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + message);
-            return false;
-        }
-        return true;
-    }
+
 
     /**
      * 处理命令逻辑。
@@ -91,7 +63,8 @@ public class CDKCommandExecutor implements CommandExecutor {
         String subCommand = args[0].toLowerCase();
         switch (subCommand) {
             case "create":
-                return handleCreateCommand(sender, args, prefix, langConfig);
+                CreateCommandExecutor createExecutor = new CreateCommandExecutor(plugin, configManager);
+                return createExecutor.handleCreateCommand(sender, args, prefix, langConfig);
             case "add":
                 return handleAddCommand(sender, args, prefix, langConfig);
             case "delete":
@@ -103,7 +76,8 @@ public class CDKCommandExecutor implements CommandExecutor {
             case "export":
                 return handleExportCommand(sender, prefix, langConfig);
             case "use":
-                return handleUseCommand(sender, args, prefix, langConfig);
+                UseCommandExecutor useCommandExecutor = new UseCommandExecutor(plugin, configManager);
+                return useCommandExecutor.handleUseCommand(sender, args, prefix, langConfig);
             default:
                 String message = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("unknown_command"));
                 sender.sendMessage(message);
@@ -111,6 +85,24 @@ public class CDKCommandExecutor implements CommandExecutor {
                 plugin.getLogger().info("[To Player] " + sender.getName() + ": " + message);
                 return true;
         }
+    }
+
+    /**
+     * 检查玩家是否有执行命令的权限。
+     * @param sender 命令发送者
+     * @param permission 所需权限
+     * @param prefix 插件前缀
+     * @param langConfig 语言配置
+     * @return 如果玩家有权限则返回 true，否则返回 false
+     */
+    private boolean checkPermission(CommandSender sender, String permission, String prefix, LanguageConfig langConfig) {
+        if (!sender.hasPermission(permission)) {
+            String noPermissionMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("no_permission"));
+            sender.sendMessage(noPermissionMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + noPermissionMessage);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -161,166 +153,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
-    /**
-     * 处理 create 命令。
-     */
-    private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
-        if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
 
-        if (args.length < 2) { // 最少需要 /cdk create
-            String createUsageSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single"));
-            sender.sendMessage(createUsageSingleMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageSingleMessage);
-            String createUsageMultipleNameMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_name"));
-            sender.sendMessage(createUsageMultipleNameMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleNameMessage);
-            String createUsageMultipleRandomMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_random"));
-            sender.sendMessage(createUsageMultipleRandomMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleRandomMessage);
-            return true;
-        }
-
-        String cdkType = args[1].toLowerCase();
-        String cdkCode;
-        int quantity;
-        int commandStartIndex = 0;
-
-        if (cdkType.equals("multiple")) {
-            String nameOrRandomValue = args[2];
-            if (nameOrRandomValue.equalsIgnoreCase("random")) {
-                if (args.length < 5) { // create multiple random <数量> "<命令1|命令2|...>" [有效时间]
-                    String createUsageMultipleRandomMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_random"));
-                    sender.sendMessage(createUsageMultipleRandomMessage);
-                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleRandomMessage);
-                    return true;
-                }
-                cdkCode = generateRandomCdkCode(8); // 生成8位随机CDK代码
-                try {
-                    quantity = Integer.parseInt(args[3]);
-                } catch (NumberFormatException e) {
-                    String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
-                    sender.sendMessage(invalidQuantityMessage);
-                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
-                    return true;
-                }
-                commandStartIndex = 4; // args[4] is the start of commands for 'multiple random'
-            } else {
-                if (args.length < 6) { // create multiple <name> <id> <数量> "<命令1|命令2|...>" [有效时间]
-                    String createUsageMultipleNameMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_name"));
-                    sender.sendMessage(createUsageMultipleNameMessage);
-                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleNameMessage);
-                    return true;
-                }
-                cdkCode = args[3];
-                try {
-                    quantity = Integer.parseInt(args[4]);
-                } catch (NumberFormatException e) {
-                    String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
-                    sender.sendMessage(invalidQuantityMessage);
-                    plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
-                    return true;
-                }
-                commandStartIndex = 5; // args[5] is the start of commands for 'multiple <name>'
-            }
-        } else if (cdkType.equals("single")) {
-            if (args.length < 5) { // create single <id> <数量> "<命令1|命令2|...>" [有效时间]
-                String createUsageSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single"));
-                sender.sendMessage(createUsageSingleMessage);
-                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageSingleMessage);
-                return true;
-            }
-            cdkCode = args[2];
-            try {
-                quantity = Integer.parseInt(args[3]);
-            } catch (NumberFormatException e) {
-                String invalidQuantityMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_quantity"));
-                sender.sendMessage(invalidQuantityMessage);
-                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidQuantityMessage);
-                return true;
-            }
-            commandStartIndex = 4; // args[4] is the start of commands for 'single'
-        } else {
-            String invalidCdkTypeMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type"));
-            sender.sendMessage(invalidCdkTypeMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidCdkTypeMessage);
-            return true;
-        }
-
-        List<String> commands;
-        String expiration = null;
-
-        // Determine the command string and optional expiration
-        StringBuilder commandStringBuilder = new StringBuilder();
-        String potentialExpiration = null;
-        int commandEndIndex;
-
-        // Check if the last argument could be an expiration date
-        if (args.length > commandStartIndex + 1) { // Only consider expiration if there are enough arguments after commands
-            try {
-                DATE_FORMAT.parse(args[args.length - 1]);
-                // If parsing succeeds, it's likely an expiration date
-                potentialExpiration = args[args.length - 1];
-                commandEndIndex = args.length - 2; // Command string ends before the expiration
-            } catch (ParseException ignored) {
-                // Not a valid date format, so it's part of the command string
-                commandEndIndex = args.length - 1;
-            }
-        } else {
-            commandEndIndex = args.length - 1;
-        }
-
-        // Reconstruct the command string
-        for (int i = commandStartIndex; i <= commandEndIndex; i++) {
-            commandStringBuilder.append(args[i]);
-            if (i < commandEndIndex) {
-                commandStringBuilder.append(" ");
-            }
-        }
-        commands = Arrays.asList(commandStringBuilder.toString().split("\\|"));
-
-        expiration = potentialExpiration;
-        if (expiration != null) {
-            try {
-                DATE_FORMAT.parse(expiration);
-            } catch (ParseException e) {
-                String invalidDateFormatMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_date_format"));
-                sender.sendMessage(invalidDateFormatMessage);
-                plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidDateFormatMessage);
-                return true;
-            }
-        }
-
-        if (configManager.getCdkMap().containsKey(cdkCode)) {
-            String cdkAlreadyExistsMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_exists").replace("%cdk%", cdkCode));
-            sender.sendMessage(cdkAlreadyExistsMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + cdkAlreadyExistsMessage);
-            return true;
-        }
-
-        CDK newCdk = new CDK(cdkType, commands, quantity, expiration);
-        configManager.getCdkMap().put(cdkCode, newCdk);
-        configManager.saveCdkConfig();
-
-        if (cdkType.equals("single")) {
-            String createSuccessSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_single")
-                    .replace("%quantity%", String.valueOf(quantity))
-                    .replace("%id%", cdkCode));
-            sender.sendMessage(createSuccessSingleMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createSuccessSingleMessage);
-        } else if (cdkType.equals("multiple")) {
-            String createSuccessMultipleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_success_multiple")
-                    .replace("%cdk%", cdkCode)
-                    .replace("%quantity%", String.valueOf(quantity))
-                    .replace("%id%", cdkCode));
-            sender.sendMessage(createSuccessMultipleMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createSuccessMultipleMessage);
-        } else {
-            String invalidCdkTypeMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("invalid_cdk_type"));
-            sender.sendMessage(invalidCdkTypeMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + invalidCdkTypeMessage);
-        }
-        return true;
-    }
 
     /**
      * 处理 add 命令。
@@ -481,89 +314,4 @@ public class CDKCommandExecutor implements CommandExecutor {
         return true;
     }
 
-    /**
-     * 处理 use 命令。
-     */
-    private boolean handleUseCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
-        if (!(sender instanceof Player)) {
-            String usePlayerOnlyMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_player_only"));
-            sender.sendMessage(usePlayerOnlyMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + usePlayerOnlyMessage);
-            return true;
-        }
-        Player player = (Player) sender;
-
-        if (!checkPermission(player, "cdk.use", prefix, langConfig)) return true;
-
-        if (args.length < 2) {
-            String useUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_usage"));
-            player.sendMessage(useUsageMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + useUsageMessage);
-            return true;
-        }
-
-        String cdkCode = args[1];
-        CDK cdk = configManager.getCdkMap().get(cdkCode);
-
-        if (cdk == null) {
-            String cdkNotFoundMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_not_found").replace("%cdk%", cdkCode));
-            player.sendMessage(cdkNotFoundMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkNotFoundMessage);
-            return true;
-        }
-
-        if (configManager.isCdkExpired(cdk)) {
-            String cdkExpiredMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_expired").replace("%cdk%", cdkCode));
-            player.sendMessage(cdkExpiredMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkExpiredMessage);
-            // 不再删除过期CDK，仅提示过期
-            return true;
-        }
-
-        if (cdk.getType().equalsIgnoreCase("single") && configManager.hasPlayerUsedCdk(player.getName(), cdkCode)) {
-            String cdkAlreadyUsedMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_already_used").replace("%cdk%", cdkCode));
-            player.sendMessage(cdkAlreadyUsedMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkAlreadyUsedMessage);
-            return true;
-        }
-
-        if (cdk.getRemainingUses() <= 0) {
-            String maxUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage"));
-            player.sendMessage(maxUsageMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + maxUsageMessage);
-            return true;
-        }
-
-        // 执行命令
-        for (String commandText : cdk.getCommands()) {
-            String commandToExecute = commandText.replace("%player%", player.getName());
-            // 检查命令是否被双引号包裹，并移除它们
-            if (commandToExecute.startsWith("\"") && commandToExecute.endsWith("\"")) {
-                commandToExecute = commandToExecute.substring(1, commandToExecute.length() - 1);
-            }
-            player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandToExecute);
-            plugin.getLogger().info("Player " + player.getName() + " executed command: " + commandToExecute);
-        }
-
-        // 更新剩余使用次数
-        cdk.setRemainingUses(cdk.getRemainingUses() - 1);
-        configManager.saveCdkConfig();
-
-        // 标记玩家已使用一次性 CDK
-        if (cdk.getType().equalsIgnoreCase("single")) {
-            configManager.markPlayerUsedCdk(player.getName(), cdkCode);
-            configManager.saveUsedCodesConfig();
-        }
-
-        String useSuccessMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("use_success").replace("%cdk%", cdkCode));
-        player.sendMessage(useSuccessMessage);
-        plugin.getLogger().info("[To Player] " + player.getName() + ": " + useSuccessMessage);
-
-        if (cdk.getRemainingUses() == 0) {
-            String maxUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage"));
-            player.sendMessage(maxUsageMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + maxUsageMessage);
-        }
-        return true;
-    }
 }
