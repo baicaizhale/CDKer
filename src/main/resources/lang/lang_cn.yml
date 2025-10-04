@@ -18,7 +18,7 @@ help_footer: "&6========================="
 # cdkadmin 命令帮助
 help_admin_header: "&6===== &e&lCDK 管理帮助 &6=====&r"
 help_admin_create: "&b/cdkadmin create single <id> <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建一次性CDK"
-help_admin_create_multiple: "&b/cdkadmin create multiple <name|random> <id> <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建可多次使用CDK"
+help_admin_create_multiple: "&b/cdkadmin create multiple <name> <id> <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建可多次使用CDK (指定名称)\n&b/cdkadmin create multiple random <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建可多次使用CDK (随机ID)"
 help_admin_add: "&b/cdkadmin add <id> <数量> &7- 批量生成/增加可使用次数"
 help_admin_delete: "&b/cdkadmin delete <cdk|id> <内容> &7- 删除CDK/删除此id和id下的所有CDK"
 help_admin_list: "&b/cdkadmin list &7- 列出所有CDK"

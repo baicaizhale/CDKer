@@ -67,29 +67,45 @@ public class CDKTabCompleter implements TabCompleter {
             }
         } else if (args.length == 4 && args[0].equalsIgnoreCase("create")) {
             if (args[1].equalsIgnoreCase("multiple")) {
-                // 补全 CDK 码（创建时）
-                completions.add("<CDK码>");
+                if (args[2].equalsIgnoreCase("random")) {
+                    // 补全数量
+                    completions.add("<数量>");
+                } else {
+                    // 补全 CDK 码（创建时）
+                    completions.add("<CDK码>");
+                }
             } else {
                 // 补全数量
                 completions.add("<数量>");
             }
         } else if (args.length == 5 && args[0].equalsIgnoreCase("create")) {
             if (args[1].equalsIgnoreCase("multiple")) {
-                // 补全数量
-                completions.add("<数量>");
+                if (args[2].equalsIgnoreCase("random")) {
+                    // 补全命令
+                    completions.add("<命令1|命令2|...>");
+                } else {
+                    // 补全数量
+                    completions.add("<数量>");
+                }
             } else {
                 // 补全命令
                 completions.add("<命令1|命令2|...>");
             }
         } else if (args.length == 6 && args[0].equalsIgnoreCase("create")) {
             if (args[1].equalsIgnoreCase("multiple")) {
-                // 补全命令
-                completions.add("<命令1|命令2|...>");
-            } else {
+                if (args[2].equalsIgnoreCase("random")) {
+                    // 补全过期时间
+                    completions.add("<yyyy-MM-dd HH:mm>");
+                } else {
+                    // 补全命令
+                    completions.add("<命令1|命令2|...>");
+                }
+            }
+            else {
                 // 补全过期时间
                 completions.add("<yyyy-MM-dd HH:mm>");
             }
-        } else if (args.length == 7 && args[0].equalsIgnoreCase("create") && args[1].equalsIgnoreCase("multiple")) {
+        } else if (args.length == 7 && args[0].equalsIgnoreCase("create") && args[1].equalsIgnoreCase("multiple") && !args[2].equalsIgnoreCase("random")) {
             // 补全过期时间
             completions.add("<yyyy-MM-dd HH:mm>");
         }
