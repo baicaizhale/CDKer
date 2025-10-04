@@ -372,6 +372,7 @@ public class CDKCommandExecutor implements CommandExecutor {
         for (String commandText : cdk.getCommands()) {
             String commandToExecute = commandText.replace("%player%", player.getName());
             player.getServer().dispatchCommand(player.getServer().getConsoleSender(), commandToExecute);
+            plugin.getLogger().info("Player " + player.getName() + " executed command: " + commandToExecute);
         }
 
         // 更新剩余使用次数
