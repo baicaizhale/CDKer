@@ -167,14 +167,16 @@ public class CDKCommandExecutor implements CommandExecutor {
     private boolean handleCreateCommand(CommandSender sender, String[] args, String prefix, LanguageConfig langConfig) {
         if (!checkPermission(sender, "cdk.create", prefix, langConfig)) return true;
 
-        if (args.length < 5) {
+        if (args.length < 2) { // 最少需要 /cdk create
             String createUsageSingleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_single"));
             sender.sendMessage(createUsageSingleMessage);
             plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageSingleMessage);
-
-            String createUsageMultipleMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple"));
-            sender.sendMessage(createUsageMultipleMessage);
-            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleMessage);
+            String createUsageMultipleNameMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_name"));
+            sender.sendMessage(createUsageMultipleNameMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleNameMessage);
+            String createUsageMultipleRandomMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("create_usage_multiple_random"));
+            sender.sendMessage(createUsageMultipleRandomMessage);
+            plugin.getLogger().info("[To Player] " + sender.getName() + ": " + createUsageMultipleRandomMessage);
             return true;
         }
 
