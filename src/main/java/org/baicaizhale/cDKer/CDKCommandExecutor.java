@@ -29,6 +29,21 @@ public class CDKCommandExecutor implements CommandExecutor {
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     /**
+     * 生成一个指定长度的随机字符串作为CDK代码。
+     * @param length 随机字符串的长度
+     * @return 生成的随机CDK代码
+     */
+    private String generateRandomCdkCode(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        java.util.Random random = new java.util.Random();
+        for (int i = 0; i < length; i++) {
+            sb.append(chars.charAt(random.nextInt(chars.length())));
+        }
+        return sb.toString();
+    }
+
+    /**
      * 构造函数
      * @param plugin 插件主类实例
      */
