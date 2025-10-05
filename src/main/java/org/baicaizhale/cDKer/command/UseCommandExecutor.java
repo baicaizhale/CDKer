@@ -80,9 +80,9 @@ public class UseCommandExecutor {
         }
 
         if (cdk.getRemainingUses() <= 0) {
-            String maxUsageMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("max_usage"));
-            player.sendMessage(maxUsageMessage);
-            plugin.getLogger().info("[To Player] " + player.getName() + ": " + maxUsageMessage);
+            String cdkUsedUpMessage = ChatColor.translateAlternateColorCodes('&', prefix + langConfig.getMessage("cdk_used_up").replace("%cdk%", cdkCode));
+            player.sendMessage(cdkUsedUpMessage);
+            plugin.getLogger().info("[To Player] " + player.getName() + ": " + cdkUsedUpMessage);
             return true;
         }
 
