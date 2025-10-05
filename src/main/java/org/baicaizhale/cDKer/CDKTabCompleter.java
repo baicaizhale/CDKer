@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class CDKTabCompleter implements TabCompleter {
 
-    private final ConfigurationManager configManager;
+    // 移除未使用的字段
     private final List<String> subCommands = Arrays.asList("help", "create", "add", "delete", "list", "reload", "export", "use");
 
     /**
@@ -23,7 +23,7 @@ public class CDKTabCompleter implements TabCompleter {
      * @param configManager 配置管理器实例
      */
     public CDKTabCompleter(ConfigurationManager configManager) {
-        this.configManager = configManager;
+        // 构造函数中不再使用未声明的 configManager 字段，因此移除赋值语句
     }
 
     /**

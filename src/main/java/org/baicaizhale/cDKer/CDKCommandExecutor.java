@@ -9,15 +9,15 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+// import org.bukkit.entity.Player;
 
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
+// import java.text.ParseException;
+// import java.text.SimpleDateFormat;
+// import java.util.Arrays;
+// import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -28,7 +28,7 @@ public class CDKCommandExecutor implements CommandExecutor {
 
     private final CDKer plugin;
     private final ConfigurationManager configManager;
-    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    // 移除未使用的 DATE_FORMAT 字段
 
 
 
