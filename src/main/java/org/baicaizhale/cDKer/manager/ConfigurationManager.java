@@ -43,8 +43,8 @@ public class ConfigurationManager {
      */
     public void loadAllConfigs() {
         loadPluginConfig();
-        // loadCdkConfig(); // 懒加载
-        // loadUsedCodesConfig(); // 懒加载
+        loadCdkConfig();
+        loadUsedCodesConfig();
         loadLanguageConfigs();
     }
 
