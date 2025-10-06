@@ -37,7 +37,12 @@ public class LanguageConfig {
      * @param key 消息的键
      * @return 对应的消息字符串，如果不存在则返回 null
      */
+    /**
+     * 根据键获取特定的语言消息
+     * @param key 消息的键
+     * @return 对应的消息字符串，如果不存在则返回空字符串
+     */
     public String getMessage(String key) {
-        return messages.get(key);
+        return messages.getOrDefault(key, "");
     }
 }
