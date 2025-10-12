@@ -1,37 +1,44 @@
 name: CDKer
-version: 5.0.4
+version: '1.0.0'
 main: org.baicaizhale.cDKer.CDKer
-api-version: 1.18
+api-version: '1.13'
+description: A powerful CDK management plugin for Spigot servers
+authors: [baicaizhale]
 
 commands:
   cdk:
-    description: 管理和使用礼品码的命令
-    usage: /cdk <help|create|add|delete|list|reload|export|use>
-    aliases: [cdkadmin, giftcode]
-    tab-completer: org.baicaizhale.cDKer.CDKTabCompleter
+    description: CDK management command
+    usage: |
+      §6=== CDK Plugin Usage ===
+      §f/cdk create <amount> <commands> [uses] [note] [expire] [type] §7- Create CDK
+      §f/cdk set <id/cdk> <identifier> <type> <value> §7- Set CDK property
+      §f/cdk add <id/cdk> <identifier> <amount> §7- Add uses
+      §f/cdk query <id/cdk> <identifier> §7- Query CDK info
+      §f/cdk del <id/cdk> <identifier> §7- Delete CDK
+      §f/cdk use <cdkcode> §7- Use CDK
+      §f/cdk list §7- List all CDKs
+      §f/cdk reload §7- Reload config
+    aliases: [cdker, giftcode]
 
 permissions:
-  cdk.help:
-    description: 允许查看CDK帮助信息
-    default: true
-  cdk.create:
-    description: 允许创建新的CDK
+  cdk.admin:
+    description: Gives access to all CDK plugin commands
     default: op
-  cdk.add:
-    description: 允许增加CDK数量或创建新CDK
-    default: op
-  cdk.delete:
-    description: 允许删除CDK
-    default: op
-  cdk.list:
-    description: 允许查看CDK列表
-    default: op
-  cdk.reload:
-    description: 允许重载插件配置
-    default: op
-  cdk.export:
-    description: 允许导出CDK数据
-    default: op
+    children:
+      cdk.use: true
+      cdk.create: true
+      cdk.query: true
+  
   cdk.use:
-    description: 允许玩家使用CDK
+    description: Allows using CDK codes
     default: true
+  
+  cdk.create:
+    description: Allows creating new CDK codes
+    default: op
+    children:
+      cdk.query: true
+  
+  cdk.query:
+    description: Allows querying CDK information
+    default: op

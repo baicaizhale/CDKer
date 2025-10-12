@@ -1,0 +1,12 @@
+{
+  "java.jdt.ls.java.home": "C:\\Users\\Administrator\\.jdks\\jbr-17.0.14",
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "C:\\Users\\Administrator\\.jdks\\jbr-17.0.14",
+      "default": true
+    }
+  ],
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "interactive"
+}
