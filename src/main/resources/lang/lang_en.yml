@@ -5,11 +5,10 @@ unknown_command: "&cUnknown command! Use /cdk help for a list of commands."
 no_permission_use: "&cYou do not have permission to use this CDK!"
 
 help_header: "&6===== &e&lCDK Help &6=====&r"
-help_create: "&b/cdk create single <id> <quantity> \"<command1|command2|...>\" [expiration_time] &7- Create a one-time CDK"
-help_create_multiple: "&b/cdk create multiple <name> <id> <quantity> \"<command1|command2|...>\" [expiration_time] &7- Create a multiple-use CDK\n&b/cdk create multiple random <quantity> \"<command1|command2|...>\" [expiration_time] &7- Create a multiple-use CDK with random ID"
+help_create: "&b/cdk create <amount> \"<command1|command2|...>\" [uses] [note] [expire] [type] [multi-use] &7- Create CDK\n&7Parameters:\n&7<amount>: Number of CDKs to generate\n&7<commands>: Commands to execute, separated by |\n&7[uses]: Total uses per CDK, default 1\n&7[note]: Note for this CDK\n&7[expire]: Expire time, format yyyy-MM-dd HH:mm\n&7[type]: Custom type identifier\n&7[multi-use]: true/false, allow same player to redeem multiple times\n&7Example: /cdk create 5 \"give %player% diamond 1|say Congratulations\" 1 \"Starter Pack\" 2025-12-01 10:00 vip true"
 help_add: "&b/cdk add <id> <quantity> &7- Bulk generate/increase uses for a CDK"
 help_delete: "&b/cdk delete <cdk|id> <content> &7- Delete a CDK / Delete all CDKs under an ID"
-help_list: "&b/cdk list &7- List all CDKs"
+help_list: "&b/cdk list &7- List all CDKs\n&7Supports pagination and filter, e.g.: /cdk list 2 vip"
 help_reload: "&b/cdk reload &7- Reload config and language files"
 help_export: "&b/cdk export &7- Export all CDKs"
 help_use: "&b/cdk use <CDK> &7- Use a CDK"
@@ -26,10 +25,10 @@ help_admin_reload: "&b/cdkadmin reload &7- Reload config and language files"
 help_admin_export: "&b/cdkadmin export &7- Export all CDKs"
 help_admin_footer: "&6========================="
 
-# giftcode command help
-help_giftcode_header: "&6===== &e&lGift Code Help &6=====&r"
-help_giftcode_use: "&b/giftcode use <CDK> &7- Use a gift code"
-help_giftcode_footer: "&6========================="
+  # 已移除giftcode相关内容
+prefix: "&7[&bCDK&7] &r"
+no_permission_use: "&cYou do not have permission to use this CDK!"
+unknown_command: "&cUnknown command! Use /cdk help for a list of commands."
 
 create_usage_single: "Usage: /cdk create single <id> <quantity> \"<command1|command2|...>\" [expiration_time]"
 create_usage_multiple_name: "Usage: /cdk create multiple <name> <id> <quantity> \"<command1|command2|...>\" [expiration_time]"

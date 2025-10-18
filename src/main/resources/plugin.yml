@@ -18,7 +18,7 @@ commands:
       §f/cdk use <cdkcode> §7- Use CDK
       §f/cdk list §7- List all CDKs
       §f/cdk reload §7- Reload config
-    aliases: [cdker, giftcode]
+    aliases: [cdker]
 
 permissions:
   cdk.admin:

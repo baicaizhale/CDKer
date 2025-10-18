@@ -6,32 +6,35 @@ import org.baicaizhale.cDKer.model.CdkRecord;
 import org.baicaizhale.cDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class QueryCommandExecutor extends AbstractSubCommand {
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public QueryCommandExecutor(CDKer plugin) {
         super(plugin);
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
+    public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 2) {
             CommandUtils.sendMessage(sender, getUsage());
             return true;
         }
 
-        try {
-            String identifier = args[0];
-            String target = args[1];
+        String identifierType = args[0].toLowerCase();
+        String identifier = args[1];
 
-            CdkRecord record = null;
-            if ("id".equalsIgnoreCase(identifier)) {
-                record = plugin.getCdkRecordDao().getCdkById(Integer.parseInt(target));
-            } else if ("cdk".equalsIgnoreCase(identifier)) {
-                record = plugin.getCdkRecordDao().getCdkByCode(target);
+        try {
+            CdkRecord record;
+            if ("id".equals(identifierType)) {
+                int id = Integer.parseInt(identifier);
+                record = plugin.getCdkRecordDao().getCdkById(id);
+            } else if ("cdk".equals(identifierType)) {
+                record = plugin.getCdkRecordDao().getCdkByCode(identifier);
             } else {
                 CommandUtils.sendMessage(sender, "§c无效的标识符，必须是 'id' 或 'cdk'。");
                 return true;
@@ -42,27 +45,40 @@ public class QueryCommandExecutor extends AbstractSubCommand {
                 return true;
             }
 
-            CommandUtils.sendMessage(sender, CommandUtils.formatCdkInfo(record));
-            return true;
+            // 显示详细的CDK信息
+            StringBuilder info = new StringBuilder();
+            info.append("§6=== CDK详细信息 ===\n");
+            info.append(String.format("§fID: §e%d\n", record.getId()));
+            info.append(String.format("§f代码: §e%s\n", record.getCdkCode()));
+            info.append(String.format("§f类型: §e%s\n", record.getCdkType().isEmpty() ? "无" : record.getCdkType()));
+            info.append(String.format("§f备注: §e%s\n", record.getNote().isEmpty() ? "无" : record.getNote()));
+            info.append(String.format("§f剩余使用次数: §e%d\n", record.getRemainingUses()));
+            info.append(String.format("§f过期时间: §e%s\n", record.getExpireTime()));
+            info.append(String.format("§f创建时间: §e%s\n", DATE_FORMAT.format(record.getCreatedTime())));
+            info.append(String.format("§f允许同一玩家多次使用: §e%s\n", record.isPerPlayerMultiple() ? "是" : "否"));
+            info.append("§f命令列表:\n");
+            
+            List<String> commands = record.getCommands();
+            for (int i = 0; i < commands.size(); i++) {
+                info.append(String.format("  §e%d. §f%s\n", i + 1, commands.get(i)));
+            }
+            info.append("§6==================");
+
+            CommandUtils.sendMessage(sender, info.toString());
+
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, "§c无效的数字格式。");
-            return true;
         } catch (Exception e) {
-            plugin.getLogger().severe("查询CDK信息时出错: " + e.getMessage());
-            e.printStackTrace();
             CommandUtils.sendMessage(sender, "§c查询CDK信息时出错: " + e.getMessage());
-            return true;
+            e.printStackTrace();
         }
+
+        return true;
     }
 
     @Override
     public String getUsage() {
-        return "§f/cdk query <id/cdk> <标识符> §7- 查询CDK信息";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "cdk.query";
+        return "§c用法: /cdk query <id/cdk> <标识符>";
     }
 
     @Override

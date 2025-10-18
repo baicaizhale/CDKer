@@ -17,65 +17,52 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
+    public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            CommandUtils.sendMessage(sender, getUsage());
+            sender.sendMessage("§c用法: /cdk del <id/cdk> <标识符>");
             return true;
         }
 
-        try {
-            String identifier = args[0];
-            String target = args[1];
+        String identifierType = args[0].toLowerCase();
+        String identifier = args[1];
 
-            CdkRecord record = null;
-            if ("id".equalsIgnoreCase(identifier)) {
-                record = plugin.getCdkRecordDao().getCdkById(Integer.parseInt(target));
-            } else if ("cdk".equalsIgnoreCase(identifier)) {
-                record = plugin.getCdkRecordDao().getCdkByCode(target);
+        try {
+            CdkRecord record;
+            if ("id".equals(identifierType)) {
+                int id = Integer.parseInt(identifier);
+                record = plugin.getCdkRecordDao().getCdkById(id);
+            } else if ("cdk".equals(identifierType)) {
+                record = plugin.getCdkRecordDao().getCdkByCode(identifier);
             } else {
-                CommandUtils.sendMessage(sender, "§c无效的标识符，必须是 'id' 或 'cdk'。");
+                sender.sendMessage("§c无效的标识符，必须是 'id' 或 'cdk'。");
                 return true;
             }
 
             if (record == null) {
-                CommandUtils.sendMessage(sender, "§cCDK不存在。");
+                sender.sendMessage("§cCDK不存在。");
                 return true;
             }
 
-            if ("id".equalsIgnoreCase(identifier)) {
-                plugin.getCdkRecordDao().deleteCdkById(Integer.parseInt(target));
-                CommandUtils.sendMessage(sender, String.format("§a已删除ID为 %s 的CDK码。", target));
+            if ("id".equals(identifierType)) {
+                plugin.getCdkRecordDao().deleteCdkById(record.getId());
             } else {
-                plugin.getCdkRecordDao().deleteCdk(target);
-                CommandUtils.sendMessage(sender, String.format("§a已删除CDK码: %s", target));
+                plugin.getCdkRecordDao().deleteCdk(record.getCdkCode());
             }
-            return true;
+
+            sender.sendMessage("§a成功删除CDK码: " + record.getCdkCode());
+
         } catch (NumberFormatException e) {
-            CommandUtils.sendMessage(sender, "§c无效的数字格式。");
-            return true;
+            sender.sendMessage("§c无效的数字格式。");
         } catch (Exception e) {
-            plugin.getLogger().severe("删除CDK时出错: " + e.getMessage());
+            sender.sendMessage("§c删除CDK时出错: " + e.getMessage());
             e.printStackTrace();
-            CommandUtils.sendMessage(sender, "§c删除CDK时出错: " + e.getMessage());
-            return true;
         }
+
+        return true;
     }
 
     @Override
     public String getUsage() {
-        return "§f/cdk del <id/cdk> <标识符> §7- 删除CDK";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "cdk.admin";
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String[] args) {
-        if (args.length == 1) {
-            return Arrays.asList("id", "cdk");
-        }
-        return new ArrayList<>();
+        return "§c用法: /cdk del <id/cdk> <标识符>";
     }
 }

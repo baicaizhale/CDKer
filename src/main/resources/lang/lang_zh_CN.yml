@@ -34,15 +34,34 @@ messages:
   # 命令帮助
   help:
     header: "§6=== CDK插件帮助 ==="
-    create: "§f/cdk create <数量> <命令> [次数] [备注] [过期时间] [类型] §7- 创建CDK"
+    create: |
+      §f/cdk create <数量> "<命令1|命令2|...>" [兑换次数] [备注] [失效时间] [CDK类型] [每人可多次] §7- 创建CDK
+      §7参数说明:
+      §7<数量>: 生成CDK数量
+      §7<命令>: 玩家兑换时执行的命令，多个用|分隔
+      §7[兑换次数]: 每个CDK可被兑换的总次数，默认1
+      §7[备注]: 该CDK的备注信息
+      §7[失效时间]: 过期时间，格式yyyy-MM-dd HH:mm
+      §7[CDK类型]: 自定义类型标识
+      §7[每人可多次]: true/false，是否允许同一玩家多次兑换
+      §7示例: /cdk create 5 "give %player% diamond 1|say 恭喜获得钻石" 1 "新手礼包" 2025-12-01 10:00 vip true
     set: "§f/cdk set <id/cdk> <标识符> <类型> <值> §7- 设置CDK属性"
     add: "§f/cdk add <id/cdk> <标识符> <数量> §7- 增加使用次数"
     query: "§f/cdk query <id/cdk> <标识符> §7- 查询CDK信息"
     del: "§f/cdk del <id/cdk> <标识符> §7- 删除CDK"
     use: "§f/cdk use <cdkcode> §7- 使用CDK"
-    list: "§f/cdk list §7- 列出所有CDK"
+    list: |
+      §f/cdk list §7- 列出所有CDK
+      §7支持分页和筛选，示例: /cdk list 2 vip
     reload: "§f/cdk reload §7- 重载配置"
+    import: "§f/cdk import <yml文件> [replace|append] §7- 从yml导入CDK"
+    export: "§f/cdk export <yml文件> §7- 导出CDK为yml"
     footer: "§6=================="
+
+  # 兼容/补充项
+  prefix: "§7[§bCDK§7] §r"
+  no-permission-use: "§c你没有权限使用此CDK！"
+  unknown-command: "§c未知命令！使用 /cdk help 查看命令列表。"
 
   # 错误消息
   error:

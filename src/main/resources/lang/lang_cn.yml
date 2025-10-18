@@ -5,11 +5,10 @@ unknown_command: "&c未知命令！使用 /cdk help 查看命令列表。"
 no_permission_use: "&c你没有权限使用此 CDK！"
 
 help_header: "&6===== &e&lCDK 帮助 &6=====&r"
-help_create: "&b/cdk create single <id> <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建一次性CDK"
-help_create_multiple: "&b/cdk create multiple <name> <id> <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建可多次使用CDK\n&b/cdk create multiple random <数量> \"<命令1|命令2|...>\" [有效时间] &7- 创建随机ID的可多次使用CDK"
+help_create: "&b/cdk create <数量> \"<命令1|命令2|...>\" [兑换次数] [备注] [失效时间] [CDK类型] [每人可多次] &7- 创建CDK\n&7参数说明:\n&7<数量>: 生成CDK数量\n&7<命令>: 玩家兑换时执行的命令，多个用|分隔\n&7[兑换次数]: 每个CDK可被兑换的总次数，默认1\n&7[备注]: 该CDK的备注信息\n&7[失效时间]: 过期时间，格式yyyy-MM-dd HH:mm\n&7[CDK类型]: 自定义类型标识\n&7[每人可多次]: true/false，是否允许同一玩家多次兑换\n&7示例: /cdk create 5 \"give %player% diamond 1|say 恭喜获得钻石\" 1 \"新手礼包\" 2025-12-01 10:00 vip true"
 help_add: "&b/cdk add <id> <数量> &7- 批量生成/增加可使用次数"
 help_delete: "&b/cdk delete <cdk|id> <内容> &7- 删除CDK/删除此id和id下的所有CDK"
-help_list: "&b/cdk list &7- 列出所有CDK"
+help_list: "&b/cdk list &7- 列出所有CDK\n&7支持分页和筛选，示例: /cdk list 2 vip"
 help_reload: "&b/cdk reload &7- 重新加载配置和语言文件"
 help_export: "&b/cdk export &7- 导出所有CDK"
 help_use: "&b/cdk use <CDK> &7- 使用一个CDK"
@@ -26,10 +25,10 @@ help_admin_reload: "&b/cdkadmin reload &7- 重新加载配置和语言文件"
 help_admin_export: "&b/cdkadmin export &7- 导出所有CDK"
 help_admin_footer: "&6========================="
 
-# giftcode 命令帮助
-help_giftcode_header: "&6===== &e&l礼品码帮助 &6=====&r"
-help_giftcode_use: "&b/giftcode use <CDK> &7- 使用一个礼品码"
-help_giftcode_footer: "&6========================="
+  # 已移除giftcode相关内容
+prefix: "&7[&bCDK&7] &r"
+no_permission_use: "&c你没有权限使用此 CDK！"
+unknown_command: "&c未知命令！使用 /cdk help 查看命令列表。"
 
 create_usage_single: "用法: /cdk create single <id> <数量> \"<命令1|命令2|...>\" [有效时间]"
 create_usage_multiple_name: "用法: /cdk create multiple <name> <id> <数量> \"<命令1|命令2|...>\" [有效时间]"

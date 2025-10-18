@@ -8,12 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CdkLogDao {
-    private final CDKer plugin;
     private final DatabaseManager databaseManager;
     private final String tablePrefix;
 
     public CdkLogDao(CDKer plugin, DatabaseManager databaseManager) {
-        this.plugin = plugin;
         this.databaseManager = databaseManager;
         this.tablePrefix = plugin.getConfig().getString("table-prefix", "cdk_");
     }
@@ -63,6 +61,49 @@ public class CdkLogDao {
             }
         }
         return logs;
+    }
+
+    /**
+     * 检查玩家是否已经使用过指定的CDK码
+     * @param playerUUID 玩家UUID
+     * @param cdkCode CDK码
+     * @return 是否已使用
+     * @throws SQLException 数据库异常
+     */
+    public boolean hasPlayerUsedCode(String playerUUID, String cdkCode) throws SQLException {
+        String sql = String.format("SELECT COUNT(*) FROM %slogs WHERE player_uuid = ? AND cdk_code = ?", tablePrefix);
+        
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, playerUUID);
+            ps.setString(2, cdkCode);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 记录CDK使用日志
+     * @param playerName 玩家名
+     * @param playerUUID 玩家UUID
+     * @param cdkCode CDK码
+     * @param cdkType CDK类型
+     * @param commands 执行的命令列表
+     * @throws SQLException 数据库异常
+     */
+    public void logCdkUsage(String playerName, String playerUUID, String cdkCode, String cdkType, List<String> commands) throws SQLException {
+        String commandsExecuted = String.join("|", commands);
+        CdkLog log = new CdkLog();
+        log.setPlayerName(playerName);
+        log.setPlayerUUID(playerUUID);
+        log.setCdkCode(cdkCode);
+        log.setCdkType(cdkType);
+        log.setCommandsExecuted(commandsExecuted);
+        insertLog(log);
     }
 
     private CdkLog extractCdkLog(ResultSet rs) throws SQLException {

@@ -17,27 +17,34 @@ public class AddCommandExecutor extends AbstractSubCommand {
     }
 
     @Override
-    public boolean execute(CommandSender sender, String[] args) {
+    public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 3) {
             CommandUtils.sendMessage(sender, getUsage());
             return true;
         }
 
-        try {
-            String identifier = args[0];
-            String target = args[1];
-            int amount = Integer.parseInt(args[2]);
+        String identifierType = args[0].toLowerCase();
+        String identifier = args[1];
+        int amount;
 
+        try {
+            amount = Integer.parseInt(args[2]);
             if (amount <= 0) {
                 CommandUtils.sendMessage(sender, "§c增加的数量必须大于0。");
                 return true;
             }
+        } catch (NumberFormatException e) {
+            CommandUtils.sendMessage(sender, "§c无效的数字格式。");
+            return true;
+        }
 
-            CdkRecord record = null;
-            if ("id".equalsIgnoreCase(identifier)) {
-                record = plugin.getCdkRecordDao().getCdkById(Integer.parseInt(target));
-            } else if ("cdk".equalsIgnoreCase(identifier)) {
-                record = plugin.getCdkRecordDao().getCdkByCode(target);
+        try {
+            CdkRecord record;
+            if ("id".equals(identifierType)) {
+                int id = Integer.parseInt(identifier);
+                record = plugin.getCdkRecordDao().getCdkById(id);
+            } else if ("cdk".equals(identifierType)) {
+                record = plugin.getCdkRecordDao().getCdkByCode(identifier);
             } else {
                 CommandUtils.sendMessage(sender, "§c无效的标识符，必须是 'id' 或 'cdk'。");
                 return true;
@@ -50,29 +57,23 @@ public class AddCommandExecutor extends AbstractSubCommand {
 
             record.setRemainingUses(record.getRemainingUses() + amount);
             plugin.getCdkRecordDao().updateCdk(record);
-            
+
             CommandUtils.sendMessage(sender, String.format("§a已为CDK码 %s 增加 %d 次使用次数。当前剩余: %d",
-                record.getCdkCode(), amount, record.getRemainingUses()));
-            return true;
+                    record.getCdkCode(), amount, record.getRemainingUses()));
+
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, "§c无效的数字格式。");
-            return true;
         } catch (Exception e) {
-            plugin.getLogger().severe("增加CDK使用次数时出错: " + e.getMessage());
-            e.printStackTrace();
             CommandUtils.sendMessage(sender, "§c增加CDK使用次数时出错: " + e.getMessage());
-            return true;
+            e.printStackTrace();
         }
+
+        return true;
     }
 
     @Override
     public String getUsage() {
-        return "§f/cdk add <id/cdk> <标识符> <数量> §7- 增加使用次数";
-    }
-
-    @Override
-    public String getRequiredPermission() {
-        return "cdk.admin";
+        return "§c用法: /cdk add <id/cdk> <标识符> <数量>";
     }
 
     @Override

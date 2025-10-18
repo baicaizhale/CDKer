@@ -6,6 +6,10 @@ cdk:
   length: 12
   # 默认兑换次数
   default-uses: 1
+  # 语言配置 (支持: zh_CN, en_US)
+  language: "zh_CN"
+  # 消息前缀
+  prefix: "&bCDKer &7> &f"
   # 数据库配置
   database:
     type: "sqlite" # sqlite 或 mysql
