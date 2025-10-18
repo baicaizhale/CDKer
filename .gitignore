@@ -1,4 +1,6 @@
+
 # User-specific stuff
+
 *.iml
 *.ipr
 *.iws
@@ -111,3 +113,5 @@ buildNumber.properties
 
 # Common working directory
 run/
+.vscode/settings.json
+.vscode/settings.json
