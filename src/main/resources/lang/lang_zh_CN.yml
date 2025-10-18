@@ -1,0 +1,54 @@
+# 中文语言配置文件
+
+messages:
+  # 通用消息
+  general:
+    no-permission: "§c您没有权限执行此命令。"
+    config-reloaded: "§a配置已重新加载。"
+    invalid-command: "§c无效的命令。用法: {usage}"
+    unknown-player: "§c未找到玩家: {player}"
+    invalid-number: "§c无效的数字: {input}"
+
+  # CDK相关消息
+  cdk:
+    created: "§a成功创建 {count} 个CDK码。类型: {type}"
+    created-single: "§a成功创建CDK码: §f{code}"
+    deleted: "§a成功删除CDK码: §f{code}"
+    deleted-id: "§a成功删除ID为 {id} 的CDK。"
+    not-found: "§cCDK码不存在: §f{code}"
+    expired: "§c此CDK码已过期。"
+    used-up: "§c此CDK码已被使用完。"
+    used-type: "§c您已经使用过此类型的CDK码。"
+    use-success: "§a成功使用CDK码！"
+    remaining-uses: "§a剩余使用次数: §f{uses}"
+    updated: "§a成功更新CDK码: §f{code}"
+    info: |
+      §6CDK信息:
+      §f代码: §e{code}
+      §f类型: §e{type}
+      §f备注: §e{note}
+      §f剩余使用次数: §e{uses}
+      §f过期时间: §e{expire}
+      §f创建时间: §e{created}
+
+  # 命令帮助
+  help:
+    header: "§6=== CDK插件帮助 ==="
+    create: "§f/cdk create <数量> <命令> [次数] [备注] [过期时间] [类型] §7- 创建CDK"
+    set: "§f/cdk set <id/cdk> <标识符> <类型> <值> §7- 设置CDK属性"
+    add: "§f/cdk add <id/cdk> <标识符> <数量> §7- 增加使用次数"
+    query: "§f/cdk query <id/cdk> <标识符> §7- 查询CDK信息"
+    del: "§f/cdk del <id/cdk> <标识符> §7- 删除CDK"
+    use: "§f/cdk use <cdkcode> §7- 使用CDK"
+    list: "§f/cdk list §7- 列出所有CDK"
+    reload: "§f/cdk reload §7- 重载配置"
+    footer: "§6=================="
+
+  # 错误消息
+  error:
+    db-connection: "§c数据库连接失败: {error}"
+    invalid-expire-time: "§c无效的过期时间格式，请使用 yyyy-MM-dd HH:mm 格式。"
+    invalid-type: "§c无效的CDK类型: {type}"
+    command-error: "§c执行命令时出错: {error}"
+    yml-load: "§c加载配置文件时出错: {error}"
+    yml-save: "§c保存配置文件时出错: {error}"

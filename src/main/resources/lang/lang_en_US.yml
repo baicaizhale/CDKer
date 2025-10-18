@@ -1,0 +1,54 @@
+# English Language Configuration
+
+messages:
+  # General Messages
+  general:
+    no-permission: "§cYou don't have permission to execute this command."
+    config-reloaded: "§aConfiguration has been reloaded."
+    invalid-command: "§cInvalid command. Usage: {usage}"
+    unknown-player: "§cPlayer not found: {player}"
+    invalid-number: "§cInvalid number: {input}"
+
+  # CDK Related Messages
+  cdk:
+    created: "§aSuccessfully created {count} CDK codes. Type: {type}"
+    created-single: "§aSuccessfully created CDK code: §f{code}"
+    deleted: "§aSuccessfully deleted CDK code: §f{code}"
+    deleted-id: "§aSuccessfully deleted CDK with ID {id}."
+    not-found: "§cCDK code does not exist: §f{code}"
+    expired: "§cThis CDK code has expired."
+    used-up: "§cThis CDK code has been used up."
+    used-type: "§cYou have already used this type of CDK code."
+    use-success: "§aSuccessfully used CDK code!"
+    remaining-uses: "§aRemaining uses: §f{uses}"
+    updated: "§aSuccessfully updated CDK code: §f{code}"
+    info: |
+      §6CDK Information:
+      §fCode: §e{code}
+      §fType: §e{type}
+      §fNote: §e{note}
+      §fRemaining Uses: §e{uses}
+      §fExpire Time: §e{expire}
+      §fCreated Time: §e{created}
+
+  # Command Help
+  help:
+    header: "§6=== CDK Plugin Help ==="
+    create: "§f/cdk create <amount> <commands> [uses] [note] [expire] [type] §7- Create CDK"
+    set: "§f/cdk set <id/cdk> <identifier> <type> <value> §7- Set CDK property"
+    add: "§f/cdk add <id/cdk> <identifier> <amount> §7- Add uses"
+    query: "§f/cdk query <id/cdk> <identifier> §7- Query CDK info"
+    del: "§f/cdk del <id/cdk> <identifier> §7- Delete CDK"
+    use: "§f/cdk use <cdkcode> §7- Use CDK"
+    list: "§f/cdk list §7- List all CDKs"
+    reload: "§f/cdk reload §7- Reload config"
+    footer: "§6=================="
+
+  # Error Messages
+  error:
+    db-connection: "§cDatabase connection failed: {error}"
+    invalid-expire-time: "§cInvalid expire time format, please use yyyy-MM-dd HH:mm format."
+    invalid-type: "§cInvalid CDK type: {type}"
+    command-error: "§cError executing command: {error}"
+    yml-load: "§cError loading configuration file: {error}"
+    yml-save: "§cError saving configuration file: {error}"

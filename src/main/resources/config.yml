@@ -1,11 +1,44 @@
-# CDKer 插件主配置文件
-# 此文件用于配置插件的全局行为，例如语言和消息前缀。
-# 它是插件正常运行所必需的，请勿随意删除。
+# CDK配置
+cdk:
+  # CDK字符集
+  charset: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+  # CDK长度
+  length: 12
+  # 默认兑换次数
+  default-uses: 1
+  # 数据库配置
+  database:
+    type: "sqlite" # sqlite 或 mysql
+    sqlite:
+      file: "cdk.db"
+    mysql:
+      host: "localhost"
+      port: 3306
+      database: "cdk"
+      username: "root"
+      password: "password"
+      table-prefix: "cdk_"
 
-# 使用的语言。插件将加载 'lang/lang_<language>.yml' 文件。
-# 目前支持 'cn' (中文) 和 'en' (英文)。
-language: "cn"
+# 插件基础设置
+settings:
+  # 插件消息前缀
+  prefix: "§6[CDK] §f"
+  # 插件语言 (zh_CN 或 en_US)
+  language: "zh_CN"
+  # 是否启用调试模式
+  debug: false
+  # 是否在使用CDK时广播
+  broadcast: true
+  # 广播消息模板 (支持 {player} 和 {type} 变量)
+  broadcast-message: "§e玩家 {player} 使用了一个 {type} CDK!"
 
-# 插件发送到聊天框的消息前缀。
-# 支持 Minecraft 颜色代码，例如 &b (青色), &7 (灰色), &f (白色)。
-prefix: "&bCDKer &7> &f"
+# 权限相关配置
+permissions:
+  # 管理员权限节点
+  admin: "cdk.admin"
+  # 使用CDK权限节点
+  use: "cdk.use"
+  # 创建CDK权限节点
+  create: "cdk.create"
+  # 查询CDK权限节点
+  query: "cdk.query"
