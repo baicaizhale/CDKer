@@ -52,13 +52,6 @@
   </build>
 
   <repositories>
-    <!-- 阿里云镜像 -->
-    <repository>
-        <id>aliyun</id>
-        <url>https://maven.aliyun.com/repository/public</url>
-        <releases><enabled>true</enabled></releases>
-        <snapshots><enabled>false</enabled></snapshots>
-    </repository>
     <repository>
       <id>spigotmc-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
