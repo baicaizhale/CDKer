@@ -34,15 +34,34 @@ messages:
   # Command Help
   help:
     header: "§6=== CDK Plugin Help ==="
-    create: "§f/cdk create <amount> <commands> [uses] [note] [expire] [type] §7- Create CDK"
+    create: |
+      §f/cdk create <amount> "<command1|command2|...>" [uses] [note] [expire] [type] [multi-use] §7- Create CDK
+      §7Parameters:
+      §7<amount>: Number of CDKs to generate
+      §7<commands>: Commands to execute, separated by |
+      §7[uses]: Total uses per CDK, default 1
+      §7[note]: Note for this CDK
+      §7[expire]: Expire time, format yyyy-MM-dd HH:mm
+      §7[type]: Custom type identifier
+      §7[multi-use]: true/false, allow same player to redeem multiple times
+      §7Example: /cdk create 5 "give %player% diamond 1|say Congratulations" 1 "Starter Pack" 2025-12-01 10:00 vip true
     set: "§f/cdk set <id/cdk> <identifier> <type> <value> §7- Set CDK property"
     add: "§f/cdk add <id/cdk> <identifier> <amount> §7- Add uses"
     query: "§f/cdk query <id/cdk> <identifier> §7- Query CDK info"
     del: "§f/cdk del <id/cdk> <identifier> §7- Delete CDK"
     use: "§f/cdk use <cdkcode> §7- Use CDK"
-    list: "§f/cdk list §7- List all CDKs"
+    list: |
+      §f/cdk list §7- List all CDKs
+      §7Supports pagination and filter, e.g.: /cdk list 2 vip
     reload: "§f/cdk reload §7- Reload config"
+    import: "§f/cdk import <yml file> [replace|append] §7- Import CDKs from yml"
+    export: "§f/cdk export <yml file> §7- Export CDKs to yml"
     footer: "§6=================="
+
+  # Compatibility/Extra
+  prefix: "§7[§bCDK§7] §r"
+  no-permission-use: "§cYou do not have permission to use this CDK!"
+  unknown-command: "§cUnknown command! Use /cdk help for a list of commands."
 
   # Error Messages
   error:

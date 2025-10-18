@@ -3,7 +3,7 @@ package org.baicaizhale.cDKer.util;
 import org.baicaizhale.cDKer.model.CdkRecord;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
+
 import org.bukkit.entity.Player;
 
 import java.security.SecureRandom;

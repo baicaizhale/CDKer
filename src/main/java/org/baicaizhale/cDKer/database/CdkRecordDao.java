@@ -7,23 +7,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CdkRecordDao {
-    private final CDKer plugin;
     private final DatabaseManager databaseManager;
     private final String tablePrefix;
 
     public CdkRecordDao(CDKer plugin, DatabaseManager databaseManager) {
-        this.plugin = plugin;
         this.databaseManager = databaseManager;
         this.tablePrefix = plugin.getConfig().getString("table-prefix", "cdk_");
     }
 
     public void createCdk(CdkRecord record) throws SQLException {
-        String sql = String.format("INSERT INTO %srecords (cdk_code, remaining_uses, commands, expire_time, note, cdk_type) VALUES (?, ?, ?, ?, ?, ?)",
+        String sql = String.format("INSERT INTO %srecords (cdk_code, remaining_uses, commands, expire_time, note, cdk_type, per_player_multiple) VALUES (?, ?, ?, ?, ?, ?, ?)",
                 tablePrefix);
-        
         try (Connection conn = databaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, record.getCdkCode());
@@ -32,6 +28,7 @@ public class CdkRecordDao {
             ps.setString(4, record.getExpireTime());
             ps.setString(5, record.getNote());
             ps.setString(6, record.getCdkType());
+            ps.setBoolean(7, record.isPerPlayerMultiple());
             ps.executeUpdate();
         }
     }
@@ -81,9 +78,8 @@ public class CdkRecordDao {
     }
 
     public void updateCdk(CdkRecord record) throws SQLException {
-        String sql = String.format("UPDATE %srecords SET remaining_uses = ?, commands = ?, expire_time = ?, note = ?, cdk_type = ? WHERE cdk_code = ?",
+        String sql = String.format("UPDATE %srecords SET remaining_uses = ?, commands = ?, expire_time = ?, note = ?, cdk_type = ?, per_player_multiple = ? WHERE cdk_code = ?",
                 tablePrefix);
-        
         try (Connection conn = databaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, record.getRemainingUses());
@@ -91,7 +87,8 @@ public class CdkRecordDao {
             ps.setString(3, record.getExpireTime());
             ps.setString(4, record.getNote());
             ps.setString(5, record.getCdkType());
-            ps.setString(6, record.getCdkCode());
+            ps.setBoolean(6, record.isPerPlayerMultiple());
+            ps.setString(7, record.getCdkCode());
             ps.executeUpdate();
         }
     }
@@ -116,6 +113,18 @@ public class CdkRecordDao {
         }
     }
 
+    /**
+     * 删除所有CDK记录
+     */
+    public void deleteAllCdks() throws SQLException {
+        String sql = String.format("DELETE FROM %srecords", tablePrefix);
+        
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.executeUpdate();
+        }
+    }
+
     private CdkRecord extractCdkRecord(ResultSet rs) throws SQLException {
         CdkRecord record = new CdkRecord();
         record.setId(rs.getInt("id"));
@@ -126,6 +135,11 @@ public class CdkRecordDao {
         record.setNote(rs.getString("note"));
         record.setCdkType(rs.getString("cdk_type"));
         record.setCreatedTime(rs.getTimestamp("created_time"));
+        try {
+            record.setPerPlayerMultiple(rs.getBoolean("per_player_multiple"));
+        } catch (SQLException | IllegalArgumentException e) {
+            record.setPerPlayerMultiple(false);
+        }
         return record;
     }
 }

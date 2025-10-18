@@ -95,6 +95,7 @@ public class DatabaseManager {
             "expire_time VARCHAR(20) DEFAULT 'forever'," +
             "note TEXT DEFAULT ''," +
             "cdk_type VARCHAR(50) DEFAULT ''," +
+            "per_player_multiple BOOLEAN DEFAULT FALSE," +
             "created_time DATETIME DEFAULT CURRENT_TIMESTAMP" +
             ")", prefix, autoIncrement);
 

@@ -3,7 +3,7 @@ package org.baicaizhale.cDKer.model;
 import java.util.List;
 
 /**
- * CDK 实体类，用于表示 cdk.yml 中的一个 CDK 条目。
+ * CDK 实体类，用于表示一个 CDK 条目。
  */
 public class CDK {
     private String type;

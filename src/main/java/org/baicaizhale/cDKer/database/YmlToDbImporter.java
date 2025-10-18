@@ -8,8 +8,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class YmlToDbImporter {
@@ -39,8 +37,9 @@ public class YmlToDbImporter {
             int remainingUses = cdkData.getInt("remainingUses", 1);
             String expireTime = cdkData.getString("expiration", "forever");
             String note = cdkData.getString("note", "");
-
-            CdkRecord record = new CdkRecord(code, remainingUses, commands, expireTime, note, type);
+            boolean perPlayerMultiple = cdkData.getBoolean("perPlayerMultiple", false);
+            
+            CdkRecord record = new CdkRecord(code, remainingUses, commands, expireTime, note, type, perPlayerMultiple);
             try {
                 cdkRecordDao.createCdk(record);
                 plugin.getLogger().info("已导入CDK: " + code);
