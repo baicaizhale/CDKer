@@ -1,7 +1,6 @@
 # CDKer
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Spigot](https://img.shields.io/badge/Spigot-1.13--1.21-orange.svg)](https://www.spigotmc.org/)
 [![Java](https://img.shields.io/badge/Java-17%2B-red.svg)](https://adoptium.net/)
 
 CDKer 是一个功能强大的Minecraft服务器插件，用于管理和分发兑换码（CDK）。它允许服务器管理员创建可兑换的代码，玩家可以使用这些代码获得奖励，如物品、金钱或其他游戏内福利。
