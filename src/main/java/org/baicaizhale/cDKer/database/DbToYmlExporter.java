@@ -29,7 +29,7 @@ public class DbToYmlExporter {
             ymlConfig.set(code + ".type", record.getCdkType());
             ymlConfig.set(code + ".commands", record.getCommands());
             ymlConfig.set(code + ".remainingUses", record.getRemainingUses());
-            ymlConfig.set(code + ".expiration", DATE_FORMAT.format(record.getExpireTime()));
+            ymlConfig.set(code + ".expiration", record.getExpireTime() != null ? DATE_FORMAT.format(record.getExpireTime()) : null);
             ymlConfig.set(code + ".note", record.getNote());
             ymlConfig.set(code + ".perPlayerMultiple", record.isPerPlayerMultiple());
         }
