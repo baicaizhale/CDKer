@@ -93,7 +93,7 @@ public class DatabaseManager {
             "remaining_uses INTEGER DEFAULT 1," +
             "commands TEXT NOT NULL," +
             "expire_time VARCHAR(20) DEFAULT 'forever'," +
-            "note TEXT DEFAULT ''," +
+            "note TEXT," +
             "cdk_type VARCHAR(50) DEFAULT ''," +
             "per_player_multiple BOOLEAN DEFAULT FALSE," +
             "created_time DATETIME DEFAULT CURRENT_TIMESTAMP" +
