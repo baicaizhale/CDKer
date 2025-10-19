@@ -6,16 +6,17 @@
 
   <groupId>org.baicaizhale</groupId>
   <artifactId>CDKer</artifactId>
-  <version>1.0.0</version>
+  <version>SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>CDKer</name>
   <description>A powerful CDK management plugin for Spigot servers</description>
 
-  <properties>
-    <java.version>17</java.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <java.version>17</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.30</lombok.version>
+    </properties>
 
   <build>
     <defaultGoal>clean package</defaultGoal>
@@ -27,6 +28,14 @@
         <configuration>
           <source>${java.version}</source>
           <target>${java.version}</target>
+          <release>${java.version}</release>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
       <plugin>
@@ -67,7 +76,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.20.4-R0.1-SNAPSHOT</version>
+            <version>[1.18-R0.1,1.21-R0.1]</version>
       <scope>provided</scope>
     </dependency>
     
@@ -96,7 +105,7 @@
     <dependency>
         <groupId>org.projectlombok</groupId>
         <artifactId>lombok</artifactId>
-        <version>1.18.30</version>
+        <version>1.18.32</version>
         <scope>provided</scope>
     </dependency>
   </dependencies>
