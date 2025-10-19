@@ -112,7 +112,9 @@ public class CDKer extends JavaPlugin {
                         Path changed = (Path) event.context();
                         if (changed.toString().endsWith(".yml")) {
                             long currentTime = System.currentTimeMillis();
-                            if (currentTime - lastReloadTime > 500) { // 500毫秒内只重载一次
+                            // 仅当变更的文件是 config.yml 或语言文件时才触发重载
+                            String changedFileName = changed.getFileName().toString();
+                            if (("config.yml".equals(changedFileName) || changedFileName.startsWith("lang_")) && currentTime - lastReloadTime > 500) { // 500毫秒内只重载一次
                                 getLogger().info("检测到配置文件变更: " + changed.getFileName() + "，正在重新加载...");
                                 configurationManager.reloadAllConfigs();
                                 lastReloadTime = currentTime;
