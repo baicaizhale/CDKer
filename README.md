@@ -229,7 +229,7 @@ cdk:
 
 构建步骤：
 ```bash
-git clone https://github.com/your-username/CDKer.git
+git clone https://github.com/baicaizhale/CDKer.git
 cd CDKer
 mvn clean package
 ```
