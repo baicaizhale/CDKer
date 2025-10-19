@@ -16,8 +16,9 @@ public class CDKer extends JavaPlugin {
     private DatabaseManager databaseManager;
     private CdkRecordDao cdkRecordDao;
     private CdkLogDao cdkLogDao;
-    private WatchService watcher;
-    private Thread watchThread;
+    private volatile WatchService watcher;
+    private volatile Thread watchThread;
+    private long lastReloadTime = 0L; // 新增：记录上次重载时间
 
     @Override
     public void onEnable() {
@@ -110,9 +111,13 @@ public class CDKer extends JavaPlugin {
                         // 确保事件是关于文件的修改或创建
                         Path changed = (Path) event.context();
                         if (changed.toString().endsWith(".yml")) {
-                            getLogger().info("检测到配置文件变更: " + changed.getFileName() + "，正在重新加载...");
-                            configurationManager.reloadAllConfigs();
-                            break; // 只处理一次重载，避免重复触发
+                            long currentTime = System.currentTimeMillis();
+                            if (currentTime - lastReloadTime > 500) { // 500毫秒内只重载一次
+                                getLogger().info("检测到配置文件变更: " + changed.getFileName() + "，正在重新加载...");
+                                configurationManager.reloadAllConfigs();
+                                lastReloadTime = currentTime;
+                            }
+                            // 移除 break; 语句，让所有事件都被处理，但通过时间戳控制重载频率
                         }
                     }
 
