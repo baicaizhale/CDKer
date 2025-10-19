@@ -3,7 +3,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Java](https://img.shields.io/badge/Java-17%2B-red.svg)](https://adoptium.net/)
 
-CDKer 是一个功能强大的Minecraft服务器插件，用于管理和分发兑换码（CDK）。它允许服务器管理员创建可兑换的代码，玩家可以使用这些代码获得奖励，如物品、金钱或其他游戏内福利。
+CDKer 是一个运行在Spigot1.18+的Minecraft服务器插件，用于管理和分发兑换码（CDK）。它允许服务器管理员创建可兑换的代码，玩家可以使用这些代码获得奖励，如物品、金钱或其他游戏内福利。
 
 ## 目录
 
@@ -224,8 +224,8 @@ cdk:
 
 要从源代码构建插件，您需要：
 
-1. Java 17 或更高版本
-2. Apache Maven 3.6 或更高版本
+1. JDK 17 
+2. Apache Maven 3.6 
 
 构建步骤：
 ```bash
