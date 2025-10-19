@@ -114,6 +114,7 @@ public class CDKer extends JavaPlugin {
                             long currentTime = System.currentTimeMillis();
                             // 仅当变更的文件是 config.yml 或语言文件时才触发重载
                             String changedFileName = changed.getFileName().toString();
+                            getLogger().info("文件变更检测: 文件名 = " + changedFileName + ", 是否为配置/语言文件 = " + ("config.yml".equals(changedFileName) || changedFileName.startsWith("lang_")));
                             if (("config.yml".equals(changedFileName) || changedFileName.startsWith("lang_")) && currentTime - lastReloadTime > 500) { // 500毫秒内只重载一次
                                 getLogger().info("检测到配置文件变更: " + changed.getFileName() + "，正在重新加载...");
                                 configurationManager.reloadAllConfigs();
