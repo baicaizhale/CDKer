@@ -13,6 +13,7 @@ import java.util.List;
 public class DbToYmlExporter {
     private final CDKer plugin;
     private final CdkRecordDao cdkRecordDao;
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public DbToYmlExporter(CDKer plugin, CdkRecordDao cdkRecordDao) {
         this.plugin = plugin;
