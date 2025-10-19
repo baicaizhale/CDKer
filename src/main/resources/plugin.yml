@@ -1,7 +1,7 @@
 name: CDKer
-version: '1.0.0'
+version: '6.0.1'
 main: org.baicaizhale.cDKer.CDKer
-api-version: '1.13'
+api-version: '1.18'
 description: A powerful CDK management plugin for Spigot servers
 authors: [baicaizhale]
 
