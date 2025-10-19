@@ -112,7 +112,7 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
                     return true;
                 }
             default:
-                sender.sendMessage(prefix + langConfig.getMessage("unknown-command"));
+                sender.sendMessage("未知命令，使用/cdk help查看帮助。");
                 return true;
         }
     }
