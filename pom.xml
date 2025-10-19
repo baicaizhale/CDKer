@@ -61,9 +61,16 @@
   </build>
 
   <repositories>
+    <!-- Spigot官方仓库 -->
     <repository>
-      <id>spigotmc-repo</id>
+      <id>spigot-repo</id>
       <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
     <repository>
       <id>sonatype</id>
