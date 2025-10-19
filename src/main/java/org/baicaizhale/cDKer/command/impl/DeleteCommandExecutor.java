@@ -3,12 +3,7 @@ package org.baicaizhale.cDKer.command.impl;
 import org.baicaizhale.cDKer.CDKer;
 import org.baicaizhale.cDKer.command.AbstractSubCommand;
 import org.baicaizhale.cDKer.model.CdkRecord;
-import org.baicaizhale.cDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class DeleteCommandExecutor extends AbstractSubCommand {
 

@@ -80,13 +80,8 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
             case "reload":
                 return new ReloadCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "export":
-                if (args.length > 1) {
-                    return new ExportCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
-                } else {
-                    // 显示export命令的帮助
-                    sender.sendMessage(new ExportCommandExecutor(plugin).getUsage());
-                    return true;
-                }
+                // 无论是否有参数，都直接执行ExportCommandExecutor，参数处理逻辑已移至ExportCommandExecutor内部
+                return new ExportCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "import":
                 if (args.length > 1) {
                     return new ImportCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
@@ -119,7 +114,7 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
                     return true;
                 }
             default:
-                sender.sendMessage(prefix + langConfig.getMessage("unknown-command"));
+                sender.sendMessage("未知命令，使用/cdk help查看帮助。");
                 return true;
         }
     }

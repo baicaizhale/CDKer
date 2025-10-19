@@ -5,9 +5,6 @@ import org.baicaizhale.cDKer.command.AbstractSubCommand;
 import org.baicaizhale.cDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ReloadCommandExecutor extends AbstractSubCommand {
 
     public ReloadCommandExecutor(CDKer plugin) {

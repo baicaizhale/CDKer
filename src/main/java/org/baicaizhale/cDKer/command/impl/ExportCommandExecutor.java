@@ -14,12 +14,11 @@ public class ExportCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        if (args.length < 1) {
-            sender.sendMessage("§c用法: /cdk export <文件>");
-            return true;
+        String fileName = "cdks.yml"; // 默认文件名
+        if (args.length >= 1) {
+            fileName = args[0];
         }
 
-        String fileName = args[0];
         File ymlFile = new File(plugin.getDataFolder(), fileName);
 
         try {
@@ -36,6 +35,6 @@ public class ExportCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk export <yml文件>";
+        return "§c用法: /cdk export [yml文件]";
     }
 }

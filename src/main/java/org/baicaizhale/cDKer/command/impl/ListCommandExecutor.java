@@ -3,7 +3,6 @@ package org.baicaizhale.cDKer.command.impl;
 import org.baicaizhale.cDKer.CDKer;
 import org.baicaizhale.cDKer.command.AbstractSubCommand;
 import org.baicaizhale.cDKer.model.CdkRecord;
-import org.baicaizhale.cDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -102,7 +101,7 @@ public class ListCommandExecutor extends AbstractSubCommand {
                 sender.sendMessage(String.format("§f%d. %s §7(%d次) [%s] §8[%s] §7备注: §f%s",
                         record.getId(), record.getCdkCode(), record.getRemainingUses(),
                         typeDisplay,
-                        record.isExpired() ? "§c已过期" : "§a有效", note));
+                        record.isExpired() || record.getRemainingUses() == 0 ? "§c无效§8" : "§a有效§8", note));
             }
             sender.sendMessage("§6================");
 
