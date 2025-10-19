@@ -9,12 +9,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+// ...existing code...
 
 public class MainCommandExecutor implements CommandExecutor, TabCompleter {
 
@@ -77,6 +75,8 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
                 }
             case "list":
                 return new ListCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+            case "log":
+                return new org.baicaizhale.cDKer.command.impl.LogCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "reload":
                 return new ReloadCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "export":
@@ -101,6 +101,13 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
                 } else {
                     // 显示query命令的帮助
                     sender.sendMessage(new QueryCommandExecutor(plugin).getUsage());
+                    return true;
+                }
+            case "view":
+                if (args.length > 1) {
+                    return new ViewCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                } else {
+                    sender.sendMessage(new ViewCommandExecutor(plugin).getUsage());
                     return true;
                 }
             case "set":

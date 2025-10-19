@@ -213,8 +213,11 @@ cdk:
 | `/cdk create <数量> "<命令>" [次数] [备注] [过期时间] [类型] [允许多次使用]` | cdk.create | 创建CDK |
 | `/cdk use <兑换码>` | cdk.use | 使用CDK |
 | `/cdk query <id/cdk> <标识符>` | cdk.query | 查询CDK信息 |
+| `/cdk view <id/cdk> <标识符>` | cdk.query | 在控制台或非玩家环境中查看CDK详情（纯文本、不带 hover） |
 | `/cdk del <id/cdk> <标识符>` | cdk.admin | 删除CDK |
 | `/cdk list [页码] [类型]` | cdk.admin | 列出所有CDK |
+| `/cdk log [页码]` | cdk.log | 列出玩家兑换记录，支持分页和筛选（/cdk log filter <player|uuid|type> <值> [页码]） |
+|  |  |  注: 在客户端中，鼠标悬停玩家名会显示 UUID；悬停命令数会显示命令列表。使用 `/cdk log view <id>` 可查看单条记录详情（含完整命令列表）。 |
 | `/cdk set <id/cdk> <标识符> <属性> <值>` | cdk.admin | 设置CDK属性 |
 | `/cdk add <id/cdk> <标识符> <数量>` | cdk.admin | 增加CDK使用次数 |
 | `/cdk reload` | cdk.admin | 重新加载配置 |
