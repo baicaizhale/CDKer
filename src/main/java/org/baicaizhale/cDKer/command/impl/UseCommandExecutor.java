@@ -2,7 +2,6 @@ package org.baicaizhale.cDKer.command.impl;
 
 import org.baicaizhale.cDKer.CDKer;
 import org.baicaizhale.cDKer.command.AbstractSubCommand;
-import org.baicaizhale.cDKer.model.CdkLog;
 import org.baicaizhale.cDKer.model.CdkRecord;
 import org.baicaizhale.cDKer.util.CommandUtils;
 import org.bukkit.Bukkit;
