@@ -32,7 +32,7 @@ settings:
   # 是否启用调试模式
   debug: false
   # 是否在使用CDK时广播
-  broadcast: true
+  broadcast: false
   # 广播消息模板 (支持 {player} 和 {type} 变量)
   broadcast-message: "§e玩家 {player} 使用了一个 {type} CDK!"
 
