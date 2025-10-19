@@ -18,6 +18,7 @@ commands:
       §f/cdk use <cdkcode> §7- Use CDK
       §f/cdk list §7- List all CDKs
       §f/cdk reload §7- Reload config
+      §f/cdk log §7- Show CDK usage logs (permission: cdk.log)
     aliases: [cdker]
 
 permissions:
@@ -41,4 +42,8 @@ permissions:
   
   cdk.query:
     description: Allows querying CDK information
+    default: op
+
+  cdk.log:
+    description: Allows viewing CDK usage logs
     default: op

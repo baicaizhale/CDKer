@@ -2,11 +2,7 @@ package org.baicaizhale.cDKer.command.impl;
 
 import org.baicaizhale.cDKer.CDKer;
 import org.baicaizhale.cDKer.command.AbstractSubCommand;
-import org.baicaizhale.cDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class HelpCommandExecutor extends AbstractSubCommand {
 
@@ -35,8 +31,13 @@ public class HelpCommandExecutor extends AbstractSubCommand {
         sender.sendMessage("  §7示例: /cdk del id 1 或 /cdk del cdk ABC123XYZ789");
         sender.sendMessage("§f/cdk list [页码] [类型] §7- 列出所有CDK，支持分页和类型筛选");
         sender.sendMessage("  §7示例: /cdk list 2 或 /cdk list vip 或 /cdk list vip 2");
+    sender.sendMessage("§f/cdk log [页码] §7- 列出玩家兑换记录，支持分页。需要权限: cdk.log");
+    sender.sendMessage("  §7示例: /cdk log 或 /cdk log 2 或 /cdk log filter player Steve");
+    sender.sendMessage("  §7提示: 玩家上悬停显示 UUID；悬停命令数可查看命令列表；使用 /cdk log view <id> 查看单条详情。 ");
         sender.sendMessage("§f/cdk query <id/cdk> <标识符> §7- 查询CDK信息");
         sender.sendMessage("  §7示例: /cdk query id 1 或 /cdk query cdk ABC123XYZ789");
+    sender.sendMessage("§f/cdk view <id/cdk> <标识符> §7- 在控制台或非玩家环境中查看CDK详情（纯文本，不带 hover）");
+    sender.sendMessage("  §7示例: /cdk view id 1 或 /cdk view cdk ABC123XYZ789");
         sender.sendMessage("§f/cdk set <id/cdk> <标识符> <属性> <值> §7- 设置CDK属性");
         sender.sendMessage("  §7可设置的属性: remaining_uses, commands, expire_time, note, cdk_type, per_player_multiple");
         sender.sendMessage("  §7示例: /cdk set id 1 remaining_uses 10");
