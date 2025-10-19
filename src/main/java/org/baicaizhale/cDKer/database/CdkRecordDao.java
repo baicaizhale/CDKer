@@ -130,19 +130,9 @@ public class CdkRecordDao {
         record.setId(rs.getInt("id"));
         record.setCdkCode(rs.getString("cdk_code"));
         record.setRemainingUses(rs.getInt("remaining_uses"));
-        
-        String commandsStr = rs.getString("commands");
-        if (commandsStr != null) {
-            record.setCommands(Arrays.asList(commandsStr.split("\\|")));
-        } else {
-            record.setCommands(new ArrayList<>());
-        }
-        
+        record.setCommands(Arrays.asList(rs.getString("commands").split("\\|")));
         record.setExpireTime(rs.getString("expire_time"));
-        
-        String note = rs.getString("note");
-        record.setNote(note != null ? note : "");
-        
+        record.setNote(rs.getString("note"));
         record.setCdkType(rs.getString("cdk_type"));
         record.setCreatedTime(rs.getTimestamp("created_time"));
         try {

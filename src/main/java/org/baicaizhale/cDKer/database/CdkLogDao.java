@@ -113,10 +113,7 @@ public class CdkLogDao {
         log.setPlayerUUID(rs.getString("player_uuid"));
         log.setCdkCode(rs.getString("cdk_code"));
         log.setCdkType(rs.getString("cdk_type"));
-        
-        String commandsExecuted = rs.getString("commands_executed");
-        log.setCommandsExecuted(commandsExecuted != null ? commandsExecuted : "");
-        
+        log.setCommandsExecuted(rs.getString("commands_executed"));
         log.setUseTime(rs.getTimestamp("use_time"));
         return log;
     }
