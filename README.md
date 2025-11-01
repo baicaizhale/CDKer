@@ -241,7 +241,8 @@ mvn clean package
 
 ## 贡献
 
-欢迎任何形式的贡献！如果您发现了bug或有改进建议，请提交issue或pull request。
+欢迎任何形式的贡献！如果您发现了bug或有改进建议，请提交issue(https://github.com/baicaizhale/CDKer/issues)或pull request(https://github.com/baicaizhale/CDKer/pulls)。
+
 
 ## 许可证
 
