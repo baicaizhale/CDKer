@@ -46,7 +46,7 @@
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
-              <shadedPattern>org.baicaizhale.cdker.bstats</shadedPattern>
+              <shadedPattern>org.baicaizhale.CDKer.bstats</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
