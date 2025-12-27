@@ -41,12 +41,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.5.3</version>
         <configuration>
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
-              <shadedPattern>org.baicaizhale.cdker.bstats</shadedPattern>
+              <shadedPattern>org.baicaizhale.CDKer.bstats</shadedPattern>
             </relocation>
           </relocations>
         </configuration>
