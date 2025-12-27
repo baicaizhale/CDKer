@@ -41,7 +41,15 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.5.3</version>
+        <version>3.1.0</version>
+        <configuration>
+          <relocations>
+            <relocation>
+              <pattern>org.bstats</pattern>
+              <shadedPattern>org.baicaizhale.cdker.bstats</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
         <executions>
           <execution>
             <phase>package</phase>
@@ -122,5 +130,11 @@
         <version>1.18.30</version>
         <scope>provided</scope>
     </dependency>
+    <dependency>
+    <groupId>org.bstats</groupId>
+    <artifactId>bstats-bukkit</artifactId>
+    <version>3.1.0</version>
+    <scope>compile</scope>
+</dependency>
   </dependencies>
 </project>

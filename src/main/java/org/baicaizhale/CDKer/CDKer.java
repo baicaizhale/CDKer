@@ -6,6 +6,8 @@ import org.baicaizhale.CDKer.database.DatabaseManager;
 import org.baicaizhale.CDKer.database.CdkRecordDao;
 import org.baicaizhale.CDKer.database.CdkLogDao;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -47,6 +49,13 @@ public class CDKer extends JavaPlugin {
 
         // 启动文件监听
         startWatchingConfigs();
+
+        // bStats
+        int pluginId = 28557; // bStats id
+        Metrics metrics = new Metrics(this, pluginId);
+        metrics.addCustomChart(
+            new SimplePie("chart_id", () -> "My value")
+        );
 
         getLogger().info("CDKer plugin has been enabled!");
     }
