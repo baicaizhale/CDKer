@@ -1,0 +1,73 @@
+# 日本語言語設定ファイル
+
+messages:
+  # 一般メッセージ
+  general:
+    no-permission: "§cこのコマンドを実行する権限がありません。"
+    config-reloaded: "§a設定が再読み込みされました。"
+    invalid-command: "§c無効なコマンドです。使用方法: {usage}"
+    unknown-player: "§cプレイヤーが見つかりません: {player}"
+    invalid-number: "§c無効な数値です: {input}"
+
+  # CDK関連メッセージ
+  cdk:
+    created: "§a{count} 個のCDKコードを作成しました。種類: {type}"
+    created-single: "§aCDKコードを作成しました: §f{code}"
+    deleted: "§aCDKコードを削除しました: §f{code}"
+    deleted-id: "§aID {id} のCDKを削除しました。"
+    not-found: "§cCDKコードが見つかりません: §f{code}"
+    expired: "§cこのCDKコードは期限切れです。"
+    used-up: "§cこのCDKコードは使用回数が上限に達しました。"
+    used-type: "§cこの種類のCDKコードは既に使用済みです。"
+    use-success: "§aCDKコードを使用しました！"
+    remaining-uses: "§a残り使用回数: §f{uses}"
+    updated: "§aCDKコードを更新しました: §f{code}"
+    info: |
+      §6CDK情報:
+      §fコード: §e{code}
+      §f種類: §e{type}
+      §fメモ: §e{note}
+      §f残り使用回数: §e{uses}
+      §f有効期限: §e{expire}
+      §f作成日時: §e{created}
+
+  # コマンドヘルプ
+  help:
+    header: "§6=== CDKプラグインヘルプ ==="
+    create: |
+      §f/cdk create <数量> "<コマンド1|コマンド2|...>" [使用回数] [メモ] [期限] [CDK種類] [複数回使用] §7- CDKを作成
+      §7パラメータ説明:
+      §7<数量>: 生成するCDKの数
+      §7<コマンド>: プレイヤーが使用時に実行するコマンド。複数は|で区切る
+      §7[使用回数]: 各CDKの使用可能回数、デフォルト1
+      §7[メモ]: CDKのメモ情報
+      §7[期限]: 有効期限、形式yyyy-MM-dd HH:mm
+      §7[CDK種類]: カスタム種類識別子
+      §7[複数回使用]: true/false、同一プレイヤーの複数回使用を許可
+      §7例: /cdk create 5 "give %player% diamond 1|say おめでとうございます" 1 "スターターパック" 2025-12-01 10:00 vip true
+    set: "§f/cdk set <id/cdk> <識別子> <種類> <値> §7- CDKプロパティを設定"
+    add: "§f/cdk add <id/cdk> <識別子> <数量> §7- 使用回数を追加"
+    query: "§f/cdk query <id/cdk> <識別子> §7- CDK情報を照会"
+    del: "§f/cdk del <id/cdk> <識別子> §7- CDKを削除"
+    use: "§f/cdk use <CDKコード> §7- CDKを使用"
+    list: |
+      §f/cdk list §7- 全CDKを表示
+      §7ページ分割とフィルター対応、例: /cdk list 2 vip
+    reload: "§f/cdk reload §7- 設定を再読み込み"
+    import: "§f/cdk import <ymlファイル> [replace|append] §7- YMLからCDKをインポート"
+    export: "§f/cdk export <ymlファイル> §7- CDKをYMLにエクスポート"
+    footer: "§6=================="
+
+  # 互換/補足項目
+  prefix: "§7[§bCDK§7] §r"
+  no-permission-use: "§cこのCDKを使用する権限がありません！"
+  unknown-command: "§c不明なコマンドです！ /cdk help でコマンド一覧を表示してください。"
+
+  # エラーメッセージ
+  error:
+    db-connection: "§cデータベース接続に失敗しました: {error}"
+    invalid-expire-time: "§c無効な有効期限形式です。yyyy-MM-dd HH:mm 形式で入力してください。"
+    invalid-type: "§c無効なCDK種類です: {type}"
+    command-error: "§cコマンド実行中にエラーが発生しました: {error}"
+    yml-load: "§c設定ファイルの読み込み中にエラーが発生しました: {error}"
+    yml-save: "§c設定ファイルの保存中にエラーが発生しました: {error}"
