@@ -20,39 +20,37 @@ public class UseCommandExecutor extends AbstractSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (!requirePlayer(sender)) {
-            sender.sendMessage("§c该命令只能由玩家执行。");
+            sender.sendMessage(getMsg("command.common.player_only"));
             return true;
         }
 
         if (args.length < 1) {
-            sender.sendMessage("§c用法: /cdk use <兑换码>");
+            sender.sendMessage(getMsg("command.use.usage"));
             return true;
         }
 
         Player player = (Player) sender;
-        String code = args[0]; // 不再强制转大写，确保与数据库存储一致
+        String code = args[0];
 
         try {
             CdkRecord record = plugin.getCdkRecordDao().getCdkByCode(code);
             if (record == null) {
-                sender.sendMessage("§c无效的兑换码。");
+                sender.sendMessage(getMsg("command.use.invalid_code"));
                 return true;
             }
 
             if (!record.canBeUsed()) {
-                sender.sendMessage("§c该兑换码已过期或无剩余次数。");
+                sender.sendMessage(getMsg("command.use.expired_or_used"));
                 return true;
             }
 
-            // 检查是否允许同一玩家多次使用
             if (!record.isPerPlayerMultiple()) {
                 if (plugin.getCdkLogDao().hasPlayerUsedCode(player.getUniqueId().toString(), code)) {
-                    sender.sendMessage("§c您已经使用过该兑换码。");
+                    sender.sendMessage(getMsg("command.use.already_used"));
                     return true;
                 }
             }
 
-            // 执行命令
             boolean success = true;
             for (String command : record.getCommands()) {
                 String finalCommand = CommandUtils.replaceCommandVariables(command, player);
@@ -63,16 +61,13 @@ public class UseCommandExecutor extends AbstractSubCommand {
             }
 
             if (success) {
-                // 记录使用日志
                 plugin.getCdkLogDao().logCdkUsage(player.getName(), player.getUniqueId().toString(), code, record.getCdkType(), record.getCommands());
 
-                // 更新剩余次数
                 record.setRemainingUses(record.getRemainingUses() - 1);
                 plugin.getCdkRecordDao().updateCdk(record);
 
-                sender.sendMessage("§a兑换成功！");
-                
-                // 根据配置决定是否广播
+                sender.sendMessage(getMsg("command.use.success"));
+
                 boolean broadcastEnabled = plugin.getConfig().getBoolean("settings.broadcast", false);
                 if (broadcastEnabled) {
                     String broadcastMessage = plugin.getConfig().getString("settings.broadcast-message", "§e玩家 {player} 使用了一个 {type} CDK!")
@@ -81,11 +76,11 @@ public class UseCommandExecutor extends AbstractSubCommand {
                     Bukkit.broadcastMessage(broadcastMessage);
                 }
             } else {
-                sender.sendMessage("§c执行兑换码命令时出错，请联系管理员。");
+                sender.sendMessage(getMsg("command.use.use_error"));
             }
 
         } catch (Exception e) {
-            sender.sendMessage("§c使用兑换码时出错: " + e.getMessage());
+            sender.sendMessage(getMsg("command.use.error", e.getMessage()));
             plugin.getLogger().severe("使用CDK时出错: " + e.getMessage());
             e.printStackTrace();
         }
@@ -95,7 +90,7 @@ public class UseCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk use <兑换码>";
+        return getMsg("command.use.usage");
     }
     
     @Override

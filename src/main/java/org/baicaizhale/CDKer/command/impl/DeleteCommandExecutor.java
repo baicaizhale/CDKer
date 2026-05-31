@@ -14,7 +14,7 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage("§c用法: /cdk del <id/cdk> <标识符>");
+            sender.sendMessage(getMsg("command.del.usage"));
             return true;
         }
 
@@ -29,12 +29,12 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
             } else if ("cdk".equals(identifierType)) {
                 record = plugin.getCdkRecordDao().getCdkByCode(identifier);
             } else {
-                sender.sendMessage("§c无效的标识符，必须是 'id' 或 'cdk'。");
+                sender.sendMessage(getMsg("command.common.invalid_identifier"));
                 return true;
             }
 
             if (record == null) {
-                sender.sendMessage("§cCDK不存在。");
+                sender.sendMessage(getMsg("command.common.not_found"));
                 return true;
             }
 
@@ -44,12 +44,12 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
                 plugin.getCdkRecordDao().deleteCdk(record.getCdkCode());
             }
 
-            sender.sendMessage("§a成功删除CDK码: " + record.getCdkCode());
+            sender.sendMessage(getMsg("command.del.success", record.getCdkCode()));
 
         } catch (NumberFormatException e) {
-            sender.sendMessage("§c无效的数字格式。");
+            sender.sendMessage(getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            sender.sendMessage("§c删除CDK时出错: " + e.getMessage());
+            sender.sendMessage(getMsg("command.del.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -58,6 +58,6 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk del <id/cdk> <标识符>";
+        return getMsg("command.del.usage");
     }
 }
