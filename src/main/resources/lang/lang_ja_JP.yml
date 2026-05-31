@@ -1,73 +1,152 @@
 # 日本語言語設定ファイル
 
-messages:
-  # 一般メッセージ
-  general:
-    no-permission: "§cこのコマンドを実行する権限がありません。"
-    config-reloaded: "§a設定が再読み込みされました。"
-    invalid-command: "§c無効なコマンドです。使用方法: {usage}"
-    unknown-player: "§cプレイヤーが見つかりません: {player}"
-    invalid-number: "§c無効な数値です: {input}"
+command:
+  common:
+    usage_invalid: "§c使用方法が正しくありません。コマンド形式を確認してください。"
+    invalid_number: "§c無効な数値形式です。"
+    invalid_identifier: "§c無効な識別子です。'id' または 'cdk' を使用してください。"
+    not_found: "§cCDKが見つかりません。"
+    no_permission: "§cこのコマンドを実行する権限がありません。"
+    no_permission_log: "§cこのコマンドを実行する権限がありません。必要な権限: cdk.log"
+    player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
+    unknown_command: "不明なコマンドです。/cdk help でヘルプを表示してください。"
 
-  # CDK関連メッセージ
-  cdk:
-    created: "§a{count} 個のCDKコードを作成しました。種類: {type}"
-    created-single: "§aCDKコードを作成しました: §f{code}"
-    deleted: "§aCDKコードを削除しました: §f{code}"
-    deleted-id: "§aID {id} のCDKを削除しました。"
-    not-found: "§cCDKコードが見つかりません: §f{code}"
-    expired: "§cこのCDKコードは期限切れです。"
-    used-up: "§cこのCDKコードは使用回数が上限に達しました。"
-    used-type: "§cこの種類のCDKコードは既に使用済みです。"
-    use-success: "§aCDKコードを使用しました！"
-    remaining-uses: "§a残り使用回数: §f{uses}"
-    updated: "§aCDKコードを更新しました: §f{code}"
-    info: |
-      §6CDK情報:
-      §fコード: §e{code}
-      §f種類: §e{type}
-      §fメモ: §e{note}
-      §f残り使用回数: §e{uses}
-      §f有効期限: §e{expire}
-      §f作成日時: §e{created}
+  create:
+    usage: |
+      §c使用方法: /cdk create <数量> "<コマンド1|コマンド2|...>" [回数] [メモ] [期限] [タイプ] [複数回使用]
+      §7  - 数量: 生成するCDKの数 (1-100)
+      §7  - コマンド: 実行するコマンド、'|' で区切る
+      §7  - 回数: CDKごとの利用可能回数、デフォルトは設定ファイルの値
+      §7  - メモ: オプションの説明（スペースを含む場合は引用符で囲む）
+      §7  - 期限: 形式 '2025-12-31 23:59' または 'forever'
+      §7  - タイプ: オプションのカテゴリラベル
+      §7  - 複数回使用: true/false、同じプレイヤーが複数回利用可能か
+    amount_range: "§c数量は1から100の間で指定してください。"
+    need_quotes: "§cコマンドはダブルクォーテーションで囲んでください。"
+    command_empty: "§cコマンドを空にすることはできません。"
+    invalid_uses: "§c無効な利用回数形式です。"
+    success_single: "§aCDKコードを作成しました: §f{0}"
+    success_multi: "§a{0} 個のCDKコードを作成しました。タイプ: {1}\n§f{2}"
+    error: "§cCDK作成中にエラーが発生しました: {0}"
 
-  # コマンドヘルプ
-  help:
-    header: "§6=== CDKプラグインヘルプ ==="
-    create: |
-      §f/cdk create <数量> "<コマンド1|コマンド2|...>" [使用回数] [メモ] [期限] [CDK種類] [複数回使用] §7- CDKを作成
-      §7パラメータ説明:
-      §7<数量>: 生成するCDKの数
-      §7<コマンド>: プレイヤーが使用時に実行するコマンド。複数は|で区切る
-      §7[使用回数]: 各CDKの使用可能回数、デフォルト1
-      §7[メモ]: CDKのメモ情報
-      §7[期限]: 有効期限、形式yyyy-MM-dd HH:mm
-      §7[CDK種類]: カスタム種類識別子
-      §7[複数回使用]: true/false、同一プレイヤーの複数回使用を許可
-      §7例: /cdk create 5 "give %player% diamond 1|say おめでとうございます" 1 "スターターパック" 2025-12-01 10:00 vip true
-    set: "§f/cdk set <id/cdk> <識別子> <種類> <値> §7- CDKプロパティを設定"
-    add: "§f/cdk add <id/cdk> <識別子> <数量> §7- 使用回数を追加"
-    query: "§f/cdk query <id/cdk> <識別子> §7- CDK情報を照会"
-    del: "§f/cdk del <id/cdk> <識別子> §7- CDKを削除"
-    use: "§f/cdk use <CDKコード> §7- CDKを使用"
-    list: |
-      §f/cdk list §7- 全CDKを表示
-      §7ページ分割とフィルター対応、例: /cdk list 2 vip
-    reload: "§f/cdk reload §7- 設定を再読み込み"
-    import: "§f/cdk import <ymlファイル> [replace|append] §7- YMLからCDKをインポート"
-    export: "§f/cdk export <ymlファイル> §7- CDKをYMLにエクスポート"
+  use:
+    usage: "§c使用方法: /cdk use <コード>"
+    invalid_code: "§c無効なCDKコードです。"
+    expired_or_used: "§cこのCDKコードは期限切れか、残り回数がありません。"
+    already_used: "§cこのCDKコードは既に使用済みです。"
+    success: "§aCDKを利用しました！"
+    use_error: "§cCDKコマンドの実行中にエラーが発生しました。管理者に連絡してください。"
+    error: "§cCDK利用中にエラーが発生しました: {0}"
+
+  add:
+    usage: "§c使用方法: /cdk add <id/cdk> <識別子> <数量>"
+    amount_positive: "§c追加する数量は0より大きくしてください。"
+    success: "§aCDK {0} に {1} 回分を追加しました。残り: {2}"
+    error: "§c利用回数追加中にエラーが発生しました: {0}"
+
+  del:
+    usage: "§c使用方法: /cdk del <id/cdk> <識別子>"
+    success: "§aCDKを削除しました: {0}"
+    error: "§cCDK削除中にエラーが発生しました: {0}"
+
+  list:
+    usage: "§c使用方法: /cdk list [ページ] [タイプ] または /cdk list [タイプ] [ページ]"
+    empty: "§cCDKレコードがありません。"
+    header: "§6=== CDKリスト ==="
+    page_info: "§7ページ: §f{0}/{1} §7(合計: §f{2}§7)"
+    type_filter: "§7タイプフィルター: §f{0}"
+    item: "§f{0}. {1} §7({2}回) [{3}] §8[{4}] §7メモ: §f{5}"
+    footer: "§6================"
+    error: "§cCDKリスト取得中にエラーが発生しました: {0}"
+
+  log:
+    usage: "§c使用方法: /cdk log [ページ] | /cdk log view <id> | /cdk log filter <player|uuid|type> <値> [ページ]"
+    empty: "§c利用記録がありません。"
+    header: "§6=== CDK利用ログ - {0}ページ ==="
+    hint: "§7ヒント: プレイヤー名またはCDKにマウスオーバーでUUID表示；コマンド数または時間にマウスオーバーでコマンドリスト表示；/cdk log view <id> で詳細表示。"
+    page_info: "§7ページ: §f{0}/{1} §7(合計: §f{2}§7)"
+    page_hint: "§7/cdk log <ページ> で移動、/cdk log view <id> で詳細表示。"
+    unknown_filter: "§c不明なフィルターフィールド: {0}"
+    view_not_found: "§c指定されたIDのレコードが見つかりません。"
+    view_usage: "§c使用方法: /cdk log view <id>"
+    read_error: "§cログ読み取り中にエラーが発生しました: {0}"
+    error: "§cログ取得中にエラーが発生しました: {0}"
+
+  query:
+    usage: "§c使用方法: /cdk query <id/cdk> <識別子>"
+    header: "§6=== CDK詳細情報 ==="
     footer: "§6=================="
+    error: "§cCDK照会中にエラーが発生しました: {0}"
 
-  # 互換/補足項目
-  prefix: "§7[§bCDK§7] §r"
-  no-permission-use: "§cこのCDKを使用する権限がありません！"
-  unknown-command: "§c不明なコマンドです！ /cdk help でコマンド一覧を表示してください。"
+  set:
+    usage: "§c使用方法: /cdk set <id/cdk> <識別子> <プロパティ> <値>"
+    invalid_property: "§c無効なプロパティタイプです。"
+    success: "§aCDKを更新しました: §f{0}"
+    error: "§cCDKプロパティ設定中にエラーが発生しました: {0}"
 
-  # エラーメッセージ
-  error:
-    db-connection: "§cデータベース接続に失敗しました: {error}"
-    invalid-expire-time: "§c無効な有効期限形式です。yyyy-MM-dd HH:mm 形式で入力してください。"
-    invalid-type: "§c無効なCDK種類です: {type}"
-    command-error: "§cコマンド実行中にエラーが発生しました: {error}"
-    yml-load: "§c設定ファイルの読み込み中にエラーが発生しました: {error}"
-    yml-save: "§c設定ファイルの保存中にエラーが発生しました: {error}"
+  view:
+    usage: "§c使用方法: /cdk view <id/cdk> <識別子>"
+    not_found: "§cレコードが見つかりません。"
+    header: "§6=== CDK利用記録 詳細 (ID: {0}) ==="
+    error: "§cログ読み取り中にエラーが発生しました: {0}"
+
+  reload:
+    usage: "§c使用方法: /cdk reload"
+    success: "§a設定を再読み込みしました。"
+    error: "§c設定再読み込み中にエラーが発生しました: {0}"
+
+  export:
+    usage: "§c使用方法: /cdk export [ymlファイル]"
+    success: "§a{0} にエクスポートしました。"
+    error: "§cエクスポートに失敗しました: {0}"
+
+  import:
+    usage: "§c使用方法: /cdk import <ファイル> [replace|append]"
+    success: "§a{0} からCDKをインポートしました。"
+    error: "§cインポートに失敗しました: {0}"
+
+  help:
+    header: "§6=== CDKヘルプ ==="
+    create: "§f/cdk create <数量> \"<コマンド1|コマンド2|...>\" [回数] [メモ] [期限] [タイプ] [複数回] §7- CDKを作成"
+    create_params: |
+      §7パラメータ説明:
+      §7<数量>: 生成するCDK数 (1-100)
+      §7<コマンド>: 利用時に実行するコマンド、|で区切る
+      §7[回数]: CDKごとの利用可能回数、デフォルト1
+      §7[メモ]: CDKの説明
+      §7[期限]: 有効期限、形式 yyyy-MM-dd HH:mm
+      §7[タイプ]: カスタムタイプ識別子
+      §7[複数回]: true/false、同じプレイヤーが複数回利用可能か
+      §7例: /cdk create 5 "give %player% diamond 1|say おめでとう" 1 "初心者パック" 2025-12-01 10:00 vip true
+    use: "§f/cdk use <コード> §7- CDKを利用"
+    use_example: "  §7例: /cdk use ABC123XYZ789"
+    add: "§f/cdk add <id/cdk> <識別子> <数量> §7- 利用回数を追加"
+    add_example: "  §7例: /cdk add id 1 5 または /cdk add cdk ABC123XYZ789 3"
+    del: "§f/cdk del <id/cdk> <識別子> §7- CDKを削除"
+    del_example: "  §7例: /cdk del id 1 または /cdk del cdk ABC123XYZ789"
+    list: "§f/cdk list [ページ] [タイプ] §7- 全CDKを表示（ページ分割・タイプフィルター対応）"
+    list_example: "  §7例: /cdk list 2 または /cdk list vip または /cdk list vip 2"
+    log: "§f/cdk log [ページ] §7- 利用ログを表示（ページ分割対応）。権限: cdk.log"
+    log_example: "  §7例: /cdk log または /cdk log 2 または /cdk log filter player Steve"
+    log_hint: "  §7ヒント: プレイヤー名にマウスオーバーでUUID表示；コマンド数にマウスオーバーでコマンドリスト表示；/cdk log view <id> で詳細表示。 "
+    query: "§f/cdk query <id/cdk> <識別子> §7- CDK情報を照会"
+    query_example: "  §7例: /cdk query id 1 または /cdk query cdk ABC123XYZ789"
+    view: "§f/cdk view <id/cdk> <識別子> §7- コンソールでCDK詳細を表示（プレーンテキスト、ホバーなし）"
+    view_example: "  §7例: /cdk view id 1 または /cdk view cdk ABC123XYZ789"
+    set: "§f/cdk set <id/cdk> <識別子> <プロパティ> <値> §7- CDKプロパティを設定"
+    set_props: "  §7設定可能なプロパティ: remaining_uses, commands, expire_time, note, cdk_type, per_player_multiple"
+    set_examples: |
+      §7例: /cdk set id 1 remaining_uses 10
+      §7例: /cdk set cdk ABC123XYZ789 commands "give {player} diamond 5|say ダイヤモンド入手"
+      §7例: /cdk set id 1 expire_time "2025-12-31 23:59"
+      §7例: /cdk set cdk ABC123XYZ789 note "メモ更新"
+      §7例: /cdk set id 1 cdk_type "vip"
+      §7例: /cdk set cdk ABC123XYZ789 per_player_multiple true
+    reload: "§f/cdk reload §7- 設定を再読み込み"
+    import: "§f/cdk import <ファイル> [replace|append] §7- YMLからCDKをインポート"
+    import_examples: |
+      §7replace: 既存の全CDKを置換、append: 既存のCDKに追加
+      §7例: /cdk import cdks.yml replace
+    export: "§f/cdk export <ファイル> §7- CDKをYMLにエクスポート"
+    export_example: "  §7例: /cdk export cdks.yml"
+    footer: "§6=============="

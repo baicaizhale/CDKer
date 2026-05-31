@@ -19,7 +19,7 @@ public class ViewCommandExecutor extends AbstractSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            CommandUtils.sendMessage(sender, getUsage());
+            CommandUtils.sendMessage(sender, getMsg("command.view.usage"));
             return true;
         }
 
@@ -30,7 +30,6 @@ public class ViewCommandExecutor extends AbstractSubCommand {
             CdkLog record = null;
             if ("id".equals(identifierType)) {
                 int id = Integer.parseInt(identifier);
-                // 直接查询 logs 表
                 java.sql.Connection conn = plugin.getDatabaseManager().getConnection();
                 String sql = String.format("SELECT * FROM %slogs WHERE id = ?", plugin.getConfig().getString("table-prefix", "cdk_"));
                 java.sql.PreparedStatement ps = conn.prepareStatement(sql);
@@ -50,16 +49,16 @@ public class ViewCommandExecutor extends AbstractSubCommand {
             } else if ("cdk".equals(identifierType)) {
                 record = plugin.getCdkLogDao().getLogsByCode(identifier).stream().findFirst().orElse(null);
             } else {
-                CommandUtils.sendMessage(sender, "§c无效的标识符，必须是 'id' 或 'cdk'。");
+                CommandUtils.sendMessage(sender, getMsg("command.common.invalid_identifier"));
                 return true;
             }
 
             if (record == null) {
-                CommandUtils.sendMessage(sender, "§c未找到记录。");
+                CommandUtils.sendMessage(sender, getMsg("command.view.not_found"));
                 return true;
             }
 
-            CommandUtils.sendMessage(sender, String.format("§6=== CDK兑换记录 详情 (ID: %d) ===", record.getId()));
+            CommandUtils.sendMessage(sender, getMsg("command.view.header", String.valueOf(record.getId())));
             CommandUtils.sendMessage(sender, String.format("§f[%d] [%s]", record.getId(), record.getPlayerName()));
             CommandUtils.sendMessage(sender, String.format("§7CDK: §f%s §7类型: §f%s", record.getCdkCode(), record.getCdkType()));
 
@@ -73,9 +72,9 @@ public class ViewCommandExecutor extends AbstractSubCommand {
             }
 
         } catch (NumberFormatException e) {
-            CommandUtils.sendMessage(sender, "§c无效的数字格式。");
+            CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, "§c读取日志时出错: " + e.getMessage());
+            CommandUtils.sendMessage(sender, getMsg("command.view.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -84,6 +83,6 @@ public class ViewCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk view <id/cdk> <标识符>";
+        return getMsg("command.view.usage");
     }
 }

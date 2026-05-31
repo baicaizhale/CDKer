@@ -18,19 +18,19 @@ public class ImportCommandExecutor extends AbstractSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (!sender.hasPermission("cdk.admin")) {
-            sender.sendMessage("§c您没有权限执行此命令。");
+            sender.sendMessage(getMsg("command.common.no_permission"));
             return true;
         }
-        
+
         if (args.length < 2) {
-            sender.sendMessage("§c用法: /cdk import <文件> [replace|append]");
+            sender.sendMessage(getMsg("command.import.usage"));
             return true;
         }
-        
-        String fileName = args[0]; // 修复参数索引错误
+
+        String fileName = args[0];
         File ymlFile = new File(plugin.getDataFolder(), fileName);
-        boolean replace = args.length > 1 && "replace".equalsIgnoreCase(args[1]); // 修复参数索引错误
-        
+        boolean replace = args.length > 1 && "replace".equalsIgnoreCase(args[1]);
+
         try {
             if (replace) {
                 plugin.getCdkRecordDao().deleteAllCdks();
@@ -38,9 +38,9 @@ public class ImportCommandExecutor extends AbstractSubCommand {
 
             YmlToDbImporter importer = new YmlToDbImporter(plugin, plugin.getCdkRecordDao());
             importer.importFromYml(ymlFile);
-            sender.sendMessage("§a成功从 " + fileName + " 导入CDK。");
+            sender.sendMessage(getMsg("command.import.success", fileName));
         } catch (Exception e) {
-            sender.sendMessage("§c导入失败: " + e.getMessage());
+            sender.sendMessage(getMsg("command.import.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -49,7 +49,7 @@ public class ImportCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk import <yml文件> [replace|append]";
+        return getMsg("command.import.usage");
     }
 
     @Override

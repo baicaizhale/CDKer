@@ -19,14 +19,13 @@ public class SetCommandExecutor extends AbstractSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 4) {
-            CommandUtils.sendMessage(sender, getUsage());
+            CommandUtils.sendMessage(sender, getMsg("command.set.usage"));
             return true;
         }
 
         String identifierType = args[0].toLowerCase();
         String identifier = args[1];
         String property = args[2];
-        // 重新组合参数，从第4个参数开始，处理可能包含空格的值
         String value = String.join(" ", Arrays.copyOfRange(args, 3, args.length));
 
         try {
@@ -37,12 +36,12 @@ public class SetCommandExecutor extends AbstractSubCommand {
             } else if ("cdk".equals(identifierType)) {
                 record = plugin.getCdkRecordDao().getCdkByCode(identifier);
             } else {
-                CommandUtils.sendMessage(sender, "§c无效的标识符，必须是 'id' 或 'cdk'。");
+                CommandUtils.sendMessage(sender, getMsg("command.common.invalid_identifier"));
                 return true;
             }
 
             if (record == null) {
-                CommandUtils.sendMessage(sender, "§cCDK不存在。");
+                CommandUtils.sendMessage(sender, getMsg("command.common.not_found"));
                 return true;
             }
 
@@ -66,17 +65,17 @@ public class SetCommandExecutor extends AbstractSubCommand {
                     record.setPerPlayerMultiple(Boolean.parseBoolean(value));
                     break;
                 default:
-                    CommandUtils.sendMessage(sender, "§c无效的属性类型。");
+                    CommandUtils.sendMessage(sender, getMsg("command.set.invalid_property"));
                     return true;
             }
 
             plugin.getCdkRecordDao().updateCdk(record);
-            CommandUtils.sendMessage(sender, "§a成功更新CDK码: §f" + record.getCdkCode());
+            CommandUtils.sendMessage(sender, getMsg("command.set.success", record.getCdkCode()));
 
         } catch (NumberFormatException e) {
-            CommandUtils.sendMessage(sender, "§c无效的数字格式。");
+            CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, "§c设置CDK属性时出错: " + e.getMessage());
+            CommandUtils.sendMessage(sender, getMsg("command.set.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -85,7 +84,7 @@ public class SetCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk set <id/cdk> <标识符> <属性> <值>";
+        return getMsg("command.set.usage");
     }
 
     @Override

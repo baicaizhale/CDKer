@@ -28,33 +28,30 @@ public class LogCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        // 权限检查
         if (!CommandUtils.hasPermission(sender, "cdk.log")) {
-            CommandUtils.sendMessage(sender, "§c你没有权限执行此命令。需要权限: cdk.log");
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission_log"));
             return true;
         }
 
         try {
-            // 解析参数: 支持 /cdk log | /cdk log <page> | /cdk log filter <field> <value> [page]
             int page = 1;
             String filterField = null;
             String filterValue = null;
 
             if (args.length == 1) {
-                // /cdk log <page>
                 if (isInteger(args[0])) {
                     page = Integer.parseInt(args[0]);
                 } else if ("filter".equalsIgnoreCase(args[0])) {
-                    CommandUtils.sendMessage(sender, getUsage());
+                    CommandUtils.sendMessage(sender, getMsg("command.log.usage"));
                     return true;
                 } else {
-                    CommandUtils.sendMessage(sender, getUsage());
+                    CommandUtils.sendMessage(sender, getMsg("command.log.usage"));
                     return true;
                 }
             } else if (args.length >= 2) {
                 if ("filter".equalsIgnoreCase(args[0])) {
                     if (args.length < 3) {
-                        CommandUtils.sendMessage(sender, getUsage());
+                        CommandUtils.sendMessage(sender, getMsg("command.log.usage"));
                         return true;
                     }
                     filterField = args[1].toLowerCase();
@@ -73,10 +70,9 @@ public class LogCommandExecutor extends AbstractSubCommand {
             CdkLogDao logDao = plugin.getCdkLogDao();
             List<CdkLog> logs = new ArrayList<>();
 
-            // 处理子命令 view: /cdk log view <id>
             if (args.length >= 1 && "view".equalsIgnoreCase(args[0])) {
                 if (args.length < 2 || !isInteger(args[1])) {
-                    CommandUtils.sendMessage(sender, "§c用法: /cdk log view <id>");
+                    CommandUtils.sendMessage(sender, getMsg("command.log.view_usage"));
                     return true;
                 }
                 int viewId = Integer.parseInt(args[1]);
@@ -100,13 +96,13 @@ public class LogCommandExecutor extends AbstractSubCommand {
                     }
                     rs.close(); ps.close(); conn.close();
                 } catch (Exception ex) {
-                    CommandUtils.sendMessage(sender, "§c读取日志失败: " + ex.getMessage());
+                    CommandUtils.sendMessage(sender, getMsg("command.log.read_error", ex.getMessage()));
                     ex.printStackTrace();
                     return true;
                 }
 
                 if (record == null) {
-                    CommandUtils.sendMessage(sender, "§c未找到指定 ID 的记录。");
+                    CommandUtils.sendMessage(sender, getMsg("command.log.view_not_found"));
                     return true;
                 }
 
@@ -168,13 +164,13 @@ public class LogCommandExecutor extends AbstractSubCommand {
                         logs = queryLogsByType(filterValue);
                         break;
                     default:
-                        CommandUtils.sendMessage(sender, "§c未知的过滤字段: " + filterField);
+                        CommandUtils.sendMessage(sender, getMsg("command.log.unknown_filter", filterField));
                         return true;
                 }
             }
 
             if (logs == null || logs.isEmpty()) {
-                CommandUtils.sendMessage(sender, "§c暂无兑换记录。");
+                CommandUtils.sendMessage(sender, getMsg("command.log.empty"));
                 return true;
             }
 
@@ -190,8 +186,8 @@ public class LogCommandExecutor extends AbstractSubCommand {
             List<CdkLog> pageLogs = logs.subList(startIndex, endIndex);
 
             // 页顶部说明：提示 hover 与 view 命令
-            CommandUtils.sendMessage(sender, String.format("§6=== CDK兑换记录 - 第%d页 ===", page));
-            CommandUtils.sendMessage(sender, "§7提示: 鼠标悬停玩家名或CDK可显示UUID；悬停命令数或时间可查看命令列表；使用 /cdk log view <id> 查看单条详情。");
+            CommandUtils.sendMessage(sender, getMsg("command.log.header", String.valueOf(page)));
+            CommandUtils.sendMessage(sender, getMsg("command.log.hint"));
             for (CdkLog log : pageLogs) {
                 String playerName = log.getPlayerName() == null ? "未知" : log.getPlayerName();
                 String cdkCode = log.getCdkCode() == null ? "" : log.getCdkCode();
@@ -238,11 +234,11 @@ public class LogCommandExecutor extends AbstractSubCommand {
                 }
             }
 
-            CommandUtils.sendMessage(sender, String.format("§7页码: §f%d/%d §7(总计: §f%d§7)", page, totalPages, totalItems));
-            CommandUtils.sendMessage(sender, "§7使用 /cdk log <页码> 翻页，或 /cdk log view <id> 查看详情。");
+            CommandUtils.sendMessage(sender, getMsg("command.log.page_info", String.valueOf(page), String.valueOf(totalPages), String.valueOf(totalItems)));
+            CommandUtils.sendMessage(sender, getMsg("command.log.page_hint"));
 
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, "§c获取兑换记录时出错: " + e.getMessage());
+            CommandUtils.sendMessage(sender, getMsg("command.log.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -309,7 +305,7 @@ public class LogCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-    return "§c用法: /cdk log [页码] | /cdk log view <id> | /cdk log filter <player|uuid|type> <值> [页码]";
+        return getMsg("command.log.usage");
     }
 
     @Override

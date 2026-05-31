@@ -24,9 +24,9 @@ public class ExportCommandExecutor extends AbstractSubCommand {
         try {
             DbToYmlExporter exporter = new DbToYmlExporter(plugin, plugin.getCdkRecordDao());
             exporter.exportToYml(ymlFile);
-            sender.sendMessage("§a成功导出到 " + fileName);
+            sender.sendMessage(getMsg("command.export.success", fileName));
         } catch (Exception e) {
-            sender.sendMessage("§c导出失败: " + e.getMessage());
+            sender.sendMessage(getMsg("command.export.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -35,6 +35,6 @@ public class ExportCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk export [yml文件]";
+        return getMsg("command.export.usage");
     }
 }

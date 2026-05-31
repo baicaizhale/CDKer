@@ -1,6 +1,7 @@
 package org.baicaizhale.CDKer.command;
 
 import org.baicaizhale.CDKer.CDKer;
+import org.baicaizhale.CDKer.model.LanguageConfig;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -40,35 +41,40 @@ public abstract class AbstractSubCommand {
      * @return 命令用法字符串
      */
     public String getUsage() {
-        return "§c用法不正确，请检查命令格式。";
+        return getMsg("command.usage_invalid");
     }
-    
+
     /**
      * 检查命令发送者是否为玩家
-     *
-     * @param sender 命令发送者
-     * @return 是否为玩家
      */
     protected boolean requirePlayer(CommandSender sender) {
         return sender instanceof Player;
     }
 
     /**
-     * 将命令发送者转换为玩家对象
-     *
-     * @param sender 命令发送者
-     * @return 玩家对象
+     * 便捷方法：从当前语言配置中获取消息并替换占位符
      */
-    protected Player asPlayer(CommandSender sender) {
-        return (Player) sender;
+    protected String getMsg(String key) {
+        LanguageConfig lang = plugin.getConfigurationManager()
+                .getLanguageConfig(plugin.getConfigurationManager().getPluginConfig().getLanguage());
+        return lang.getMessage(key);
     }
-    
+
+    /**
+     * 便捷方法：获取消息并替换占位符 {0}, {1}, ...
+     */
+    protected String getMsg(String key, String... args) {
+        String msg = getMsg(key);
+        if (args != null) {
+            for (int i = 0; i < args.length; i++) {
+                msg = msg.replace("{" + i + "}", args[i] != null ? args[i] : "");
+            }
+        }
+        return msg;
+    }
+
     /**
      * 命令自动补全
-     *
-     * @param sender 命令发送者
-     * @param args   命令参数
-     * @return 补全建议列表
      */
     public List<String> tabComplete(CommandSender sender, String[] args) {
         return new ArrayList<>();

@@ -16,7 +16,7 @@ public class CdkLogDao {
         this.tablePrefix = plugin.getConfig().getString("table-prefix", "cdk_");
     }
 
-    public void insertLog(CdkLog log) throws SQLException {
+    private void insertLog(CdkLog log) throws SQLException {
         String sql = String.format("INSERT INTO %slogs (player_name, player_uuid, cdk_code, cdk_type, commands_executed) VALUES (?, ?, ?, ?, ?)",
                 tablePrefix);
         
