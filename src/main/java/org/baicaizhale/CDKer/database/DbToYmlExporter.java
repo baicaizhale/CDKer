@@ -7,13 +7,11 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class DbToYmlExporter {
     private final CDKer plugin;
     private final CdkRecordDao cdkRecordDao;
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     public DbToYmlExporter(CDKer plugin, CdkRecordDao cdkRecordDao) {
         this.plugin = plugin;
@@ -29,7 +27,7 @@ public class DbToYmlExporter {
             ymlConfig.set(code + ".type", record.getCdkType());
             ymlConfig.set(code + ".commands", record.getCommands());
             ymlConfig.set(code + ".remainingUses", record.getRemainingUses());
-            ymlConfig.set(code + ".expiration", record.getExpireTime() != null ? DATE_FORMAT.format(record.getExpireTime()) : null);
+            ymlConfig.set(code + ".expiration", record.getExpireTime());
             ymlConfig.set(code + ".note", record.getNote());
             ymlConfig.set(code + ".perPlayerMultiple", record.isPerPlayerMultiple());
         }

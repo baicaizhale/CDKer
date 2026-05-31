@@ -25,24 +25,7 @@ cdk:
 
 # 插件基础设置
 settings:
-  # 插件消息前缀
-  prefix: "§6[CDK] §f"
-  # 插件语言 (zh_CN, en_US, ja_JP)
-  language: "zh_CN"
-  # 是否启用调试模式
-  debug: false
   # 是否在使用CDK时广播
   broadcast: false
   # 广播消息模板 (支持 {player} 和 {type} 变量)
   broadcast-message: "§e玩家 {player} 使用了一个 {type} CDK!"
-
-# 权限相关配置
-permissions:
-  # 管理员权限节点
-  admin: "cdk.admin"
-  # 使用CDK权限节点
-  use: "cdk.use"
-  # 创建CDK权限节点
-  create: "cdk.create"
-  # 查询CDK权限节点
-  query: "cdk.query"

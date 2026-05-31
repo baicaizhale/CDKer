@@ -15,18 +15,18 @@ public class ReloadCommandExecutor extends AbstractSubCommand {
     public boolean onCommand(CommandSender sender, String[] args) {
         try {
             plugin.getConfigurationManager().reloadAllConfigs();
-            CommandUtils.sendMessage(sender, "§a配置已重新加载。");
+            CommandUtils.sendMessage(sender, getMsg("command.reload.success"));
             return true;
         } catch (Exception e) {
             plugin.getLogger().severe("重新加载配置时出错: " + e.getMessage());
             e.printStackTrace();
-            CommandUtils.sendMessage(sender, "§c重新加载配置时出错: " + e.getMessage());
+            CommandUtils.sendMessage(sender, getMsg("command.reload.error", e.getMessage()));
             return true;
         }
     }
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk reload";
+        return getMsg("command.reload.usage");
     }
 }
