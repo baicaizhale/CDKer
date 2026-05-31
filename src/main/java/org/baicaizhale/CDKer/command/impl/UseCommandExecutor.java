@@ -53,7 +53,9 @@ public class UseCommandExecutor extends AbstractSubCommand {
 
             boolean success = true;
             for (String command : record.getCommands()) {
-                String finalCommand = CommandUtils.replaceCommandVariables(command, player);
+                String finalCommand = CommandUtils.sanitizeCommand(CommandUtils.replaceCommandVariables(command, player));
+                if (finalCommand == null || finalCommand.isEmpty()) continue;
+                plugin.getLogger().info("执行CDK命令: " + finalCommand);
                 if (!plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), finalCommand)) {
                     success = false;
                     plugin.getLogger().warning("执行命令失败: " + finalCommand);
