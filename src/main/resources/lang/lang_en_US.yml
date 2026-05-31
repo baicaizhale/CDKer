@@ -1,73 +1,152 @@
 # English Language Configuration
 
-messages:
-  # General Messages
-  general:
-    no-permission: "§cYou don't have permission to execute this command."
-    config-reloaded: "§aConfiguration has been reloaded."
-    invalid-command: "§cInvalid command. Usage: {usage}"
-    unknown-player: "§cPlayer not found: {player}"
-    invalid-number: "§cInvalid number: {input}"
+command:
+  common:
+    usage_invalid: "§cInvalid usage. Please check the command format."
+    invalid_number: "§cInvalid number format."
+    invalid_identifier: "§cInvalid identifier. Must be 'id' or 'cdk'."
+    not_found: "§cCDK not found."
+    no_permission: "§cYou don't have permission to execute this command."
+    no_permission_log: "§cYou don't have permission to execute this command. Required: cdk.log"
+    player_only: "§cThis command can only be executed by a player."
+    unknown_command: "Unknown command. Use /cdk help for help."
 
-  # CDK Related Messages
-  cdk:
-    created: "§aSuccessfully created {count} CDK codes. Type: {type}"
-    created-single: "§aSuccessfully created CDK code: §f{code}"
-    deleted: "§aSuccessfully deleted CDK code: §f{code}"
-    deleted-id: "§aSuccessfully deleted CDK with ID {id}."
-    not-found: "§cCDK code does not exist: §f{code}"
-    expired: "§cThis CDK code has expired."
-    used-up: "§cThis CDK code has been used up."
-    used-type: "§cYou have already used this type of CDK code."
-    use-success: "§aSuccessfully used CDK code!"
-    remaining-uses: "§aRemaining uses: §f{uses}"
-    updated: "§aSuccessfully updated CDK code: §f{code}"
-    info: |
-      §6CDK Information:
-      §fCode: §e{code}
-      §fType: §e{type}
-      §fNote: §e{note}
-      §fRemaining Uses: §e{uses}
-      §fExpire Time: §e{expire}
-      §fCreated Time: §e{created}
+  create:
+    usage: |
+      §cUsage: /cdk create <amount> "<command1|command2|...>" [uses] [note] [expire] [type] [multi-use]
+      §7  - amount: Number of CDKs to generate (1-100)
+      §7  - commands: Commands to execute, separated by '|'
+      §7  - uses: Redeemable uses per CDK, default from config
+      §7  - note: Optional description (use quotes if contains spaces)
+      §7  - expire: Format '2025-12-31 23:59' or 'forever'
+      §7  - type: Optional category label
+      §7  - multi-use: true/false, allow same player to redeem multiple times
+    amount_range: "§cAmount must be between 1 and 100."
+    need_quotes: "§cCommands must be wrapped in double quotes."
+    command_empty: "§cCommands cannot be empty."
+    invalid_uses: "§cInvalid uses format."
+    success_single: "§aSuccessfully created CDK code: §f{0}"
+    success_multi: "§aSuccessfully created {0} CDK codes. Type: {1}\n§f{2}"
+    error: "§cError creating CDK: {0}"
 
-  # Command Help
+  use:
+    usage: "§cUsage: /cdk use <code>"
+    invalid_code: "§cInvalid CDK code."
+    expired_or_used: "§cThis CDK code has expired or has no remaining uses."
+    already_used: "§cYou have already used this CDK code."
+    success: "§aSuccessfully redeemed CDK!"
+    use_error: "§cError executing CDK commands. Please contact an admin."
+    error: "§cError using CDK: {0}"
+
+  add:
+    usage: "§cUsage: /cdk add <id/cdk> <identifier> <amount>"
+    amount_positive: "§cThe amount to add must be greater than 0."
+    success: "§aAdded {1} uses to CDK {0}. Remaining: {2}"
+    error: "§cError adding uses: {0}"
+
+  del:
+    usage: "§cUsage: /cdk del <id/cdk> <identifier>"
+    success: "§aSuccessfully deleted CDK: {0}"
+    error: "§cError deleting CDK: {0}"
+
+  list:
+    usage: "§cUsage: /cdk list [page] [type] or /cdk list [type] [page]"
+    empty: "§cNo CDK records found."
+    header: "§6=== CDK List ==="
+    page_info: "§7Page: §f{0}/{1} §7(Total: §f{2}§7)"
+    type_filter: "§7Type filter: §f{0}"
+    item: "§f{0}. {1} §7({2} uses) [{3}] §8[{4}] §7Note: §f{5}"
+    footer: "§6================"
+    error: "§cError fetching CDK list: {0}"
+
+  log:
+    usage: "§cUsage: /cdk log [page] | /cdk log view <id> | /cdk log filter <player|uuid|type> <value> [page]"
+    empty: "§cNo redemption records found."
+    header: "§6=== CDK Redemption Log - Page {0} ==="
+    hint: "§7Tip: Hover over player name or CDK for UUID; hover over command count or time for command list; use /cdk log view <id> for details."
+    page_info: "§7Page: §f{0}/{1} §7(Total: §f{2}§7)"
+    page_hint: "§7Use /cdk log <page> to navigate, or /cdk log view <id> for details."
+    unknown_filter: "§cUnknown filter field: {0}"
+    view_not_found: "§cRecord with specified ID not found."
+    view_usage: "§cUsage: /cdk log view <id>"
+    read_error: "§cError reading log: {0}"
+    error: "§cError fetching logs: {0}"
+
+  query:
+    usage: "§cUsage: /cdk query <id/cdk> <identifier>"
+    header: "§6=== CDK Details ==="
+    footer: "§6=================="
+    error: "§cError querying CDK: {0}"
+
+  set:
+    usage: "§cUsage: /cdk set <id/cdk> <identifier> <property> <value>"
+    invalid_property: "§cInvalid property type."
+    success: "§aSuccessfully updated CDK: §f{0}"
+    error: "§cError setting CDK property: {0}"
+
+  view:
+    usage: "§cUsage: /cdk view <id/cdk> <identifier>"
+    not_found: "§cRecord not found."
+    header: "§6=== CDK Redemption Record Detail (ID: {0}) ==="
+    error: "§cError reading log: {0}"
+
+  reload:
+    usage: "§cUsage: /cdk reload"
+    success: "§aConfiguration reloaded."
+    error: "§cError reloading configuration: {0}"
+
+  export:
+    usage: "§cUsage: /cdk export [yml file]"
+    success: "§aSuccessfully exported to {0}"
+    error: "§cExport failed: {0}"
+
+  import:
+    usage: "§cUsage: /cdk import <file> [replace|append]"
+    success: "§aSuccessfully imported CDKs from {0}."
+    error: "§cImport failed: {0}"
+
   help:
-    header: "§6=== CDK Plugin Help ==="
-    create: |
-      §f/cdk create <amount> "<command1|command2|...>" [uses] [note] [expire] [type] [multi-use] §7- Create CDK
+    header: "§6=== CDK Help ==="
+    create: "§f/cdk create <amount> \"<cmd1|cmd2|...>\" [uses] [note] [expire] [type] [multi-use] §7- Create CDK"
+    create_params: |
       §7Parameters:
-      §7<amount>: Number of CDKs to generate
-      §7<commands>: Commands to execute, separated by |
+      §7<amount>: Number of CDKs to generate (1-100)
+      §7<commands>: Commands to execute on redeem, separated by |
       §7[uses]: Total uses per CDK, default 1
-      §7[note]: Note for this CDK
-      §7[expire]: Expire time, format yyyy-MM-dd HH:mm
+      §7[note]: Description for this CDK
+      §7[expire]: Expiration time, format yyyy-MM-dd HH:mm
       §7[type]: Custom type identifier
       §7[multi-use]: true/false, allow same player to redeem multiple times
-      §7Example: /cdk create 5 "give %player% diamond 1|say Congratulations" 1 "Starter Pack" 2025-12-01 10:00 vip true
-    set: "§f/cdk set <id/cdk> <identifier> <type> <value> §7- Set CDK property"
+      §7Example: /cdk create 5 "give %player% diamond 1|say Congrats" 1 "Starter Pack" 2025-12-01 10:00 vip true
+    use: "§f/cdk use <code> §7- Use a CDK"
+    use_example: "  §7Example: /cdk use ABC123XYZ789"
     add: "§f/cdk add <id/cdk> <identifier> <amount> §7- Add uses"
-    query: "§f/cdk query <id/cdk> <identifier> §7- Query CDK info"
+    add_example: "  §7Example: /cdk add id 1 5 or /cdk add cdk ABC123XYZ789 3"
     del: "§f/cdk del <id/cdk> <identifier> §7- Delete CDK"
-    use: "§f/cdk use <cdkcode> §7- Use CDK"
-    list: |
-      §f/cdk list §7- List all CDKs
-      §7Supports pagination and filter, e.g.: /cdk list 2 vip
-    reload: "§f/cdk reload §7- Reload config"
-    import: "§f/cdk import <yml file> [replace|append] §7- Import CDKs from yml"
-    export: "§f/cdk export <yml file> §7- Export CDKs to yml"
-    footer: "§6=================="
-
-  # Compatibility/Extra
-  prefix: "§7[§bCDK§7] §r"
-  no-permission-use: "§cYou do not have permission to use this CDK!"
-  unknown-command: "§cUnknown command! Use /cdk help for a list of commands."
-
-  # Error Messages
-  error:
-    db-connection: "§cDatabase connection failed: {error}"
-    invalid-expire-time: "§cInvalid expire time format, please use yyyy-MM-dd HH:mm format."
-    invalid-type: "§cInvalid CDK type: {type}"
-    command-error: "§cError executing command: {error}"
-    yml-load: "§cError loading configuration file: {error}"
-    yml-save: "§cError saving configuration file: {error}"
+    del_example: "  §7Example: /cdk del id 1 or /cdk del cdk ABC123XYZ789"
+    list: "§f/cdk list [page] [type] §7- List all CDKs with pagination and type filter"
+    list_example: "  §7Example: /cdk list 2 or /cdk list vip or /cdk list vip 2"
+    log: "§f/cdk log [page] §7- Show redemption logs with pagination. Permission: cdk.log"
+    log_example: "  §7Example: /cdk log or /cdk log 2 or /cdk log filter player Steve"
+    log_hint: "  §7Tip: Hover player name for UUID; hover count for command list; use /cdk log view <id> for details. "
+    query: "§f/cdk query <id/cdk> <identifier> §7- Query CDK info"
+    query_example: "  §7Example: /cdk query id 1 or /cdk query cdk ABC123XYZ789"
+    view: "§f/cdk view <id/cdk> <identifier> §7- View CDK detail in console (plain text, no hover)"
+    view_example: "  §7Example: /cdk view id 1 or /cdk view cdk ABC123XYZ789"
+    set: "§f/cdk set <id/cdk> <identifier> <property> <value> §7- Set CDK property"
+    set_props: "  §7Settable properties: remaining_uses, commands, expire_time, note, cdk_type, per_player_multiple"
+    set_examples: |
+      §7Example: /cdk set id 1 remaining_uses 10
+      §7Example: /cdk set cdk ABC123XYZ789 commands "give {player} diamond 5|say Got diamonds"
+      §7Example: /cdk set id 1 expire_time "2025-12-31 23:59"
+      §7Example: /cdk set cdk ABC123XYZ789 note "Updated note"
+      §7Example: /cdk set id 1 cdk_type "vip"
+      §7Example: /cdk set cdk ABC123XYZ789 per_player_multiple true
+    reload: "§f/cdk reload §7- Reload configuration"
+    import: "§f/cdk import <file> [replace|append] §7- Import CDKs from yml"
+    import_examples: |
+      §7replace: replace all existing CDKs, append: add to existing CDKs
+      §7Example: /cdk import cdks.yml replace
+    export: "§f/cdk export <file> §7- Export CDKs to yml"
+    export_example: "  §7Example: /cdk export cdks.yml"
+    footer: "§6=============="

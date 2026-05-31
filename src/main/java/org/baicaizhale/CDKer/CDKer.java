@@ -66,9 +66,6 @@ public class CDKer extends JavaPlugin {
         stopWatchingConfigs();
 
         // 保存配置
-        if (configurationManager != null) {
-            configurationManager.saveCdkConfig();
-        }
         if (databaseManager != null) {
             databaseManager.close();
         }

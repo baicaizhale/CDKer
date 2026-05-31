@@ -21,7 +21,7 @@ public class QueryCommandExecutor extends AbstractSubCommand {
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         if (args.length < 2) {
-            CommandUtils.sendMessage(sender, getUsage());
+            CommandUtils.sendMessage(sender, getMsg("command.query.usage"));
             return true;
         }
 
@@ -36,18 +36,17 @@ public class QueryCommandExecutor extends AbstractSubCommand {
             } else if ("cdk".equals(identifierType)) {
                 record = plugin.getCdkRecordDao().getCdkByCode(identifier);
             } else {
-                CommandUtils.sendMessage(sender, "§c无效的标识符，必须是 'id' 或 'cdk'。");
+                CommandUtils.sendMessage(sender, getMsg("command.common.invalid_identifier"));
                 return true;
             }
 
             if (record == null) {
-                CommandUtils.sendMessage(sender, "§cCDK不存在。");
+                CommandUtils.sendMessage(sender, getMsg("command.common.not_found"));
                 return true;
             }
 
-            // 显示详细的CDK信息
             StringBuilder info = new StringBuilder();
-            info.append("§6=== CDK详细信息 ===\n");
+            info.append(getMsg("command.query.header")).append("\n");
             info.append(String.format("§fID: §e%d\n", record.getId()));
             info.append(String.format("§f代码: §e%s\n", record.getCdkCode()));
             info.append(String.format("§f类型: §e%s\n", record.getCdkType().isEmpty() ? "无" : record.getCdkType()));
@@ -57,19 +56,19 @@ public class QueryCommandExecutor extends AbstractSubCommand {
             info.append(String.format("§f创建时间: §e%s\n", DATE_FORMAT.format(record.getCreatedTime())));
             info.append(String.format("§f允许同一玩家多次使用: §e%s\n", record.isPerPlayerMultiple() ? "是" : "否"));
             info.append("§f命令列表:\n");
-            
+
             List<String> commands = record.getCommands();
             for (int i = 0; i < commands.size(); i++) {
                 info.append(String.format("  §e%d. §f%s\n", i + 1, commands.get(i)));
             }
-            info.append("§6==================");
+            info.append(getMsg("command.query.footer"));
 
             CommandUtils.sendMessage(sender, info.toString());
 
         } catch (NumberFormatException e) {
-            CommandUtils.sendMessage(sender, "§c无效的数字格式。");
+            CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, "§c查询CDK信息时出错: " + e.getMessage());
+            CommandUtils.sendMessage(sender, getMsg("command.query.error", e.getMessage()));
             e.printStackTrace();
         }
 
@@ -78,7 +77,7 @@ public class QueryCommandExecutor extends AbstractSubCommand {
 
     @Override
     public String getUsage() {
-        return "§c用法: /cdk query <id/cdk> <标识符>";
+        return getMsg("command.query.usage");
     }
 
     @Override
