@@ -5,7 +5,6 @@ import org.baicaizhale.CDKer.model.CdkRecord;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class CdkRecordDao {
@@ -130,7 +129,10 @@ public class CdkRecordDao {
         record.setId(rs.getInt("id"));
         record.setCdkCode(rs.getString("cdk_code"));
         record.setRemainingUses(rs.getInt("remaining_uses"));
-        record.setCommands(Arrays.asList(rs.getString("commands").split("\\|")));
+        String commandsStr = rs.getString("commands");
+        record.setCommands(commandsStr != null ?
+            org.baicaizhale.CDKer.util.CommandUtils.parseCommands(commandsStr) :
+            new java.util.ArrayList<>());
         record.setExpireTime(rs.getString("expire_time"));
         record.setNote(rs.getString("note"));
         record.setCdkType(rs.getString("cdk_type"));
