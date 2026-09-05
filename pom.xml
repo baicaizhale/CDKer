@@ -48,6 +48,10 @@
               <pattern>org.bstats</pattern>
               <shadedPattern>org.baicaizhale.CDKer.bstats</shadedPattern>
             </relocation>
+            <relocation>
+              <pattern>com.google.protobuf</pattern>
+              <shadedPattern>org.baicaizhale.CDKer.protobuf</shadedPattern>
+            </relocation>
           </relocations>
         </configuration>
         <executions>
