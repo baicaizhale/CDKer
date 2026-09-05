@@ -18,6 +18,11 @@ public class SetCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 4) {
             CommandUtils.sendMessage(sender, getMsg("command.set.usage"));
             return true;

@@ -3,6 +3,7 @@ package org.baicaizhale.CDKer.command.impl;
 import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.command.AbstractSubCommand;
 import org.baicaizhale.CDKer.model.CdkRecord;
+import org.baicaizhale.CDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -18,6 +19,11 @@ public class ListCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         try {
             int page = 1;
             String typeFilter = null;

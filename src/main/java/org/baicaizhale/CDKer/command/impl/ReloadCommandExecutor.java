@@ -13,6 +13,11 @@ public class ReloadCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         try {
             plugin.getConfigurationManager().reloadAllConfigs();
             CommandUtils.sendMessage(sender, getMsg("command.reload.success"));

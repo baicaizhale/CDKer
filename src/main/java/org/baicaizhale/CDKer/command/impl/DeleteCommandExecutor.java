@@ -3,6 +3,7 @@ package org.baicaizhale.CDKer.command.impl;
 import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.command.AbstractSubCommand;
 import org.baicaizhale.CDKer.model.CdkRecord;
+import org.baicaizhale.CDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
 public class DeleteCommandExecutor extends AbstractSubCommand {
@@ -13,6 +14,11 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 2) {
             sender.sendMessage(getMsg("command.del.usage"));
             return true;

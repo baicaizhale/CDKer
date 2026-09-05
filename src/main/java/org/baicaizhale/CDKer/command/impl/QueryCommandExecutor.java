@@ -20,6 +20,11 @@ public class QueryCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.query")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 2) {
             CommandUtils.sendMessage(sender, getMsg("command.query.usage"));
             return true;
