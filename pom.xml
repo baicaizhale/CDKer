@@ -20,8 +20,6 @@
 
   <build>
     <defaultGoal>clean package</defaultGoal>
-    <!-- 构建产物固定命名为 CDKer.jar，不带版本号 -->
-    <finalName>CDKer</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
