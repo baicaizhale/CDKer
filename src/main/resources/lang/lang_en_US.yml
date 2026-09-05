@@ -8,6 +8,7 @@ command:
     not_found: "§cCDK not found."
     no_permission: "§cYou don't have permission to execute this command."
     no_permission_log: "§cYou don't have permission to execute this command. Required: cdk.log"
+    internal_error: "§cAn internal error occurred. Check the server console for details."
     player_only: "§cThis command can only be executed by a player."
     unknown_command: "Unknown command. Use /cdk help for help."
 

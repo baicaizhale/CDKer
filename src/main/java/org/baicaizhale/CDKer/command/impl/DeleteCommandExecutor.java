@@ -55,8 +55,9 @@ public class DeleteCommandExecutor extends AbstractSubCommand {
         } catch (NumberFormatException e) {
             sender.sendMessage(getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.del.error", e.getMessage()));
+            plugin.getLogger().severe("删除CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

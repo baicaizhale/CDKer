@@ -69,8 +69,9 @@ public class AddCommandExecutor extends AbstractSubCommand {
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, getMsg("command.add.error", e.getMessage()));
+            plugin.getLogger().severe("增加CDK次数时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

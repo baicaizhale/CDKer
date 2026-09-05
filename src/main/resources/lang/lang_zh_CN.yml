@@ -8,6 +8,7 @@ command:
     not_found: "§cCDK不存在。"
     no_permission: "§c您没有权限执行此命令。"
     no_permission_log: "§c你没有权限执行此命令。需要权限: cdk.log"
+    internal_error: "§c操作时发生内部错误，请查看服务器控制台日志。"
     player_only: "§c该命令只能由玩家执行。"
     unknown_command: "未知命令，使用/cdk help查看帮助。"
 

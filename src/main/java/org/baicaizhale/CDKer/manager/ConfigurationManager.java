@@ -28,7 +28,14 @@ public class ConfigurationManager {
     }
 
     public void reloadAllConfigs() {
+        String oldDbType = plugin.getConfig().getString("cdk.database.type", "sqlite");
+        // 重新从磁盘读取 config.yml，让所有 plugin.getConfig() 的读取方拿到新值
+        plugin.reloadConfig();
         loadAllConfigs();
+        String newDbType = plugin.getConfig().getString("cdk.database.type", "sqlite");
+        if (!oldDbType.equals(newDbType)) {
+            plugin.getLogger().warning("检测到数据库类型变更，需要重启服务器才能生效");
+        }
     }
 
     private void loadPluginConfig() {

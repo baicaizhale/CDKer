@@ -3,6 +3,7 @@ package org.baicaizhale.CDKer.command.impl;
 import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.command.AbstractSubCommand;
 import org.baicaizhale.CDKer.model.CdkRecord;
+import org.baicaizhale.CDKer.model.RedeemResult;
 import org.baicaizhale.CDKer.util.CommandUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -32,23 +33,47 @@ public class UseCommandExecutor extends AbstractSubCommand {
         Player player = (Player) sender;
         String code = args[0];
 
+        // 数据库查询放到异步线程，避免阻塞主线程；扣减与发奖在主线程串行执行
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+            try {
+                CdkRecord record = plugin.getCdkRecordDao().getCdkByCode(code);
+                plugin.getServer().getScheduler().runTask(plugin, () -> handleRedeem(player, record));
+            } catch (Exception e) {
+                plugin.getLogger().severe("查询CDK时出错: " + e.getMessage());
+                e.printStackTrace();
+                plugin.getServer().getScheduler().runTask(plugin,
+                        () -> CommandUtils.sendMessage(player, getMsg("command.common.internal_error")));
+            }
+        });
+
+        return true;
+    }
+
+    private void handleRedeem(Player player, CdkRecord record) {
+        if (!player.isOnline()) {
+            return;
+        }
+        if (record == null) {
+            CommandUtils.sendMessage(player, getMsg("command.use.invalid_code"));
+            return;
+        }
+
         try {
-            CdkRecord record = plugin.getCdkRecordDao().getCdkByCode(code);
-            if (record == null) {
-                sender.sendMessage(getMsg("command.use.invalid_code"));
-                return true;
-            }
-
-            if (!record.canBeUsed()) {
-                sender.sendMessage(getMsg("command.use.expired_or_used"));
-                return true;
-            }
-
-            if (!record.isPerPlayerMultiple()) {
-                if (plugin.getCdkLogDao().hasPlayerUsedCode(player.getUniqueId().toString(), code)) {
-                    sender.sendMessage(getMsg("command.use.already_used"));
-                    return true;
-                }
+            // 单个事务内完成：校验单人限用 + 扣次数 + 写日志，全部成功才提交
+            RedeemResult result = plugin.getCdkRecordDao()
+                    .redeem(record, player.getUniqueId().toString(), player.getName());
+            switch (result) {
+                case ALREADY_USED:
+                    CommandUtils.sendMessage(player, getMsg("command.use.already_used"));
+                    return;
+                case USED_UP:
+                    CommandUtils.sendMessage(player, getMsg("command.use.expired_or_used"));
+                    return;
+                case INVALID:
+                    CommandUtils.sendMessage(player, getMsg("command.use.invalid_code"));
+                    return;
+                default:
+                    break;
             }
 
             boolean success = true;
@@ -63,12 +88,7 @@ public class UseCommandExecutor extends AbstractSubCommand {
             }
 
             if (success) {
-                plugin.getCdkLogDao().logCdkUsage(player.getName(), player.getUniqueId().toString(), code, record.getCdkType(), record.getCommands());
-
-                record.setRemainingUses(record.getRemainingUses() - 1);
-                plugin.getCdkRecordDao().updateCdk(record);
-
-                sender.sendMessage(getMsg("command.use.success"));
+                CommandUtils.sendMessage(player, getMsg("command.use.success"));
 
                 boolean broadcastEnabled = plugin.getConfig().getBoolean("settings.broadcast", false);
                 if (broadcastEnabled) {
@@ -78,16 +98,14 @@ public class UseCommandExecutor extends AbstractSubCommand {
                     Bukkit.broadcastMessage(broadcastMessage);
                 }
             } else {
-                sender.sendMessage(getMsg("command.use.use_error"));
+                CommandUtils.sendMessage(player, getMsg("command.use.use_error"));
             }
 
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.use.error", e.getMessage()));
             plugin.getLogger().severe("使用CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(player, getMsg("command.common.internal_error"));
         }
-
-        return true;
     }
 
     @Override

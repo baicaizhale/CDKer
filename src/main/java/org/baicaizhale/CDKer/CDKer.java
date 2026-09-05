@@ -33,8 +33,8 @@ public class CDKer extends JavaPlugin {
         // 初始化数据库
         try {
             databaseManager = new DatabaseManager(this);
-            cdkRecordDao = new CdkRecordDao(this, databaseManager);
-            cdkLogDao = new CdkLogDao(this, databaseManager);
+            cdkRecordDao = new CdkRecordDao(databaseManager);
+            cdkLogDao = new CdkLogDao(databaseManager);
         } catch (Exception e) {
             getLogger().severe("初始化数据库失败: " + e.getMessage());
             e.printStackTrace();
@@ -123,7 +123,8 @@ public class CDKer extends JavaPlugin {
                             getLogger().info("文件变更检测: 文件名 = " + changedFileName + ", 是否为配置/语言文件 = " + ("config.yml".equals(changedFileName) || changedFileName.startsWith("lang_")));
                             if (("config.yml".equals(changedFileName) || changedFileName.startsWith("lang_")) && currentTime - lastReloadTime > 500) { // 500毫秒内只重载一次
                                 getLogger().info("检测到配置文件变更: " + changed.getFileName() + "，正在重新加载...");
-                                configurationManager.reloadAllConfigs();
+                                // Bukkit 配置对象非线程安全，必须在主线程重载
+                                getServer().getScheduler().runTask(this, () -> configurationManager.reloadAllConfigs());
                                 lastReloadTime = currentTime;
                             }
                             // 移除 break; 语句，让所有事件都被处理，但通过时间戳控制重载频率

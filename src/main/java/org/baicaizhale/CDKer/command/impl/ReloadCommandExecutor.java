@@ -25,7 +25,7 @@ public class ReloadCommandExecutor extends AbstractSubCommand {
         } catch (Exception e) {
             plugin.getLogger().severe("重新加载配置时出错: " + e.getMessage());
             e.printStackTrace();
-            CommandUtils.sendMessage(sender, getMsg("command.reload.error", e.getMessage()));
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
             return true;
         }
     }

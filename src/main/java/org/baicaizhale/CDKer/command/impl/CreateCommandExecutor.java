@@ -105,8 +105,9 @@ public class CreateCommandExecutor extends AbstractSubCommand {
 
             return true;
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.create.error", e.getMessage()));
+            plugin.getLogger().severe("创建CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
             return true;
         }
     }

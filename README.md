@@ -56,7 +56,7 @@ cdk:
   length: 12
   # 默认兑换次数
   default-uses: 1
-  # 语言配置 (支持: zh_CN, en_US)
+  # 语言配置 (支持: zh_CN, en_US, ja_JP)
   language: "zh_CN"
   # 消息前缀
   prefix: "&bCDKer &7> &f"
@@ -75,14 +75,8 @@ cdk:
 
 # 插件基础设置
 settings:
-  # 插件消息前缀
-  prefix: "§6[CDK] §f"
-  # 插件语言 (zh_CN 或 en_US)
-  language: "zh_CN"
-  # 是否启用调试模式
-  debug: false
   # 是否在使用CDK时广播
-  broadcast: true
+  broadcast: false
   # 广播消息模板 (支持 {player} 和 {type} 变量)
   broadcast-message: "§e玩家 {player} 使用了一个 {type} CDK!"
 

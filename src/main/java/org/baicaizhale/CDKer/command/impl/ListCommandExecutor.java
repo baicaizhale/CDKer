@@ -48,33 +48,19 @@ public class ListCommandExecutor extends AbstractSubCommand {
                 }
             }
 
-            List<CdkRecord> records = plugin.getCdkRecordDao().getAllCdks();
+            int totalItems = plugin.getCdkRecordDao().countCdks(typeFilter);
 
-            if (typeFilter != null && !typeFilter.isEmpty()) {
-                List<CdkRecord> filteredRecords = new ArrayList<>();
-                for (CdkRecord record : records) {
-                    if (typeFilter.equals(record.getCdkType())) {
-                        filteredRecords.add(record);
-                    }
-                }
-                records = filteredRecords;
-            }
-
-            if (records.isEmpty()) {
+            if (totalItems == 0) {
                 sender.sendMessage(getMsg("command.list.empty"));
                 return true;
             }
 
-            int totalItems = records.size();
             int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
 
             if (page < 1) page = 1;
             if (page > totalPages) page = totalPages;
 
-            int startIndex = (page - 1) * ITEMS_PER_PAGE;
-            int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-
-            List<CdkRecord> pageRecords = records.subList(startIndex, endIndex);
+            List<CdkRecord> pageRecords = plugin.getCdkRecordDao().getCdksPage(page, ITEMS_PER_PAGE, typeFilter);
 
             sender.sendMessage(getMsg("command.list.header"));
             sender.sendMessage(getMsg("command.list.page_info", String.valueOf(page), String.valueOf(totalPages), String.valueOf(totalItems)));
@@ -82,7 +68,7 @@ public class ListCommandExecutor extends AbstractSubCommand {
                 sender.sendMessage(getMsg("command.list.type_filter", typeFilter));
             }
 
-            int displayIndex = startIndex + 1;
+            int displayIndex = (page - 1) * ITEMS_PER_PAGE + 1;
             for (CdkRecord record : pageRecords) {
                 String note = record.getNote();
                 if (note == null || note.isEmpty()) {
@@ -104,8 +90,9 @@ public class ListCommandExecutor extends AbstractSubCommand {
             sender.sendMessage(getMsg("command.list.footer"));
 
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.list.error", e.getMessage()));
+            plugin.getLogger().severe("列出CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

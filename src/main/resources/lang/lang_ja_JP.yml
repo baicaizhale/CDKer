@@ -8,6 +8,7 @@ command:
     not_found: "§cCDKが見つかりません。"
     no_permission: "§cこのコマンドを実行する権限がありません。"
     no_permission_log: "§cこのコマンドを実行する権限がありません。必要な権限: cdk.log"
+    internal_error: "§c内部エラーが発生しました。サーバーコンソールを確認してください。"
     player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
     unknown_command: "不明なコマンドです。/cdk help でヘルプを表示してください。"
 

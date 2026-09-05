@@ -13,90 +13,115 @@ import java.util.List;
 public class MainCommandExecutor implements CommandExecutor, TabCompleter {
 
     private final CDKer plugin;
+    private final HelpCommandExecutor helpExecutor;
+    private final CreateCommandExecutor createExecutor;
+    private final UseCommandExecutor useExecutor;
+    private final AddCommandExecutor addExecutor;
+    private final DeleteCommandExecutor deleteExecutor;
+    private final ListCommandExecutor listExecutor;
+    private final LogCommandExecutor logExecutor;
+    private final ReloadCommandExecutor reloadExecutor;
+    private final ExportCommandExecutor exportExecutor;
+    private final ImportCommandExecutor importExecutor;
+    private final QueryCommandExecutor queryExecutor;
+    private final ViewCommandExecutor viewExecutor;
+    private final SetCommandExecutor setExecutor;
 
     public MainCommandExecutor(CDKer plugin) {
         this.plugin = plugin;
+        this.helpExecutor = new HelpCommandExecutor(plugin);
+        this.createExecutor = new CreateCommandExecutor(plugin);
+        this.useExecutor = new UseCommandExecutor(plugin);
+        this.addExecutor = new AddCommandExecutor(plugin);
+        this.deleteExecutor = new DeleteCommandExecutor(plugin);
+        this.listExecutor = new ListCommandExecutor(plugin);
+        this.logExecutor = new LogCommandExecutor(plugin);
+        this.reloadExecutor = new ReloadCommandExecutor(plugin);
+        this.exportExecutor = new ExportCommandExecutor(plugin);
+        this.importExecutor = new ImportCommandExecutor(plugin);
+        this.queryExecutor = new QueryCommandExecutor(plugin);
+        this.viewExecutor = new ViewCommandExecutor(plugin);
+        this.setExecutor = new SetCommandExecutor(plugin);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            new HelpCommandExecutor(plugin).onCommand(sender, new String[0]);
+            helpExecutor.onCommand(sender, new String[0]);
             return true;
         }
 
         String subCommand = args[0].toLowerCase();
         switch (subCommand) {
             case "help":
-                return new HelpCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                return helpExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "create":
                 if (args.length > 1) {
-                    return new CreateCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return createExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new CreateCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(createExecutor.getUsage());
                     return true;
                 }
             case "use":
                 if (args.length > 1) {
-                    return new UseCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return useExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new UseCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(useExecutor.getUsage());
                     return true;
                 }
             case "add":
                 if (args.length > 1) {
-                    return new AddCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return addExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new AddCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(addExecutor.getUsage());
                     return true;
                 }
             case "del":
             case "delete":
                 if (args.length > 1) {
-                    return new DeleteCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return deleteExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new DeleteCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(deleteExecutor.getUsage());
                     return true;
                 }
             case "list":
-                return new ListCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                return listExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "log":
-                return new LogCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                return logExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "reload":
-                return new ReloadCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                return reloadExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "export":
-                return new ExportCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                return exportExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "import":
                 if (args.length > 1) {
-                    return new ImportCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return importExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new ImportCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(importExecutor.getUsage());
                     return true;
                 }
             case "query":
                 if (args.length > 1) {
-                    return new QueryCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return queryExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new QueryCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(queryExecutor.getUsage());
                     return true;
                 }
             case "view":
                 if (args.length > 1) {
-                    return new ViewCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return viewExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new ViewCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(viewExecutor.getUsage());
                     return true;
                 }
             case "set":
                 if (args.length > 1) {
-                    return new SetCommandExecutor(plugin).execute(sender, Arrays.copyOfRange(args, 1, args.length));
+                    return setExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
                 } else {
-                    sender.sendMessage(new SetCommandExecutor(plugin).getUsage());
+                    sender.sendMessage(setExecutor.getUsage());
                     return true;
                 }
             default:
-                HelpCommandExecutor helper = new HelpCommandExecutor(plugin);
-                sender.sendMessage(helper.getMsg("command.common.unknown_command"));
+                sender.sendMessage(helpExecutor.getMsg("command.common.unknown_command"));
                 return true;
         }
     }
@@ -120,16 +145,16 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
         if (args.length >= 2) {
             String[] subArgs = Arrays.copyOfRange(args, 1, args.length);
             switch (args[0].toLowerCase()) {
-                case "create": return new CreateCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "use":    return new UseCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "add":    return new AddCommandExecutor(plugin).tabComplete(sender, subArgs);
+                case "create": return createExecutor.tabComplete(sender, subArgs);
+                case "use":    return useExecutor.tabComplete(sender, subArgs);
+                case "add":    return addExecutor.tabComplete(sender, subArgs);
                 case "del":
-                case "delete": return new DeleteCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "list":   return new ListCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "log":    return new LogCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "query":  return new QueryCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "set":    return new SetCommandExecutor(plugin).tabComplete(sender, subArgs);
-                case "import": return new ImportCommandExecutor(plugin).tabComplete(sender, subArgs);
+                case "delete": return deleteExecutor.tabComplete(sender, subArgs);
+                case "list":   return listExecutor.tabComplete(sender, subArgs);
+                case "log":    return logExecutor.tabComplete(sender, subArgs);
+                case "query":  return queryExecutor.tabComplete(sender, subArgs);
+                case "set":    return setExecutor.tabComplete(sender, subArgs);
+                case "import": return importExecutor.tabComplete(sender, subArgs);
                 default:       return new ArrayList<>();
             }
         }

@@ -11,6 +11,7 @@ import java.sql.SQLException;
 public class DatabaseManager {
     private final CDKer plugin;
     private HikariDataSource dataSource;
+    private String tablePrefix = "cdk_";
 
     public DatabaseManager(CDKer plugin) {
         this.plugin = plugin;
@@ -20,16 +21,22 @@ public class DatabaseManager {
     private void setupDatabase() {
         HikariConfig config = new HikariConfig();
         String dbType = plugin.getConfig().getString("cdk.database.type", "sqlite");
+        boolean mysql = "mysql".equalsIgnoreCase(dbType);
 
-        if ("mysql".equalsIgnoreCase(dbType)) {
+        if (mysql) {
             setupMysql(config);
         } else {
             setupSqlite(config);
         }
 
-        // 通用配置
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(5);
+        if (mysql) {
+            config.setMaximumPoolSize(10);
+            config.setMinimumIdle(5);
+        } else {
+            // SQLite 单文件数据库不支持多连接并发写，池大小必须为 1，否则会报 database is locked
+            config.setMaximumPoolSize(1);
+            config.setMinimumIdle(1);
+        }
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(600000);
         config.setMaxLifetime(1800000);
@@ -50,15 +57,12 @@ public class DatabaseManager {
         String database = plugin.getConfig().getString("cdk.database.mysql.database", "cdk");
         String username = plugin.getConfig().getString("cdk.database.mysql.username", "root");
         String password = plugin.getConfig().getString("cdk.database.mysql.password", "");
-        String prefix = plugin.getConfig().getString("cdk.database.mysql.table-prefix", "cdk_");
+        tablePrefix = plugin.getConfig().getString("cdk.database.mysql.table-prefix", "cdk_");
 
         config.setDriverClassName("com.mysql.cj.jdbc.Driver");
         config.setJdbcUrl(String.format("jdbc:mysql://%s:%d/%s?useSSL=false&serverTimezone=UTC", host, port, database));
         config.setUsername(username);
         config.setPassword(password);
-
-        // 设置表前缀到插件实例中，以便其他类使用
-        plugin.getConfig().set("table-prefix", prefix);
     }
 
     private void setupSqlite(HikariConfig config) {
@@ -76,12 +80,12 @@ public class DatabaseManager {
         config.setDriverClassName("org.sqlite.JDBC");
         config.setJdbcUrl("jdbc:sqlite:" + dbFile.getAbsolutePath());
 
-        // SQLite没有表前缀的概念，但为了统一处理，我们还是设置一个
-        plugin.getConfig().set("table-prefix", "cdk_");
+        // SQLite 没有表前缀的概念，使用固定前缀
+        tablePrefix = "cdk_";
     }
 
     private void initializeTables() {
-        String prefix = plugin.getConfig().getString("table-prefix", "cdk_");
+        String prefix = tablePrefix;
         String autoIncrement = plugin.getConfig().getString("cdk.database.type", "sqlite").equalsIgnoreCase("mysql") ? 
             "AUTO_INCREMENT" : "AUTOINCREMENT";
 
@@ -123,6 +127,10 @@ public class DatabaseManager {
 
     public Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    public String getTablePrefix() {
+        return tablePrefix;
     }
 
     public void close() {
