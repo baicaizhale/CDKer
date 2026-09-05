@@ -20,6 +20,11 @@ public class QueryCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.query")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 2) {
             CommandUtils.sendMessage(sender, getMsg("command.query.usage"));
             return true;
@@ -68,8 +73,9 @@ public class QueryCommandExecutor extends AbstractSubCommand {
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, getMsg("command.query.error", e.getMessage()));
+            plugin.getLogger().severe("查询CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

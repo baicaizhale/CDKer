@@ -18,6 +18,11 @@ public class AddCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 3) {
             CommandUtils.sendMessage(sender, getMsg("command.add.usage"));
             return true;
@@ -64,8 +69,9 @@ public class AddCommandExecutor extends AbstractSubCommand {
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, getMsg("command.add.error", e.getMessage()));
+            plugin.getLogger().severe("增加CDK次数时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

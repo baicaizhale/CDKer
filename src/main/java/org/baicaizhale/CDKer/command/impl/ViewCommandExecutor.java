@@ -18,6 +18,11 @@ public class ViewCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.query")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 2) {
             CommandUtils.sendMessage(sender, getMsg("command.view.usage"));
             return true;
@@ -31,7 +36,7 @@ public class ViewCommandExecutor extends AbstractSubCommand {
             if ("id".equals(identifierType)) {
                 int id = Integer.parseInt(identifier);
                 java.sql.Connection conn = plugin.getDatabaseManager().getConnection();
-                String sql = String.format("SELECT * FROM %slogs WHERE id = ?", plugin.getConfig().getString("table-prefix", "cdk_"));
+                String sql = String.format("SELECT * FROM %slogs WHERE id = ?", plugin.getDatabaseManager().getTablePrefix());
                 java.sql.PreparedStatement ps = conn.prepareStatement(sql);
                 ps.setInt(1, id);
                 java.sql.ResultSet rs = ps.executeQuery();
@@ -74,8 +79,9 @@ public class ViewCommandExecutor extends AbstractSubCommand {
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, getMsg("command.view.error", e.getMessage()));
+            plugin.getLogger().severe("查看CDK日志时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

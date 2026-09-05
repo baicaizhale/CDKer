@@ -3,6 +3,7 @@ package org.baicaizhale.CDKer.command.impl;
 import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.command.AbstractSubCommand;
 import org.baicaizhale.CDKer.database.YmlToDbImporter;
+import org.baicaizhale.CDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -40,8 +41,9 @@ public class ImportCommandExecutor extends AbstractSubCommand {
             importer.importFromYml(ymlFile);
             sender.sendMessage(getMsg("command.import.success", fileName));
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.import.error", e.getMessage()));
+            plugin.getLogger().severe("导入CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

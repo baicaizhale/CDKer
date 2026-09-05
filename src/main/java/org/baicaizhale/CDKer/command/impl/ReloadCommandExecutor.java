@@ -13,6 +13,11 @@ public class ReloadCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         try {
             plugin.getConfigurationManager().reloadAllConfigs();
             CommandUtils.sendMessage(sender, getMsg("command.reload.success"));
@@ -20,7 +25,7 @@ public class ReloadCommandExecutor extends AbstractSubCommand {
         } catch (Exception e) {
             plugin.getLogger().severe("重新加载配置时出错: " + e.getMessage());
             e.printStackTrace();
-            CommandUtils.sendMessage(sender, getMsg("command.reload.error", e.getMessage()));
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
             return true;
         }
     }

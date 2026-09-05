@@ -68,7 +68,6 @@ public class LogCommandExecutor extends AbstractSubCommand {
             }
 
             CdkLogDao logDao = plugin.getCdkLogDao();
-            List<CdkLog> logs = new ArrayList<>();
 
             if (args.length >= 1 && "view".equalsIgnoreCase(args[0])) {
                 if (args.length < 2 || !isInteger(args[1])) {
@@ -80,7 +79,7 @@ public class LogCommandExecutor extends AbstractSubCommand {
                 CdkLog record = null;
                 try {
                     java.sql.Connection conn = plugin.getDatabaseManager().getConnection();
-                    String sql = String.format("SELECT * FROM %slogs WHERE id = ?", plugin.getConfig().getString("table-prefix", "cdk_"));
+                    String sql = String.format("SELECT * FROM %slogs WHERE id = ?", plugin.getDatabaseManager().getTablePrefix());
                     java.sql.PreparedStatement ps = conn.prepareStatement(sql);
                     ps.setInt(1, viewId);
                     java.sql.ResultSet rs = ps.executeQuery();
@@ -96,8 +95,9 @@ public class LogCommandExecutor extends AbstractSubCommand {
                     }
                     rs.close(); ps.close(); conn.close();
                 } catch (Exception ex) {
-                    CommandUtils.sendMessage(sender, getMsg("command.log.read_error", ex.getMessage()));
+                    plugin.getLogger().severe("读取CDK日志时出错: " + ex.getMessage());
                     ex.printStackTrace();
+                    CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
                     return true;
                 }
 
@@ -147,43 +147,24 @@ public class LogCommandExecutor extends AbstractSubCommand {
                 return true;
             }
 
-            // 根据筛选条件获取全部匹配日志
-            if (filterField == null) {
-                // 无筛选：查询全部日志
-                logs = queryAllLogsDirect();
-            } else {
-                switch (filterField) {
-                    case "player":
-                        // 允许用户名或UUID都可：先尝试按名称过滤（数据库中存储player_name/uuid）
-                        logs = queryLogsByPlayerNameOrUuid(filterValue);
-                        break;
-                    case "uuid":
-                        logs = logDao.getLogsByPlayer(filterValue);
-                        break;
-                    case "type":
-                        logs = queryLogsByType(filterValue);
-                        break;
-                    default:
-                        CommandUtils.sendMessage(sender, getMsg("command.log.unknown_filter", filterField));
-                        return true;
-                }
+            // 校验筛选字段，按条件走 SQL 分页
+            if (filterField != null
+                    && !"player".equals(filterField) && !"uuid".equals(filterField) && !"type".equals(filterField)) {
+                CommandUtils.sendMessage(sender, getMsg("command.log.unknown_filter", filterField));
+                return true;
             }
 
-            if (logs == null || logs.isEmpty()) {
+            int totalItems = logDao.countLogs(filterField, filterValue);
+            if (totalItems == 0) {
                 CommandUtils.sendMessage(sender, getMsg("command.log.empty"));
                 return true;
             }
 
-            // 排序：按时间倒序（DAO 返回的已按时间倒序）
-            // 处理分页
-            int totalItems = logs.size();
             int totalPages = (int) Math.ceil((double) totalItems / ITEMS_PER_PAGE);
             if (page < 1) page = 1;
             if (page > totalPages) page = totalPages;
 
-            int startIndex = (page - 1) * ITEMS_PER_PAGE;
-            int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
-            List<CdkLog> pageLogs = logs.subList(startIndex, endIndex);
+            List<CdkLog> pageLogs = logDao.getLogsPage(page, ITEMS_PER_PAGE, filterField, filterValue);
 
             // 页顶部说明：提示 hover 与 view 命令
             CommandUtils.sendMessage(sender, getMsg("command.log.header", String.valueOf(page)));
@@ -238,69 +219,12 @@ public class LogCommandExecutor extends AbstractSubCommand {
             CommandUtils.sendMessage(sender, getMsg("command.log.page_hint"));
 
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, getMsg("command.log.error", e.getMessage()));
+            plugin.getLogger().severe("查询CDK日志时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;
-    }
-
-    private List<CdkLog> queryLogsByPlayerNameOrUuid(String value) throws Exception {
-        // 尝试先按 UUID 查询
-        List<CdkLog> logs = plugin.getCdkLogDao().getLogsByPlayer(value);
-        if (logs != null && !logs.isEmpty()) return logs;
-
-        // 按 player name 查询（DAO 目前没有按 name 查询的方法），尝试直接从数据库
-        // 简单实现：读取所有日志并过滤
-        List<CdkLog> all = queryAllLogsDirect();
-        List<CdkLog> result = new ArrayList<>();
-        for (CdkLog log : all) {
-            if (value.equalsIgnoreCase(log.getPlayerName())) {
-                result.add(log);
-            }
-        }
-        return result;
-    }
-
-    private List<CdkLog> queryLogsByType(String type) throws Exception {
-        List<CdkLog> all = queryAllLogsDirect();
-        List<CdkLog> result = new ArrayList<>();
-        for (CdkLog log : all) {
-            if (type.equalsIgnoreCase(log.getCdkType())) {
-                result.add(log);
-            }
-        }
-        return result;
-    }
-
-    private List<CdkLog> queryAllLogsDirect() throws Exception {
-        // 直接使用 DatabaseManager 查询所有 logs，因为 CdkLogDao 缺少 getAll 方法
-        List<CdkLog> logs = new ArrayList<>();
-        java.sql.Connection conn = null;
-        java.sql.Statement stmt = null;
-        java.sql.ResultSet rs = null;
-        try {
-            conn = plugin.getDatabaseManager().getConnection();
-            String sql = String.format("SELECT * FROM %slogs ORDER BY use_time DESC", plugin.getConfig().getString("table-prefix", "cdk_"));
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            while (rs.next()) {
-                CdkLog log = new CdkLog();
-                log.setId(rs.getInt("id"));
-                log.setPlayerName(rs.getString("player_name"));
-                log.setPlayerUUID(rs.getString("player_uuid"));
-                log.setCdkCode(rs.getString("cdk_code"));
-                log.setCdkType(rs.getString("cdk_type"));
-                log.setCommandsExecuted(rs.getString("commands_executed"));
-                log.setUseTime(rs.getTimestamp("use_time"));
-                logs.add(log);
-            }
-        } finally {
-            if (rs != null) try { rs.close(); } catch (Exception ignored) {}
-            if (stmt != null) try { stmt.close(); } catch (Exception ignored) {}
-            if (conn != null) try { conn.close(); } catch (Exception ignored) {}
-        }
-        return logs;
     }
 
     @Override

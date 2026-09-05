@@ -3,6 +3,7 @@ package org.baicaizhale.CDKer.command.impl;
 import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.command.AbstractSubCommand;
 import org.baicaizhale.CDKer.database.DbToYmlExporter;
+import org.baicaizhale.CDKer.util.CommandUtils;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -14,6 +15,11 @@ public class ExportCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         String fileName = "cdks.yml"; // 默认文件名
         if (args.length >= 1) {
             fileName = args[0];
@@ -26,8 +32,9 @@ public class ExportCommandExecutor extends AbstractSubCommand {
             exporter.exportToYml(ymlFile);
             sender.sendMessage(getMsg("command.export.success", fileName));
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.export.error", e.getMessage()));
+            plugin.getLogger().severe("导出CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

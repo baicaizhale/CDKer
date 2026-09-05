@@ -20,6 +20,11 @@ public class CreateCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.create")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 2) {
             sender.sendMessage(getMsg("command.create.usage"));
             return true;
@@ -100,8 +105,9 @@ public class CreateCommandExecutor extends AbstractSubCommand {
 
             return true;
         } catch (Exception e) {
-            sender.sendMessage(getMsg("command.create.error", e.getMessage()));
+            plugin.getLogger().severe("创建CDK时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
             return true;
         }
     }

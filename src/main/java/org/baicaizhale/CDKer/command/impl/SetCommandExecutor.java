@@ -18,6 +18,11 @@ public class SetCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.admin")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (args.length < 4) {
             CommandUtils.sendMessage(sender, getMsg("command.set.usage"));
             return true;
@@ -75,8 +80,9 @@ public class SetCommandExecutor extends AbstractSubCommand {
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
         } catch (Exception e) {
-            CommandUtils.sendMessage(sender, getMsg("command.set.error", e.getMessage()));
+            plugin.getLogger().severe("设置CDK属性时出错: " + e.getMessage());
             e.printStackTrace();
+            CommandUtils.sendMessage(sender, getMsg("command.common.internal_error"));
         }
 
         return true;

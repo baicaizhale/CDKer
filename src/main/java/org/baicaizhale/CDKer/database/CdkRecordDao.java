@@ -1,19 +1,23 @@
 package org.baicaizhale.CDKer.database;
 
-import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.model.CdkRecord;
+import org.baicaizhale.CDKer.model.RedeemResult;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CdkRecordDao {
+    private static final SimpleDateFormat EXPIRE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
     private final DatabaseManager databaseManager;
     private final String tablePrefix;
 
-    public CdkRecordDao(CDKer plugin, DatabaseManager databaseManager) {
+    public CdkRecordDao(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
-        this.tablePrefix = plugin.getConfig().getString("table-prefix", "cdk_");
+        this.tablePrefix = databaseManager.getTablePrefix();
     }
 
     public void createCdk(CdkRecord record) throws SQLException {
@@ -76,6 +80,43 @@ public class CdkRecordDao {
         return records;
     }
 
+    public int countCdks(String typeFilter) throws SQLException {
+        boolean hasFilter = typeFilter != null && !typeFilter.isEmpty();
+        String sql = String.format("SELECT COUNT(*) FROM %srecords%s",
+                tablePrefix, hasFilter ? " WHERE cdk_type = ?" : "");
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            if (hasFilter) {
+                ps.setString(1, typeFilter);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() ? rs.getInt(1) : 0;
+            }
+        }
+    }
+
+    public List<CdkRecord> getCdksPage(int page, int perPage, String typeFilter) throws SQLException {
+        boolean hasFilter = typeFilter != null && !typeFilter.isEmpty();
+        String sql = String.format("SELECT * FROM %srecords%s ORDER BY id LIMIT ? OFFSET ?",
+                tablePrefix, hasFilter ? " WHERE cdk_type = ?" : "");
+        List<CdkRecord> records = new ArrayList<>();
+        try (Connection conn = databaseManager.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            int idx = 1;
+            if (hasFilter) {
+                ps.setString(idx++, typeFilter);
+            }
+            ps.setInt(idx++, perPage);
+            ps.setInt(idx, (page - 1) * perPage);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    records.add(extractCdkRecord(rs));
+                }
+            }
+        }
+        return records;
+    }
+
     public void updateCdk(CdkRecord record) throws SQLException {
         String sql = String.format("UPDATE %srecords SET remaining_uses = ?, commands = ?, expire_time = ?, note = ?, cdk_type = ?, per_player_multiple = ? WHERE cdk_code = ?",
                 tablePrefix);
@@ -121,6 +162,66 @@ public class CdkRecordDao {
         try (Connection conn = databaseManager.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.executeUpdate();
+        }
+    }
+
+    /**
+     * 在单个事务内原子地完成兑换：校验单人限用、扣减次数、写使用日志。
+     * 全部成功才提交，失败即回滚，避免并发/崩溃导致的重复兑换或"奖励已发但码未扣"。
+     */
+    public RedeemResult redeem(CdkRecord record, String playerUuid, String playerName) throws SQLException {
+        String code = record.getCdkCode();
+        String now = EXPIRE_FORMAT.format(new Date());
+        try (Connection conn = databaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                if (!record.isPerPlayerMultiple()) {
+                    String checkSql = String.format("SELECT COUNT(*) FROM %slogs WHERE player_uuid = ? AND cdk_code = ?", tablePrefix);
+                    try (PreparedStatement ps = conn.prepareStatement(checkSql)) {
+                        ps.setString(1, playerUuid);
+                        ps.setString(2, code);
+                        try (ResultSet rs = ps.executeQuery()) {
+                            if (rs.next() && rs.getInt(1) > 0) {
+                                conn.rollback();
+                                return RedeemResult.ALREADY_USED;
+                            }
+                        }
+                    }
+                }
+
+                // 条件扣减：仅当剩余次数 > 0 且未过期时才扣，防止并发重复兑换
+                String updateSql = String.format(
+                        "UPDATE %srecords SET remaining_uses = remaining_uses - 1 " +
+                        "WHERE cdk_code = ? AND remaining_uses > 0 AND (expire_time = 'forever' OR expire_time > ?)",
+                        tablePrefix);
+                try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                    ps.setString(1, code);
+                    ps.setString(2, now);
+                    if (ps.executeUpdate() == 0) {
+                        conn.rollback();
+                        return RedeemResult.USED_UP;
+                    }
+                }
+
+                String insertSql = String.format("INSERT INTO %slogs (player_name, player_uuid, cdk_code, cdk_type, commands_executed) VALUES (?, ?, ?, ?, ?)",
+                        tablePrefix);
+                try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                    ps.setString(1, playerName);
+                    ps.setString(2, playerUuid);
+                    ps.setString(3, code);
+                    ps.setString(4, record.getCdkType());
+                    ps.setString(5, String.join("|", record.getCommands()));
+                    ps.executeUpdate();
+                }
+
+                conn.commit();
+                return RedeemResult.SUCCESS;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         }
     }
 
