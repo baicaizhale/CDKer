@@ -111,35 +111,42 @@ public class LogCommandExecutor extends AbstractSubCommand {
                 String timeDisplay = record.getUseTime() == null ? "" : DATE_FORMAT.format(record.getUseTime());
                 if (sender instanceof Player) {
                     Player p = (Player) sender;
-                    TextComponent header = new TextComponent("§6=== CDK兑换记录 详情 (ID: " + record.getId() + ") ===");
+                    // 组件化输出：首段加前缀；hover 文本保持原始消息（不带前缀）
+                    TextComponent header = new TextComponent(getMsg("command.log.detail_header", String.valueOf(record.getId())));
                     p.spigot().sendMessage(header);
 
-                    TextComponent line1 = new TextComponent("§f[" + record.getId() + "] " + "§f[" + record.getPlayerName() + "] ");
-                    String uuidHover = "UUID: " + (record.getPlayerUUID() == null ? "未知" : record.getPlayerUUID());
+                    TextComponent line1 = new TextComponent(withPrefix(getRawMsg("command.common.line_id_player",
+                            String.valueOf(record.getId()), String.valueOf(record.getPlayerName()))));
+                    String uuidHover = getRawMsg("command.log.hover_uuid",
+                            record.getPlayerUUID() == null ? getRawMsg("command.common.unknown") : record.getPlayerUUID());
                     line1.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(uuidHover)));
                     p.spigot().sendMessage(line1);
 
-                    TextComponent cdkLine = new TextComponent("§7CDK: §f" + record.getCdkCode() + " §7类型: §f" + record.getCdkType());
+                    TextComponent cdkLine = new TextComponent(getRawMsg("command.common.line_cdk_type",
+                            String.valueOf(record.getCdkCode()), orEmpty(record.getCdkType())));
                     p.spigot().sendMessage(cdkLine);
 
                     // 将命令数与时间分开：命令数有 hover，时间为纯文本
-                    String commandsHover = "命令列表:\n";
-                    if (commands.isEmpty()) commandsHover += "无";
-                    else for (int i = 0; i < commands.size(); i++) commandsHover += String.format("%d. %s\n", i + 1, commands.get(i));
+                    String commandsHover = buildCommandsHover(commands);
 
-                    TextComponent cmdPart = new TextComponent("§7命令: §f[" + commands.size() + "条] ");
+                    TextComponent cmdPart = new TextComponent(
+                            getRawMsg("command.common.fragment_cmd_count", String.valueOf(commands.size())) + " ");
                     cmdPart.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(commandsHover)));
-                    TextComponent timePart = new TextComponent("§7时间: §f" + timeDisplay);
+                    TextComponent timePart = new TextComponent(getRawMsg("command.common.fragment_time", timeDisplay));
                     p.spigot().sendMessage(new ComponentBuilder().append(cmdPart).append(timePart).create());
                 } else {
-                    CommandUtils.sendMessage(sender, String.format("§6=== CDK兑换记录 详情 (ID: %d) ===", record.getId()));
-                    CommandUtils.sendMessage(sender, String.format("§f[%d] [%s]", record.getId(), record.getPlayerName()));
-                    CommandUtils.sendMessage(sender, String.format("§7CDK: §f%s §7类型: §f%s", record.getCdkCode(), record.getCdkType()));
-                    CommandUtils.sendMessage(sender, String.format("§7命令: §f[%d条] §7时间: §f%s", commands.size(), timeDisplay));
+                    CommandUtils.sendMessage(sender, getMsg("command.log.detail_header", String.valueOf(record.getId())));
+                    CommandUtils.sendMessage(sender, getMsg("command.common.line_id_player",
+                            String.valueOf(record.getId()), String.valueOf(record.getPlayerName())));
+                    CommandUtils.sendMessage(sender, getMsg("command.common.line_cdk_type",
+                            String.valueOf(record.getCdkCode()), orEmpty(record.getCdkType())));
+                    CommandUtils.sendMessage(sender, getMsg("command.common.line_cmd_time",
+                            String.valueOf(commands.size()), timeDisplay));
                     if (!commands.isEmpty()) {
-                        CommandUtils.sendMessage(sender, "§f命令列表:");
+                        CommandUtils.sendMessage(sender, getMsg("command.common.command_list"));
                         for (int i = 0; i < commands.size(); i++) {
-                            CommandUtils.sendMessage(sender, String.format("  §e%d. §f%s", i + 1, commands.get(i)));
+                            CommandUtils.sendMessage(sender, getMsg("command.common.command_item",
+                                    String.valueOf(i + 1), commands.get(i)));
                         }
                     }
                 }
@@ -170,7 +177,7 @@ public class LogCommandExecutor extends AbstractSubCommand {
             CommandUtils.sendMessage(sender, getMsg("command.log.header", String.valueOf(page)));
             CommandUtils.sendMessage(sender, getMsg("command.log.hint"));
             for (CdkLog log : pageLogs) {
-                String playerName = log.getPlayerName() == null ? "未知" : log.getPlayerName();
+                String playerName = log.getPlayerName() == null ? getRawMsg("command.common.unknown") : log.getPlayerName();
                 String cdkCode = log.getCdkCode() == null ? "" : log.getCdkCode();
                 String cdkType = log.getCdkType() == null ? "" : log.getCdkType();
                 List<String> commands = CommandUtils.parseCommands(log.getCommandsExecuted() == null ? "" : log.getCommandsExecuted());
@@ -178,29 +185,33 @@ public class LogCommandExecutor extends AbstractSubCommand {
 
                 // 构造显示内容
                 String timeDisplay = log.getUseTime() == null ? "" : DATE_FORMAT.format(log.getUseTime());
-                String uuidHover = "UUID: " + (log.getPlayerUUID() == null ? "未知" : log.getPlayerUUID());
+                String uuidHover = getRawMsg("command.log.hover_uuid",
+                        log.getPlayerUUID() == null ? getRawMsg("command.common.unknown") : log.getPlayerUUID());
 
                 if (sender instanceof Player) {
                     Player playerSender = (Player) sender;
 
-                    // ID + 玩家名段
-                    TextComponent idAndPlayer = new TextComponent("§f[" + log.getId() + "] ");
-                    TextComponent playerText = new TextComponent("§f[" + playerName + "] ");
+                    // ID + 玩家名段（首段加前缀）
+                    TextComponent idAndPlayer = new TextComponent(withPrefix(
+                            getRawMsg("command.common.bracket_fragment", String.valueOf(log.getId())) + " "));
+                    TextComponent playerText = new TextComponent(
+                            getRawMsg("command.common.bracket_fragment", playerName) + " ");
                     playerText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(uuidHover)));
 
                     // CDK 段（不显示 UUID hover）
-                    TextComponent cdkPart = new TextComponent(String.format("§7CDK: §f%s ", cdkCode));
-                    TextComponent typePart = new TextComponent(String.format("§7类型: §f%s ", cdkType));
+                    TextComponent cdkPart = new TextComponent(
+                            getRawMsg("command.common.fragment_cdk", cdkCode) + " ");
+                    TextComponent typePart = new TextComponent(
+                            getRawMsg("command.common.fragment_type", cdkType) + " ");
 
-                    // 命令数量与时间（两者 hover 显示命令列表）
-                    String commandsHover = "命令列表:\n";
-                    if (commands.isEmpty()) commandsHover += "无";
-                    else for (int i = 0; i < commands.size(); i++) commandsHover += String.format("%d. %s\n", i + 1, commands.get(i));
+                    // 命令数量与时间（命令数量 hover 显示命令列表）
+                    String commandsHover = buildCommandsHover(commands);
 
-                    TextComponent cmdCountPart = new TextComponent(String.format("§7命令: §f[%d条] ", cmdCount));
+                    TextComponent cmdCountPart = new TextComponent(
+                            getRawMsg("command.common.fragment_cmd_count", String.valueOf(cmdCount)) + " ");
                     cmdCountPart.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(commandsHover)));
 
-                    TextComponent timePart = new TextComponent(String.format("§7时间: §f%s", timeDisplay));
+                    TextComponent timePart = new TextComponent(getRawMsg("command.common.fragment_time", timeDisplay));
 
                     BaseComponent[] comps = new ComponentBuilder()
                             .append(idAndPlayer).append(playerText).append(new TextComponent(" "))
@@ -209,9 +220,9 @@ public class LogCommandExecutor extends AbstractSubCommand {
                     playerSender.spigot().sendMessage(comps);
                 } else {
                     // 控制台或非玩家，使用纯文本（简洁显示）
-                    String line = String.format("§f[%d] [%s] §7CDK: §f%s §7类型: §f%s §7命令: §f[%d条] §7时间: §f%s",
-                            log.getId(), playerName, cdkCode, cdkType, cmdCount, timeDisplay);
-                    CommandUtils.sendMessage(sender, line);
+                    CommandUtils.sendMessage(sender, getMsg("command.log.list_line",
+                            String.valueOf(log.getId()), playerName, cdkCode, cdkType,
+                            String.valueOf(cmdCount), timeDisplay));
                 }
             }
 
@@ -225,6 +236,28 @@ public class LogCommandExecutor extends AbstractSubCommand {
         }
 
         return true;
+    }
+
+    /**
+     * 构造命令列表的 hover 文本（原始消息，不带前缀）
+     */
+    private String buildCommandsHover(List<String> commands) {
+        StringBuilder hover = new StringBuilder(getRawMsg("command.common.command_list")).append("\n");
+        if (commands.isEmpty()) {
+            hover.append(getRawMsg("command.common.none"));
+        } else {
+            for (int i = 0; i < commands.size(); i++) {
+                hover.append(i + 1).append(". ").append(commands.get(i)).append("\n");
+            }
+        }
+        return hover.toString();
+    }
+
+    /**
+     * 空值转空字符串，避免消息里出现 "null"
+     */
+    private String orEmpty(String value) {
+        return value == null ? "" : value;
     }
 
     @Override

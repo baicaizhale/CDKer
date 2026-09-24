@@ -166,6 +166,50 @@ public class CdkRecordDao {
     }
 
     /**
+     * 批量导入CDK：可选的清空与全部写入在同一个事务内完成，
+     * 中途任何一条失败都会整体回滚，避免清空后导入失败导致的数据丢失。
+     *
+     * @param records 待写入的记录
+     * @param replace 是否先清空原有记录
+     */
+    public void importRecords(List<CdkRecord> records, boolean replace) throws SQLException {
+        String insertSql = String.format(
+                "INSERT INTO %srecords (cdk_code, remaining_uses, commands, expire_time, note, cdk_type, per_player_multiple) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                tablePrefix);
+        try (Connection conn = databaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                if (replace) {
+                    try (PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %srecords", tablePrefix))) {
+                        ps.executeUpdate();
+                    }
+                }
+
+                try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+                    for (CdkRecord record : records) {
+                        ps.setString(1, record.getCdkCode());
+                        ps.setInt(2, record.getRemainingUses());
+                        ps.setString(3, String.join("|", record.getCommands()));
+                        ps.setString(4, record.getExpireTime());
+                        ps.setString(5, record.getNote());
+                        ps.setString(6, record.getCdkType());
+                        ps.setBoolean(7, record.isPerPlayerMultiple());
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    /**
      * 在单个事务内原子地完成兑换：校验单人限用、扣减次数、写使用日志。
      * 全部成功才提交，失败即回滚，避免并发/崩溃导致的重复兑换或"奖励已发但码未扣"。
      */
@@ -216,6 +260,52 @@ public class CdkRecordDao {
 
                 conn.commit();
                 return RedeemResult.SUCCESS;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    /**
+     * 回滚一次兑换：删除本次兑换写入的使用日志，并把剩余使用次数加回去。
+     * 用于奖励命令执行失败时补偿玩家，避免"CDK已被消耗但奖励没有发放"。
+     */
+    public void rollbackRedeem(String code, String playerUuid) throws SQLException {
+        try (Connection conn = databaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                int lastLogId = -1;
+                String selectSql = String.format(
+                        "SELECT id FROM %slogs WHERE cdk_code = ? AND player_uuid = ? ORDER BY id DESC LIMIT 1",
+                        tablePrefix);
+                try (PreparedStatement ps = conn.prepareStatement(selectSql)) {
+                    ps.setString(1, code);
+                    ps.setString(2, playerUuid);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            lastLogId = rs.getInt(1);
+                        }
+                    }
+                }
+
+                if (lastLogId > 0) {
+                    try (PreparedStatement ps = conn.prepareStatement(
+                            String.format("DELETE FROM %slogs WHERE id = ?", tablePrefix))) {
+                        ps.setInt(1, lastLogId);
+                        ps.executeUpdate();
+                    }
+                }
+
+                try (PreparedStatement ps = conn.prepareStatement(
+                        String.format("UPDATE %srecords SET remaining_uses = remaining_uses + 1 WHERE cdk_code = ?", tablePrefix))) {
+                    ps.setString(1, code);
+                    ps.executeUpdate();
+                }
+
+                conn.commit();
             } catch (SQLException e) {
                 conn.rollback();
                 throw e;

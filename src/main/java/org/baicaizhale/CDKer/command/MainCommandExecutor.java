@@ -93,12 +93,8 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
             case "export":
                 return exportExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "import":
-                if (args.length > 1) {
-                    return importExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
-                } else {
-                    sender.sendMessage(importExecutor.getUsage());
-                    return true;
-                }
+                // 文件名是唯一必需参数，缺参时由子命令自行输出用法
+                return importExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));
             case "query":
                 if (args.length > 1) {
                     return queryExecutor.execute(sender, Arrays.copyOfRange(args, 1, args.length));

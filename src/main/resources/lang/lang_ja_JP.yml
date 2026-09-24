@@ -11,6 +11,21 @@ command:
     internal_error: "§c内部エラーが発生しました。サーバーコンソールを確認してください。"
     player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
     unknown_command: "不明なコマンドです。/cdk help でヘルプを表示してください。"
+    none: "なし"
+    unknown: "不明"
+    yes: "はい"
+    no: "いいえ"
+    type_normal: "通常"
+    bracket_fragment: "§f[{0}]"
+    line_id_player: "§f[{0}] [{1}]"
+    line_cdk_type: "§7CDK: §f{0} §7種類: §f{1}"
+    line_cmd_time: "§7コマンド: §f[{0}件] §7時間: §f{1}"
+    command_list: "§fコマンド一覧:"
+    command_item: "  §e{0}. §f{1}"
+    fragment_cdk: "§7CDK: §f{0}"
+    fragment_type: "§7種類: §f{0}"
+    fragment_cmd_count: "§7コマンド: §f[{0}件]"
+    fragment_time: "§7時間: §f{0}"
 
   create:
     usage: |
@@ -38,6 +53,7 @@ command:
     success: "§aCDKを利用しました！"
     use_error: "§cCDKコマンドの実行中にエラーが発生しました。管理者に連絡してください。"
     error: "§cCDK利用中にエラーが発生しました: {0}"
+    rolled_back: "§e交換に失敗しました。今回の使用回数は返還されました。"
 
   add:
     usage: "§c使用方法: /cdk add <id/cdk> <識別子> <数量>"
@@ -59,6 +75,10 @@ command:
     item: "§f{0}. {1} §7({2}回) [{3}] §8[{4}] §7メモ: §f{5}"
     footer: "§6================"
     error: "§cCDKリスト取得中にエラーが発生しました: {0}"
+    note_none: "メモなし"
+    type_none: "種類なし"
+    status_valid: "§a有効§8"
+    status_invalid: "§c無効§8"
 
   log:
     usage: "§c使用方法: /cdk log [ページ] | /cdk log view <id> | /cdk log filter <player|uuid|type> <値> [ページ]"
@@ -72,12 +92,23 @@ command:
     view_usage: "§c使用方法: /cdk log view <id>"
     read_error: "§cログ読み取り中にエラーが発生しました: {0}"
     error: "§cログ取得中にエラーが発生しました: {0}"
+    detail_header: "§6=== CDK利用記録 詳細 (ID: {0}) ==="
+    hover_uuid: "UUID: {0}"
+    list_line: "§f[{0}] [{1}] §7CDK: §f{2} §7種類: §f{3} §7コマンド: §f[{4}件] §7時間: §f{5}"
 
   query:
     usage: "§c使用方法: /cdk query <id/cdk> <識別子>"
     header: "§6=== CDK詳細情報 ==="
     footer: "§6=================="
     error: "§cCDK照会中にエラーが発生しました: {0}"
+    line_id: "§fID: §e{0}"
+    line_code: "§fコード: §e{0}"
+    line_type: "§f種類: §e{0}"
+    line_note: "§fメモ: §e{0}"
+    line_uses: "§f残り使用回数: §e{0}"
+    line_expire: "§f有効期限: §e{0}"
+    line_created: "§f作成日時: §e{0}"
+    line_per_player_multiple: "§f同一プレイヤーの複数回利用: §e{0}"
 
   set:
     usage: "§c使用方法: /cdk set <id/cdk> <識別子> <プロパティ> <値>"
@@ -103,8 +134,9 @@ command:
 
   import:
     usage: "§c使用方法: /cdk import <ファイル> [replace|append]"
-    success: "§a{0} からCDKをインポートしました。"
+    success: "§aファイル §f{0} §aから §f{1} §a個のCDKをインポートしました。"
     error: "§cインポートに失敗しました: {0}"
+    file_not_found: "§cファイルが見つかりません: §f{0}"
 
   help:
     header: "§6=== CDKヘルプ ==="

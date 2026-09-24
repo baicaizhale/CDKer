@@ -100,7 +100,8 @@ public class CreateCommandExecutor extends AbstractSubCommand {
                 sender.sendMessage(getMsg("command.create.success_single", codeList.toString()));
             } else {
                 sender.sendMessage(getMsg("command.create.success_multi",
-                        String.valueOf(amount), cdkType.isEmpty() ? "无" : cdkType, codeList.toString()));
+                        String.valueOf(amount), cdkType.isEmpty() ? getRawMsg("command.common.none") : cdkType,
+                        codeList.toString()));
             }
 
             return true;

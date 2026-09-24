@@ -11,6 +11,21 @@ command:
     internal_error: "§c操作时发生内部错误，请查看服务器控制台日志。"
     player_only: "§c该命令只能由玩家执行。"
     unknown_command: "未知命令，使用/cdk help查看帮助。"
+    none: "无"
+    unknown: "未知"
+    yes: "是"
+    no: "否"
+    type_normal: "普通"
+    bracket_fragment: "§f[{0}]"
+    line_id_player: "§f[{0}] [{1}]"
+    line_cdk_type: "§7CDK: §f{0} §7类型: §f{1}"
+    line_cmd_time: "§7命令: §f[{0}条] §7时间: §f{1}"
+    command_list: "§f命令列表:"
+    command_item: "  §e{0}. §f{1}"
+    fragment_cdk: "§7CDK: §f{0}"
+    fragment_type: "§7类型: §f{0}"
+    fragment_cmd_count: "§7命令: §f[{0}条]"
+    fragment_time: "§7时间: §f{0}"
 
   create:
     usage: |
@@ -38,6 +53,7 @@ command:
     success: "§a兑换成功！"
     use_error: "§c执行兑换码命令时出错，请联系管理员。"
     error: "§c使用兑换码时出错: {0}"
+    rolled_back: "§e兑换失败，本次使用次数已退回。"
 
   add:
     usage: "§c用法: /cdk add <id/cdk> <标识符> <数量>"
@@ -59,6 +75,10 @@ command:
     item: "§f{0}. {1} §7({2}次) [{3}] §8[{4}] §7备注: §f{5}"
     footer: "§6================"
     error: "§c获取CDK列表时出错: {0}"
+    note_none: "无备注"
+    type_none: "无类型"
+    status_valid: "§a有效§8"
+    status_invalid: "§c无效§8"
 
   log:
     usage: "§c用法: /cdk log [页码] | /cdk log view <id> | /cdk log filter <player|uuid|type> <值> [页码]"
@@ -72,12 +92,23 @@ command:
     view_usage: "§c用法: /cdk log view <id>"
     read_error: "§c读取日志失败: {0}"
     error: "§c获取兑换记录时出错: {0}"
+    detail_header: "§6=== CDK兑换记录 详情 (ID: {0}) ==="
+    hover_uuid: "UUID: {0}"
+    list_line: "§f[{0}] [{1}] §7CDK: §f{2} §7类型: §f{3} §7命令: §f[{4}条] §7时间: §f{5}"
 
   query:
     usage: "§c用法: /cdk query <id/cdk> <标识符>"
     header: "§6=== CDK详细信息 ==="
     footer: "§6=================="
     error: "§c查询CDK信息时出错: {0}"
+    line_id: "§fID: §e{0}"
+    line_code: "§f代码: §e{0}"
+    line_type: "§f类型: §e{0}"
+    line_note: "§f备注: §e{0}"
+    line_uses: "§f剩余使用次数: §e{0}"
+    line_expire: "§f过期时间: §e{0}"
+    line_created: "§f创建时间: §e{0}"
+    line_per_player_multiple: "§f允许同一玩家多次使用: §e{0}"
 
   set:
     usage: "§c用法: /cdk set <id/cdk> <标识符> <属性> <值>"
@@ -103,8 +134,9 @@ command:
 
   import:
     usage: "§c用法: /cdk import <文件> [replace|append]"
-    success: "§a成功从 {0} 导入CDK。"
+    success: "§a已从文件 §f{0} §a导入 §f{1} §a个CDK。"
     error: "§c导入失败: {0}"
+    file_not_found: "§c文件不存在: §f{0}"
 
   help:
     header: "§6=== CDK 帮助 ==="

@@ -20,6 +20,11 @@ public class UseCommandExecutor extends AbstractSubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
+        if (!CommandUtils.hasPermission(sender, "cdk.use")) {
+            CommandUtils.sendMessage(sender, getMsg("command.common.no_permission"));
+            return true;
+        }
+
         if (!requirePlayer(sender)) {
             sender.sendMessage(getMsg("command.common.player_only"));
             return true;
@@ -94,17 +99,35 @@ public class UseCommandExecutor extends AbstractSubCommand {
                 if (broadcastEnabled) {
                     String broadcastMessage = plugin.getConfig().getString("settings.broadcast-message", "§e玩家 {player} 使用了一个 {type} CDK!")
                             .replace("{player}", player.getName())
-                            .replace("{type}", record.getCdkType().isEmpty() ? "普通" : record.getCdkType());
+                            .replace("{type}", record.getCdkType() == null || record.getCdkType().isEmpty()
+                                    ? getRawMsg("command.common.type_normal") : record.getCdkType());
                     Bukkit.broadcastMessage(broadcastMessage);
                 }
             } else {
+                // 奖励命令执行失败：回滚本次兑换（恢复剩余次数并删除使用日志），
+                // 避免出现"CDK已被消耗但奖励没有发放"的情况
+                rollbackRedeem(record, player);
                 CommandUtils.sendMessage(player, getMsg("command.use.use_error"));
+                CommandUtils.sendMessage(player, getMsg("command.use.rolled_back"));
             }
 
         } catch (Exception e) {
             plugin.getLogger().severe("使用CDK时出错: " + e.getMessage());
             e.printStackTrace();
             CommandUtils.sendMessage(player, getMsg("command.common.internal_error"));
+        }
+    }
+
+    /**
+     * 回滚一次兑换：恢复剩余使用次数并删除本次写入的使用日志。
+     */
+    private void rollbackRedeem(CdkRecord record, Player player) {
+        try {
+            plugin.getCdkRecordDao().rollbackRedeem(record.getCdkCode(), player.getUniqueId().toString());
+            plugin.getLogger().warning("CDK奖励命令执行失败，已回滚本次兑换: " + record.getCdkCode());
+        } catch (Exception e) {
+            plugin.getLogger().severe("回滚CDK兑换失败: " + record.getCdkCode() + " - " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

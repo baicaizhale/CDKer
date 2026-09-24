@@ -51,24 +51,28 @@ public class QueryCommandExecutor extends AbstractSubCommand {
             }
 
             StringBuilder info = new StringBuilder();
-            info.append(getMsg("command.query.header")).append("\n");
-            info.append(String.format("§fID: §e%d\n", record.getId()));
-            info.append(String.format("§f代码: §e%s\n", record.getCdkCode()));
-            info.append(String.format("§f类型: §e%s\n", record.getCdkType().isEmpty() ? "无" : record.getCdkType()));
-            info.append(String.format("§f备注: §e%s\n", record.getNote().isEmpty() ? "无" : record.getNote()));
-            info.append(String.format("§f剩余使用次数: §e%d\n", record.getRemainingUses()));
-            info.append(String.format("§f过期时间: §e%s\n", record.getExpireTime()));
-            info.append(String.format("§f创建时间: §e%s\n", DATE_FORMAT.format(record.getCreatedTime())));
-            info.append(String.format("§f允许同一玩家多次使用: §e%s\n", record.isPerPlayerMultiple() ? "是" : "否"));
-            info.append("§f命令列表:\n");
+            // 这里逐行拼接多条消息，统一使用不带前缀的原始消息，最后再给整段内容加一次前缀
+            info.append(getRawMsg("command.query.header")).append("\n");
+            info.append(getRawMsg("command.query.line_id", String.valueOf(record.getId()))).append("\n");
+            info.append(getRawMsg("command.query.line_code", String.valueOf(record.getCdkCode()))).append("\n");
+            info.append(getRawMsg("command.query.line_type", orNone(record.getCdkType()))).append("\n");
+            info.append(getRawMsg("command.query.line_note", orNone(record.getNote()))).append("\n");
+            info.append(getRawMsg("command.query.line_uses", String.valueOf(record.getRemainingUses()))).append("\n");
+            info.append(getRawMsg("command.query.line_expire", orNone(record.getExpireTime()))).append("\n");
+            info.append(getRawMsg("command.query.line_created",
+                    record.getCreatedTime() == null ? getRawMsg("command.common.unknown")
+                            : DATE_FORMAT.format(record.getCreatedTime()))).append("\n");
+            info.append(getRawMsg("command.query.line_per_player_multiple",
+                    record.isPerPlayerMultiple() ? getRawMsg("command.common.yes") : getRawMsg("command.common.no"))).append("\n");
+            info.append(getRawMsg("command.common.command_list")).append("\n");
 
             List<String> commands = record.getCommands();
             for (int i = 0; i < commands.size(); i++) {
-                info.append(String.format("  §e%d. §f%s\n", i + 1, commands.get(i)));
+                info.append(getRawMsg("command.common.command_item", String.valueOf(i + 1), commands.get(i))).append("\n");
             }
-            info.append(getMsg("command.query.footer"));
+            info.append(getRawMsg("command.query.footer"));
 
-            CommandUtils.sendMessage(sender, info.toString());
+            CommandUtils.sendMessage(sender, withPrefix(info.toString()));
 
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));
@@ -79,6 +83,13 @@ public class QueryCommandExecutor extends AbstractSubCommand {
         }
 
         return true;
+    }
+
+    /**
+     * 空值/未设置时显示语言文件中的"无"
+     */
+    private String orNone(String value) {
+        return value == null || value.isEmpty() ? getRawMsg("command.common.none") : value;
     }
 
     @Override
