@@ -72,17 +72,18 @@ public class ListCommandExecutor extends AbstractSubCommand {
             for (CdkRecord record : pageRecords) {
                 String note = record.getNote();
                 if (note == null || note.isEmpty()) {
-                    note = "无备注";
+                    note = getRawMsg("command.list.note_none");
                 } else if (note.length() > 10) {
                     note = note.substring(0, 10) + "...";
                 }
 
                 String typeDisplay = record.getCdkType();
                 if (typeDisplay == null || typeDisplay.isEmpty()) {
-                    typeDisplay = "无类型";
+                    typeDisplay = getRawMsg("command.list.type_none");
                 }
 
-                String status = record.isExpired() || record.getRemainingUses() == 0 ? "§c无效§8" : "§a有效§8";
+                String status = record.isExpired() || record.getRemainingUses() == 0
+                        ? getRawMsg("command.list.status_invalid") : getRawMsg("command.list.status_valid");
                 sender.sendMessage(getMsg("command.list.item",
                         String.valueOf(displayIndex++), record.getCdkCode(),
                         String.valueOf(record.getRemainingUses()), typeDisplay, status, note));

@@ -23,7 +23,7 @@ public class ImportCommandExecutor extends AbstractSubCommand {
             return true;
         }
 
-        if (args.length < 2) {
+        if (args.length < 1) {
             sender.sendMessage(getMsg("command.import.usage"));
             return true;
         }
@@ -32,14 +32,15 @@ public class ImportCommandExecutor extends AbstractSubCommand {
         File ymlFile = new File(plugin.getDataFolder(), fileName);
         boolean replace = args.length > 1 && "replace".equalsIgnoreCase(args[1]);
 
-        try {
-            if (replace) {
-                plugin.getCdkRecordDao().deleteAllCdks();
-            }
+        if (!ymlFile.isFile()) {
+            CommandUtils.sendMessage(sender, getMsg("command.import.file_not_found", fileName));
+            return true;
+        }
 
+        try {
             YmlToDbImporter importer = new YmlToDbImporter(plugin, plugin.getCdkRecordDao());
-            importer.importFromYml(ymlFile);
-            sender.sendMessage(getMsg("command.import.success", fileName));
+            int imported = importer.importFromYml(ymlFile, replace);
+            sender.sendMessage(getMsg("command.import.success", fileName, String.valueOf(imported)));
         } catch (Exception e) {
             plugin.getLogger().severe("导入CDK时出错: " + e.getMessage());
             e.printStackTrace();

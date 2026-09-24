@@ -63,16 +63,21 @@ public class ViewCommandExecutor extends AbstractSubCommand {
                 return true;
             }
 
+            String timeDisplay = record.getUseTime() == null ? getRawMsg("command.common.unknown") : DATE_FORMAT.format(record.getUseTime());
             CommandUtils.sendMessage(sender, getMsg("command.view.header", String.valueOf(record.getId())));
-            CommandUtils.sendMessage(sender, String.format("§f[%d] [%s]", record.getId(), record.getPlayerName()));
-            CommandUtils.sendMessage(sender, String.format("§7CDK: §f%s §7类型: §f%s", record.getCdkCode(), record.getCdkType()));
+            CommandUtils.sendMessage(sender, getMsg("command.common.line_id_player",
+                    String.valueOf(record.getId()), String.valueOf(record.getPlayerName())));
+            CommandUtils.sendMessage(sender, getMsg("command.common.line_cdk_type",
+                    String.valueOf(record.getCdkCode()), orEmpty(record.getCdkType())));
 
             List<String> commands = CommandUtils.parseCommands(record.getCommandsExecuted() == null ? "" : record.getCommandsExecuted());
-            CommandUtils.sendMessage(sender, String.format("§7命令: §f[%d条] §7时间: §f%s", commands.size(), DATE_FORMAT.format(record.getUseTime())));
+            CommandUtils.sendMessage(sender, getMsg("command.common.line_cmd_time",
+                    String.valueOf(commands.size()), timeDisplay));
             if (!commands.isEmpty()) {
-                CommandUtils.sendMessage(sender, "§f命令列表:");
+                CommandUtils.sendMessage(sender, getMsg("command.common.command_list"));
                 for (int i = 0; i < commands.size(); i++) {
-                    CommandUtils.sendMessage(sender, String.format("  §e%d. §f%s", i + 1, commands.get(i)));
+                    CommandUtils.sendMessage(sender, getMsg("command.common.command_item",
+                            String.valueOf(i + 1), commands.get(i)));
                 }
             }
 
@@ -85,6 +90,13 @@ public class ViewCommandExecutor extends AbstractSubCommand {
         }
 
         return true;
+    }
+
+    /**
+     * 空值转空字符串，避免消息里出现 "null"
+     */
+    private String orEmpty(String value) {
+        return value == null ? "" : value;
     }
 
     @Override

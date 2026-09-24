@@ -2,6 +2,7 @@ package org.baicaizhale.CDKer.command;
 
 import org.baicaizhale.CDKer.CDKer;
 import org.baicaizhale.CDKer.model.LanguageConfig;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -41,7 +42,7 @@ public abstract class AbstractSubCommand {
      * @return 命令用法字符串
      */
     public String getUsage() {
-        return getMsg("command.usage_invalid");
+        return getMsg("command.common.usage_invalid");
     }
 
     /**
@@ -52,25 +53,55 @@ public abstract class AbstractSubCommand {
     }
 
     /**
-     * 便捷方法：从当前语言配置中获取消息并替换占位符
+     * 便捷方法：从当前语言配置中获取消息并替换占位符，同时加上 config.yml 中的 cdk.prefix 前缀
      */
     protected String getMsg(String key) {
-        LanguageConfig lang = plugin.getConfigurationManager()
-                .getLanguageConfig(plugin.getConfigurationManager().getPluginConfig().getLanguage());
-        return lang.getMessage(key);
+        return withPrefix(getRawMsg(key));
     }
 
     /**
-     * 便捷方法：获取消息并替换占位符 {0}, {1}, ...
+     * 便捷方法：获取消息并替换占位符 {0}, {1}, ...，同时加上 cdk.prefix 前缀
      */
     protected String getMsg(String key, String... args) {
-        String msg = getMsg(key);
+        return withPrefix(getRawMsg(key, args));
+    }
+
+    /**
+     * 获取不带前缀的原始消息，供拼接多条消息时使用（避免前缀重复出现）
+     */
+    protected String getRawMsg(String key) {
+        LanguageConfig lang = plugin.getConfigurationManager()
+                .getLanguageConfig(plugin.getConfigurationManager().getPluginConfig().getLanguage());
+        String message = lang.getMessage(key);
+        return message == null ? "" : message;
+    }
+
+    /**
+     * 获取不带前缀的原始消息并替换占位符 {0}, {1}, ...
+     */
+    protected String getRawMsg(String key, String... args) {
+        String msg = getRawMsg(key);
         if (args != null) {
             for (int i = 0; i < args.length; i++) {
                 msg = msg.replace("{" + i + "}", args[i] != null ? args[i] : "");
             }
         }
         return msg;
+    }
+
+    /**
+     * 为消息拼接 config.yml 中 cdk.prefix 配置的前缀，并翻译 & 颜色代码；
+     * 空消息不拼接前缀，避免出现"只有前缀没有内容"的提示。
+     */
+    protected String withPrefix(String message) {
+        if (message == null || message.isEmpty()) {
+            return "";
+        }
+        String prefix = plugin.getConfigurationManager().getPluginConfig().getPrefix();
+        if (prefix == null || prefix.isEmpty()) {
+            return message;
+        }
+        return ChatColor.translateAlternateColorCodes('&', prefix + message);
     }
 
     /**

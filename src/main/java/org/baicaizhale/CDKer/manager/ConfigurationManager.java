@@ -6,6 +6,10 @@ import org.baicaizhale.CDKer.model.PluginConfig;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -52,45 +56,60 @@ public class ConfigurationManager {
 
     private void loadLanguageConfigs() {
         languageConfigs.clear();
+        languageConfigs.put("zh_CN", new LanguageConfig(loadLanguageMessages("lang_zh_CN.yml")));
+        languageConfigs.put("en_US", new LanguageConfig(loadLanguageMessages("lang_en_US.yml")));
+        languageConfigs.put("ja_JP", new LanguageConfig(loadLanguageMessages("lang_ja_JP.yml")));
+    }
 
-        File langZhCNFile = new File(plugin.getDataFolder(), "lang" + File.separator + "lang_zh_CN.yml");
-        if (!langZhCNFile.exists()) {
-            plugin.saveResource("lang" + File.separator + "lang_zh_CN.yml", false);
+    /**
+     * 读取某个语言文件。
+     * 磁盘上的语言文件缺少的键会回退到 jar 内置的同名语言文件，
+     * 保证插件升级后新增的消息键在老配置目录里也有兜底文案（不会显示为空行）。
+     */
+    private Map<String, String> loadLanguageMessages(String fileName) {
+        String resourcePath = "lang/" + fileName;
+        File langFile = new File(plugin.getDataFolder(), "lang" + File.separator + fileName);
+        if (!langFile.exists()) {
+            plugin.saveResource(resourcePath, false);
         }
-        YamlConfiguration langZhCNYaml = YamlConfiguration.loadConfiguration(langZhCNFile);
-        Map<String, String> zhCNMessages = new HashMap<>();
-        for (String key : langZhCNYaml.getKeys(true)) {
-            if (langZhCNYaml.isString(key)) {
-                zhCNMessages.put(key, langZhCNYaml.getString(key));
+
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(langFile);
+        YamlConfiguration defaults = loadBundledLanguage(resourcePath);
+        if (defaults != null) {
+            yaml.setDefaults(defaults);
+        }
+
+        Set<String> keys = new LinkedHashSet<>(yaml.getKeys(true));
+        if (defaults != null) {
+            keys.addAll(defaults.getKeys(true));
+        }
+
+        Map<String, String> messages = new HashMap<>();
+        for (String key : keys) {
+            boolean stringInFile = yaml.isString(key);
+            boolean stringInDefaults = defaults != null && defaults.isString(key);
+            if (!stringInFile && !stringInDefaults) {
+                continue;
+            }
+            // yaml.getString 会优先取磁盘文件的值，缺失时由 defaults 兜底
+            String value = yaml.getString(key);
+            if (value != null) {
+                messages.put(key, value);
             }
         }
-        languageConfigs.put("zh_CN", new LanguageConfig(zhCNMessages));
+        return messages;
+    }
 
-        File langEnUsFile = new File(plugin.getDataFolder(), "lang" + File.separator + "lang_en_US.yml");
-        if (!langEnUsFile.exists()) {
-            plugin.saveResource("lang" + File.separator + "lang_en_US.yml", false);
-        }
-        YamlConfiguration langEnUsYaml = YamlConfiguration.loadConfiguration(langEnUsFile);
-        Map<String, String> enUsMessages = new HashMap<>();
-        for (String key : langEnUsYaml.getKeys(true)) {
-            if (langEnUsYaml.isString(key)) {
-                enUsMessages.put(key, langEnUsYaml.getString(key));
+    private YamlConfiguration loadBundledLanguage(String resourcePath) {
+        try (InputStream in = plugin.getResource(resourcePath)) {
+            if (in == null) {
+                return null;
             }
+            return YamlConfiguration.loadConfiguration(new InputStreamReader(in, StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            plugin.getLogger().warning("读取内置语言文件失败: " + resourcePath + " - " + e.getMessage());
+            return null;
         }
-        languageConfigs.put("en_US", new LanguageConfig(enUsMessages));
-
-        File langJaJPFile = new File(plugin.getDataFolder(), "lang" + File.separator + "lang_ja_JP.yml");
-        if (!langJaJPFile.exists()) {
-            plugin.saveResource("lang" + File.separator + "lang_ja_JP.yml", false);
-        }
-        YamlConfiguration langJaJPYaml = YamlConfiguration.loadConfiguration(langJaJPFile);
-        Map<String, String> jaJPMessages = new HashMap<>();
-        for (String key : langJaJPYaml.getKeys(true)) {
-            if (langJaJPYaml.isString(key)) {
-                jaJPMessages.put(key, langJaJPYaml.getString(key));
-            }
-        }
-        languageConfigs.put("ja_JP", new LanguageConfig(jaJPMessages));
     }
 
     public PluginConfig getPluginConfig() {
