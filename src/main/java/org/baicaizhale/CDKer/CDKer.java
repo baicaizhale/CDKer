@@ -36,7 +36,7 @@ public class CDKer extends JavaPlugin {
             cdkRecordDao = new CdkRecordDao(databaseManager);
             cdkLogDao = new CdkLogDao(databaseManager);
         } catch (Exception e) {
-            getLogger().severe("初始化数据库失败: " + e.getMessage());
+            getLogger().severe("初始化数据库失败，插件将被禁用: " + e.getMessage());
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
             return;
