@@ -56,6 +56,7 @@ public class CdkRecord {
     }
 
     public boolean canBeUsed() {
-        return !isExpired() && remainingUses > 0;
+        // remainingUses == -1 表示无限次数
+        return !isExpired() && (remainingUses > 0 || remainingUses == -1);
     }
 }

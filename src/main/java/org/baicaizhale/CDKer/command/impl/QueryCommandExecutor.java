@@ -57,7 +57,9 @@ public class QueryCommandExecutor extends AbstractSubCommand {
             info.append(getRawMsg("command.query.line_code", String.valueOf(record.getCdkCode()))).append("\n");
             info.append(getRawMsg("command.query.line_type", orNone(record.getCdkType()))).append("\n");
             info.append(getRawMsg("command.query.line_note", orNone(record.getNote()))).append("\n");
-            info.append(getRawMsg("command.query.line_uses", String.valueOf(record.getRemainingUses()))).append("\n");
+            info.append(getRawMsg("command.query.line_uses", record.getRemainingUses() == -1
+                    ? getRawMsg("command.common.unlimited")
+                    : String.valueOf(record.getRemainingUses()))).append("\n");
             info.append(getRawMsg("command.query.line_expire", orNone(record.getExpireTime()))).append("\n");
             info.append(getRawMsg("command.query.line_created",
                     record.getCreatedTime() == null ? getRawMsg("command.common.unknown")

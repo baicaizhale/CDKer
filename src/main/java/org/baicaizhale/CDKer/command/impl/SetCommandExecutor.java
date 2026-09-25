@@ -52,7 +52,13 @@ public class SetCommandExecutor extends AbstractSubCommand {
 
             switch (property.toLowerCase()) {
                 case "remaining_uses":
-                    record.setRemainingUses(Integer.parseInt(value));
+                    // -1 表示无限次数，除此之外必须为正整数
+                    int newUses = Integer.parseInt(value);
+                    if (newUses != -1 && newUses <= 0) {
+                        CommandUtils.sendMessage(sender, getMsg("command.set.invalid_uses"));
+                        return true;
+                    }
+                    record.setRemainingUses(newUses);
                     break;
                 case "commands":
                     record.setCommands(CommandUtils.parseCommands(value));

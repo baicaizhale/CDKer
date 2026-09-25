@@ -84,9 +84,12 @@ public class ListCommandExecutor extends AbstractSubCommand {
 
                 String status = record.isExpired() || record.getRemainingUses() == 0
                         ? getRawMsg("command.list.status_invalid") : getRawMsg("command.list.status_valid");
+                String usesDisplay = record.getRemainingUses() == -1
+                        ? getRawMsg("command.common.unlimited")
+                        : String.valueOf(record.getRemainingUses());
                 sender.sendMessage(getMsg("command.list.item",
                         String.valueOf(displayIndex++), record.getCdkCode(),
-                        String.valueOf(record.getRemainingUses()), typeDisplay, status, note));
+                        usesDisplay, typeDisplay, status, note));
             }
             sender.sendMessage(getMsg("command.list.footer"));
 

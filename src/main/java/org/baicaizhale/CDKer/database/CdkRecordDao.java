@@ -287,10 +287,10 @@ public class CdkRecordDao {
                     }
                 }
 
-                // 条件扣减：仅当剩余次数 > 0 且未过期时才扣，防止并发重复兑换
+                // 条件扣减：仅当剩余次数 > 0（或 -1 表示无限）且未过期时才扣，防止并发重复兑换
                 String updateSql = String.format(
-                        "UPDATE %srecords SET remaining_uses = remaining_uses - 1 " +
-                        "WHERE cdk_code = ? AND remaining_uses > 0 AND (expire_time = 'forever' OR expire_time > ?)",
+                        "UPDATE %srecords SET remaining_uses = CASE WHEN remaining_uses = -1 THEN -1 ELSE remaining_uses - 1 END " +
+                        "WHERE cdk_code = ? AND (remaining_uses > 0 OR remaining_uses = -1) AND (expire_time = 'forever' OR expire_time > ?)",
                         tablePrefix);
                 try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
                     ps.setString(1, code);
@@ -354,7 +354,8 @@ public class CdkRecordDao {
                 }
 
                 try (PreparedStatement ps = conn.prepareStatement(
-                        String.format("UPDATE %srecords SET remaining_uses = remaining_uses + 1 WHERE cdk_code = ?", tablePrefix))) {
+                        // -1 表示无限次数，不参与增减
+                        String.format("UPDATE %srecords SET remaining_uses = CASE WHEN remaining_uses = -1 THEN -1 ELSE remaining_uses + 1 END WHERE cdk_code = ?", tablePrefix))) {
                     ps.setString(1, code);
                     ps.executeUpdate();
                 }

@@ -17,6 +17,7 @@ command:
     yes: "はい"
     no: "いいえ"
     type_normal: "通常"
+    unlimited: "無限"
     bracket_fragment: "§f[{0}]"
     line_id_player: "§f[{0}] [{1}]"
     line_cdk_type: "§7CDK: §f{0} §7種類: §f{1}"
@@ -41,7 +42,7 @@ command:
     amount_range: "§c数量は1から100の間で指定してください。"
     need_quotes: "§cコマンドはダブルクォーテーションで囲んでください。"
     command_empty: "§cコマンドを空にすることはできません。"
-    invalid_uses: "§c無効な利用回数形式です。"
+    invalid_uses: "§c利用回数が無効です。正の整数または -1（無制限）を指定してください。"
     success_single: "§aCDKコードを作成しました: §f{0}"
     success_multi: "§a{0} 個のCDKコードを作成しました。タイプ: {1}\n§f{2}"
     error: "§cCDK作成中にエラーが発生しました: {0}"
@@ -114,6 +115,7 @@ command:
   set:
     usage: "§c使用方法: /cdk set <id/cdk> <識別子> <プロパティ> <値>"
     invalid_property: "§c無効なプロパティタイプです。"
+    invalid_uses: "§c利用回数が無効です。正の整数または -1（無制限）を指定してください。"
     success: "§aCDKを更新しました: §f{0}"
     error: "§cCDKプロパティ設定中にエラーが発生しました: {0}"
 
