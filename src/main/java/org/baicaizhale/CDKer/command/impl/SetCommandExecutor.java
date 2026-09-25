@@ -58,6 +58,10 @@ public class SetCommandExecutor extends AbstractSubCommand {
                     record.setCommands(CommandUtils.parseCommands(value));
                     break;
                 case "expire_time":
+                    if (!CommandUtils.isValidExpireTime(value)) {
+                        CommandUtils.sendMessage(sender, getMsg("command.common.invalid_expire"));
+                        return true;
+                    }
                     record.setExpireTime(value);
                     break;
                 case "note":
@@ -119,7 +123,7 @@ public class SetCommandExecutor extends AbstractSubCommand {
                 case "remaining_uses":
                     return Arrays.asList("1", "5", "10", "-1");
                 case "expire_time":
-                    return Arrays.asList("forever", "2025-12-31 23:59");
+                    return Arrays.asList("forever", "2026-12-31 23:59");
                 case "cdk_type":
                     return Arrays.asList("newbie", "vip", "event", "daily");
                 case "per_player_multiple":

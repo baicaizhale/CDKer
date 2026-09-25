@@ -11,6 +11,7 @@ command:
     internal_error: "§cAn internal error occurred. Check the server console for details."
     player_only: "§cThis command can only be executed by a player."
     unknown_command: "Unknown command. Use /cdk help for help."
+    invalid_expire: "§cInvalid expire time format. Use forever or yyyy-MM-dd HH:mm (e.g. 2026-12-31 23:59)."
     none: "None"
     unknown: "Unknown"
     yes: "Yes"

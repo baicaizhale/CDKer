@@ -11,6 +11,7 @@ command:
     internal_error: "§c内部エラーが発生しました。サーバーコンソールを確認してください。"
     player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
     unknown_command: "不明なコマンドです。/cdk help でヘルプを表示してください。"
+    invalid_expire: "§c有効期限の形式が無効です。forever または yyyy-MM-dd HH:mm（例: 2026-12-31 23:59）を指定してください。"
     none: "なし"
     unknown: "不明"
     yes: "はい"

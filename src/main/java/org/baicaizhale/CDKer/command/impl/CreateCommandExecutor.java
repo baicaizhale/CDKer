@@ -86,6 +86,11 @@ public class CreateCommandExecutor extends AbstractSubCommand {
                 perPlayerMultiple = Boolean.parseBoolean(optionalArgs[4]);
             }
 
+            if (!CommandUtils.isValidExpireTime(expireTime)) {
+                sender.sendMessage(getMsg("command.common.invalid_expire"));
+                return true;
+            }
+
             String charset = plugin.getConfig().getString("cdk.charset", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
             int length = plugin.getConfig().getInt("cdk.length", 12);
 
@@ -151,7 +156,7 @@ public class CreateCommandExecutor extends AbstractSubCommand {
             return Arrays.asList("1", "5", "10", "-1");
         }
         if (args.length == 5) {
-            return Arrays.asList("forever", "2025-12-31 23:59");
+            return Arrays.asList("forever", "2026-12-31 23:59");
         }
         return new ArrayList<>();
     }
