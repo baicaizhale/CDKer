@@ -86,6 +86,12 @@ public class CreateCommandExecutor extends AbstractSubCommand {
                 perPlayerMultiple = Boolean.parseBoolean(optionalArgs[4]);
             }
 
+            // -1 表示无限次数，除此之外必须为正整数
+            if (uses != -1 && uses <= 0) {
+                sender.sendMessage(getMsg("command.create.invalid_uses"));
+                return true;
+            }
+
             String charset = plugin.getConfig().getString("cdk.charset", "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
             int length = plugin.getConfig().getInt("cdk.length", 12);
 

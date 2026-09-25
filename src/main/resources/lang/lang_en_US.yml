@@ -16,6 +16,7 @@ command:
     yes: "Yes"
     no: "No"
     type_normal: "Normal"
+    unlimited: "Unlimited"
     bracket_fragment: "§f[{0}]"
     line_id_player: "§f[{0}] [{1}]"
     line_cdk_type: "§7CDK: §f{0} §7Type: §f{1}"
@@ -40,7 +41,7 @@ command:
     amount_range: "§cAmount must be between 1 and 100."
     need_quotes: "§cCommands must be wrapped in double quotes."
     command_empty: "§cCommands cannot be empty."
-    invalid_uses: "§cInvalid uses format."
+    invalid_uses: "§cInvalid uses value. Must be a positive integer or -1 (unlimited)."
     success_single: "§aSuccessfully created CDK code: §f{0}"
     success_multi: "§aSuccessfully created {0} CDK codes. Type: {1}\n§f{2}"
     error: "§cError creating CDK: {0}"
@@ -113,6 +114,7 @@ command:
   set:
     usage: "§cUsage: /cdk set <id/cdk> <identifier> <property> <value>"
     invalid_property: "§cInvalid property type."
+    invalid_uses: "§cInvalid uses value. Must be a positive integer or -1 (unlimited)."
     success: "§aSuccessfully updated CDK: §f{0}"
     error: "§cError setting CDK property: {0}"
 

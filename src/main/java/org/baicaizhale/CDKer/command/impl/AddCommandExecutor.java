@@ -60,11 +60,17 @@ public class AddCommandExecutor extends AbstractSubCommand {
                 return true;
             }
 
-            record.setRemainingUses(record.getRemainingUses() + amount);
+            // -1 表示无限次数，不参与加减，否则会把无限码变成有限次数
+            if (record.getRemainingUses() != -1) {
+                record.setRemainingUses(record.getRemainingUses() + amount);
+            }
             plugin.getCdkRecordDao().updateCdk(record);
 
+            String usesDisplay = record.getRemainingUses() == -1
+                    ? getRawMsg("command.common.unlimited")
+                    : String.valueOf(record.getRemainingUses());
             CommandUtils.sendMessage(sender, getMsg("command.add.success",
-                    record.getCdkCode(), String.valueOf(amount), String.valueOf(record.getRemainingUses())));
+                    record.getCdkCode(), String.valueOf(amount), usesDisplay));
 
         } catch (NumberFormatException e) {
             CommandUtils.sendMessage(sender, getMsg("command.common.invalid_number"));

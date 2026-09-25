@@ -16,6 +16,7 @@ command:
     yes: "是"
     no: "否"
     type_normal: "普通"
+    unlimited: "无限"
     bracket_fragment: "§f[{0}]"
     line_id_player: "§f[{0}] [{1}]"
     line_cdk_type: "§7CDK: §f{0} §7类型: §f{1}"
@@ -40,7 +41,7 @@ command:
     amount_range: "§c数量必须在1-100之间。"
     need_quotes: "§c命令部分必须用英文双引号包裹。"
     command_empty: "§c命令不能为空。"
-    invalid_uses: "§c无效的兑换次数格式。"
+    invalid_uses: "§c无效的兑换次数，必须是正整数或 -1（无限次）。"
     success_single: "§a成功创建CDK码: §f{0}"
     success_multi: "§a成功创建 {0} 个CDK码。类型: {1}\n§f{2}"
     error: "§c创建CDK时出错: {0}"
@@ -113,6 +114,7 @@ command:
   set:
     usage: "§c用法: /cdk set <id/cdk> <标识符> <属性> <值>"
     invalid_property: "§c无效的属性类型。"
+    invalid_uses: "§c无效的兑换次数，必须是正整数或 -1（无限次）。"
     success: "§a成功更新CDK码: §f{0}"
     error: "§c设置CDK属性时出错: {0}"
 
