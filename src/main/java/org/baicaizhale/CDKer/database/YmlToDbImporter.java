@@ -57,7 +57,7 @@ public class YmlToDbImporter {
         }
 
         cdkRecordDao.importRecords(records, replace);
-        plugin.getLogger().info("成功导入 " + records.size() + " 个CDK" + (replace ? "（已覆盖原有数据）" : "") + "。");
+        plugin.getLogger().info("成功导入 " + records.size() + " 个CDK" + (replace ? "（已覆盖原有数据及使用记录）" : "") + "。");
         return records.size();
     }
 }
