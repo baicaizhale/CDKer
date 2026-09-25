@@ -13,12 +13,17 @@ public class DatabaseManager {
     private HikariDataSource dataSource;
     private String tablePrefix = "cdk_";
 
-    public DatabaseManager(CDKer plugin) {
+    public DatabaseManager(CDKer plugin) throws SQLException {
         this.plugin = plugin;
         setupDatabase();
     }
 
-    private void setupDatabase() {
+    /**
+     * 初始化失败必须向上抛给 onEnable 处理（禁用插件并停止注册命令）。
+     * 在这里吞掉异常的话，onEnable 会继续走完，dataSource 为 null，
+     * 之后所有命令都会在 getConnection() 处 NPE。
+     */
+    private void setupDatabase() throws SQLException {
         HikariConfig config = new HikariConfig();
         String dbType = plugin.getConfig().getString("cdk.database.type", "sqlite");
         boolean mysql = "mysql".equalsIgnoreCase(dbType);
@@ -41,14 +46,8 @@ public class DatabaseManager {
         config.setIdleTimeout(600000);
         config.setMaxLifetime(1800000);
 
-        try {
-            dataSource = new HikariDataSource(config);
-            initializeTables();
-        } catch (Exception e) {
-            plugin.getLogger().severe("数据库连接失败: " + e.getMessage());
-            plugin.getLogger().severe("插件将被禁用!");
-            plugin.getServer().getPluginManager().disablePlugin(plugin);
-        }
+        dataSource = new HikariDataSource(config);
+        initializeTables();
     }
 
     private void setupMysql(HikariConfig config) {
@@ -65,15 +64,14 @@ public class DatabaseManager {
         config.setPassword(password);
     }
 
-    private void setupSqlite(HikariConfig config) {
+    private void setupSqlite(HikariConfig config) throws SQLException {
         File dbFile = new File(plugin.getDataFolder(), plugin.getConfig().getString("cdk.database.sqlite.file", "cdk.db"));
         if (!dbFile.exists()) {
             try {
                 dbFile.getParentFile().mkdirs();
                 dbFile.createNewFile();
             } catch (Exception e) {
-                plugin.getLogger().severe("无法创建SQLite数据库文件: " + e.getMessage());
-                return;
+                throw new SQLException("无法创建SQLite数据库文件: " + e.getMessage(), e);
             }
         }
 
@@ -84,7 +82,7 @@ public class DatabaseManager {
         tablePrefix = "cdk_";
     }
 
-    private void initializeTables() {
+    private void initializeTables() throws SQLException {
         String prefix = tablePrefix;
         String autoIncrement = plugin.getConfig().getString("cdk.database.type", "sqlite").equalsIgnoreCase("mysql") ? 
             "AUTO_INCREMENT" : "AUTOINCREMENT";
@@ -120,8 +118,6 @@ public class DatabaseManager {
             conn.createStatement().execute(createCdkTable);
             conn.createStatement().execute(createLogTable);
             plugin.getLogger().info("成功初始化数据库表!");
-        } catch (SQLException e) {
-            plugin.getLogger().severe("创建数据库表失败: " + e.getMessage());
         }
     }
 
