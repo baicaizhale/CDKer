@@ -133,23 +133,55 @@ public class CdkRecordDao {
         }
     }
 
+    /**
+     * 删除指定CDK。logs 表外键指向 records（MySQL 会强制），必须先删该码的使用日志再删记录，
+     * 否则 MySQL 下删除会因外键失败；SQLite 默认不启用外键，则表现为残留孤儿日志。
+     */
     public void deleteCdk(String code) throws SQLException {
-        String sql = String.format("DELETE FROM %srecords WHERE cdk_code = ?", tablePrefix);
-        
-        try (Connection conn = databaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, code);
-            ps.executeUpdate();
+        try (Connection conn = databaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                deleteLogsForCode(conn, code);
+                try (PreparedStatement ps = conn.prepareStatement(
+                        String.format("DELETE FROM %srecords WHERE cdk_code = ?", tablePrefix))) {
+                    ps.setString(1, code);
+                    ps.executeUpdate();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         }
     }
 
     public void deleteCdkById(int id) throws SQLException {
-        String sql = String.format("DELETE FROM %srecords WHERE id = ?", tablePrefix);
-        
-        try (Connection conn = databaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
+        try (Connection conn = databaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        String.format("SELECT cdk_code FROM %srecords WHERE id = ?", tablePrefix))) {
+                    ps.setInt(1, id);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) {
+                            deleteLogsForCode(conn, rs.getString(1));
+                        }
+                    }
+                }
+                try (PreparedStatement ps = conn.prepareStatement(
+                        String.format("DELETE FROM %srecords WHERE id = ?", tablePrefix))) {
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
         }
     }
 
@@ -157,10 +189,29 @@ public class CdkRecordDao {
      * 删除所有CDK记录
      */
     public void deleteAllCdks() throws SQLException {
-        String sql = String.format("DELETE FROM %srecords", tablePrefix);
-        
-        try (Connection conn = databaseManager.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = databaseManager.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                try (PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %slogs", tablePrefix))) {
+                    ps.executeUpdate();
+                }
+                try (PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %srecords", tablePrefix))) {
+                    ps.executeUpdate();
+                }
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            } finally {
+                conn.setAutoCommit(true);
+            }
+        }
+    }
+
+    private void deleteLogsForCode(Connection conn, String code) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(
+                String.format("DELETE FROM %slogs WHERE cdk_code = ?", tablePrefix))) {
+            ps.setString(1, code);
             ps.executeUpdate();
         }
     }
@@ -170,7 +221,7 @@ public class CdkRecordDao {
      * 中途任何一条失败都会整体回滚，避免清空后导入失败导致的数据丢失。
      *
      * @param records 待写入的记录
-     * @param replace 是否先清空原有记录
+     * @param replace 是否先清空原有记录；清空时使用日志会一并删除（logs 外键指向 records，MySQL 下必须先删）
      */
     public void importRecords(List<CdkRecord> records, boolean replace) throws SQLException {
         String insertSql = String.format(
@@ -180,6 +231,9 @@ public class CdkRecordDao {
             conn.setAutoCommit(false);
             try {
                 if (replace) {
+                    try (PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %slogs", tablePrefix))) {
+                        ps.executeUpdate();
+                    }
                     try (PreparedStatement ps = conn.prepareStatement(String.format("DELETE FROM %srecords", tablePrefix))) {
                         ps.executeUpdate();
                     }
