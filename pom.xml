@@ -43,6 +43,23 @@
         <artifactId>maven-shade-plugin</artifactId>
         <version>3.5.3</version>
         <configuration>
+          <!-- 剔除 sqlite-jdbc 里 MC 服务器不会运行的平台原生库（约 16 份 × ~1MB），
+               只保留 Windows/Linux/macOS 的 x86_64 与 aarch64 -->
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>org/sqlite/native/FreeBSD/**</exclude>
+                <exclude>org/sqlite/native/Linux-Android/**</exclude>
+                <exclude>org/sqlite/native/Linux-Musl/**</exclude>
+                <exclude>org/sqlite/native/Linux/arm/**</exclude>
+                <exclude>org/sqlite/native/Linux/ppc64/**</exclude>
+                <exclude>org/sqlite/native/Linux/x86/**</exclude>
+                <exclude>org/sqlite/native/Windows/arm/**</exclude>
+                <exclude>org/sqlite/native/Windows/x86/**</exclude>
+              </excludes>
+            </filter>
+          </filters>
           <relocations>
             <relocation>
               <pattern>org.bstats</pattern>
@@ -99,10 +116,12 @@
       <scope>provided</scope>
     </dependency>
     
-    <!-- SLF4J API -->
+    <!-- SLF4J API：HikariCP 运行时需要。只带 API，不带绑定——
+         Paper 自带 slf4j 绑定（日志走服务器日志系统）；
+         打包 slf4j-simple 会劫持 Hikari 日志直写 stderr，并与其它插件冲突 -->
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <artifactId>slf4j-api</artifactId>
       <version>1.7.36</version>
     </dependency>
     
