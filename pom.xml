@@ -6,7 +6,7 @@
 
   <groupId>org.baicaizhale</groupId>
   <artifactId>CDKer</artifactId>
-  <version>6.2.0</version>
+  <version>6.3.0</version>
   <packaging>jar</packaging>
 
   <name>CDKer</name>
