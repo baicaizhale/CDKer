@@ -4,6 +4,12 @@ main: org.baicaizhale.CDKer.CDKer
 api-version: '1.18'
 description: A powerful CDK management plugin for Spigot servers
 authors: [baicaizhale,zip8919]
+# 运行时由服务器从 Maven Central 自动下载（首次需联网，之后缓存于服务器 libraries/ 目录）
+libraries:
+  - com.zaxxer:HikariCP:5.0.1
+  - org.xerial:sqlite-jdbc:3.42.0.0
+  - com.mysql:mysql-connector-j:8.2.0
+  - org.slf4j:slf4j-api:1.7.36
 
 commands:
   cdk:
