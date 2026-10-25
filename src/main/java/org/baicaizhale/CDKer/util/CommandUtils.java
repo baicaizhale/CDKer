@@ -85,6 +85,12 @@ public class CommandUtils {
     }
 
     /**
+     * sleep 允许的最大等待时长（秒）：30 天。
+     * 超过视为非法，防止误写出天荒地老的等待把挂起记录永久滞留。
+     */
+    private static final long MAX_SLEEP_SECONDS = 30L * 24 * 60 * 60;
+
+    /**
      * 判断是否为 sleep 等待控制指令。
      * sleep 用于在多条绑定命令之间插入延迟，例如"临时给予"场景：
      * 先发放道具，等待一段时间后再收回。
@@ -92,15 +98,20 @@ public class CommandUtils {
      */
     public static boolean isSleepCommand(String command) {
         if (command == null) return false;
-        return command.trim().toLowerCase().startsWith("sleep ");
+        String trimmed = command.trim();
+        // 裸 "sleep"（无参数）也按 sleep 指令识别，时长解析不出来会在校验/运行时各自处理
+        return trimmed.equalsIgnoreCase("sleep") || trimmed.toLowerCase().startsWith("sleep ");
     }
 
     /**
-     * 解析 sleep 指令的等待时长（单位秒）。非法格式返回 0（表示不等待）。
+     * 解析 sleep 指令的等待时长（单位秒）。
+     * 非法格式（缺失、解析失败、非正数、超过 30 天上限）一律返回 0。
      */
     public static long parseSleepSeconds(String command) {
         if (command == null) return 0;
-        String rest = command.trim().substring("sleep ".length()).trim().toLowerCase();
+        String rest = command.trim().toLowerCase();
+        if (!rest.startsWith("sleep")) return 0;
+        rest = rest.substring("sleep".length()).trim();
         if (rest.isEmpty()) return 0;
 
         long multiplier = 1;
@@ -111,10 +122,25 @@ public class CommandUtils {
             numPart = rest.substring(0, rest.length() - 1);
         }
         try {
-            long value = Long.parseLong(numPart.trim());
-            return value * multiplier;
-        } catch (NumberFormatException e) {
+            long seconds = Math.multiplyExact(Long.parseLong(numPart.trim()), multiplier);
+            return (seconds > 0 && seconds <= MAX_SLEEP_SECONDS) ? seconds : 0;
+        } catch (NumberFormatException | ArithmeticException e) {
             return 0;
         }
+    }
+
+    /**
+     * 校验命令序列中的 sleep 语法：凡被识别为 sleep 指令的条目都必须解析出合法时长，
+     * 用于 create/set 时把拼写错误（如 sleep 1hour）挡在写入数据库之前。
+     *
+     * @return 第一条不合法的 sleep 命令原文；全部合法返回 null
+     */
+    public static String findInvalidSleepCommand(List<String> commands) {
+        for (String command : commands) {
+            if (isSleepCommand(command) && parseSleepSeconds(command) <= 0) {
+                return command;
+            }
+        }
+        return null;
     }
 }

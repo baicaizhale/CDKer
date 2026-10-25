@@ -1,10 +1,12 @@
 package org.baicaizhale.CDKer;
 
 import org.baicaizhale.CDKer.command.MainCommandExecutor;
+import org.baicaizhale.CDKer.listener.PlayerJoinListener;
 import org.baicaizhale.CDKer.manager.ConfigurationManager;
 import org.baicaizhale.CDKer.database.DatabaseManager;
 import org.baicaizhale.CDKer.database.CdkRecordDao;
 import org.baicaizhale.CDKer.database.CdkLogDao;
+import org.baicaizhale.CDKer.database.PendingSequenceDao;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -18,6 +20,7 @@ public class CDKer extends JavaPlugin {
     private DatabaseManager databaseManager;
     private CdkRecordDao cdkRecordDao;
     private CdkLogDao cdkLogDao;
+    private PendingSequenceDao pendingSequenceDao;
     private volatile WatchService watcher;
     private volatile Thread watchThread;
     private long lastReloadTime = 0L; // 新增：记录上次重载时间
@@ -35,6 +38,7 @@ public class CDKer extends JavaPlugin {
             databaseManager = new DatabaseManager(this);
             cdkRecordDao = new CdkRecordDao(databaseManager);
             cdkLogDao = new CdkLogDao(databaseManager);
+            pendingSequenceDao = new PendingSequenceDao(databaseManager);
         } catch (Exception e) {
             getLogger().severe("初始化数据库失败，插件将被禁用: " + e.getMessage());
             e.printStackTrace();
@@ -46,6 +50,10 @@ public class CDKer extends JavaPlugin {
         MainCommandExecutor mainCommandExecutor = new MainCommandExecutor(this);
         getCommand("cdk").setExecutor(mainCommandExecutor);
         getCommand("cdk").setTabCompleter(mainCommandExecutor);
+
+        // 注册监听器：玩家上线时恢复挂起的 CDK 剩余命令序列（sleep 等待期间离线/重启的场景）
+        getServer().getPluginManager().registerEvents(
+                new PlayerJoinListener(this, mainCommandExecutor.getUseExecutor()), this);
 
         // 启动文件监听
         startWatchingConfigs();
@@ -86,6 +94,10 @@ public class CDKer extends JavaPlugin {
 
     public CdkLogDao getCdkLogDao() {
         return cdkLogDao;
+    }
+
+    public PendingSequenceDao getPendingSequenceDao() {
+        return pendingSequenceDao;
     }
 
     /**

@@ -12,6 +12,7 @@ command:
     player_only: "§c该命令只能由玩家执行。"
     unknown_command: "未知命令，使用/cdk help查看帮助。"
     invalid_expire: "§c过期时间格式无效，请使用 forever 或 yyyy-MM-dd HH:mm（例如 2026-12-31 23:59）。"
+    invalid_sleep: "§c无效的 sleep 等待指令: {0}（时长须为正数，如 30、30s、5m、1h，最大 30 天）"
     none: "无"
     unknown: "未知"
     yes: "是"
@@ -153,12 +154,13 @@ command:
       §7[过期时间]: 过期时间，格式yyyy-MM-dd HH:mm
       §7[类型]: 自定义类型标识
       §7[允许多次使用]: true/false，是否允许同一玩家多次兑换
-      §7示例: /cdk create 5 "give %player% diamond 1|say 恭喜获得钻石" 1 "新手礼包" 2025-12-01 10:00 vip true
+      §7示例: /cdk create 5 "give {player} diamond 1|say 恭喜获得钻石" 1 "新手礼包" 2025-12-01 10:00 vip true
     sleep: |
       §f[sleep 等待控制] §7- 在多条命令之间插入延迟（常用于临时给予）
-      §7语法: 在命令序列中写入 sleep <时长>，时长可为纯数字(秒)或带单位 30s/5m/1h
+      §7语法: 在命令序列中写入 sleep <时长>，时长可为纯数字(秒)或带单位 30s/5m/1h，最大30天
       §7示例: /cdk create 1 "give {player} diamond 1|sleep 60|clear {player} diamond 1" 1 "临时钻石"
       §7说明: 玩家兑换后先获得钻石，60秒后再被收回，实现"临时给予"效果
+      §7等待期间玩家离线或服务器重启都不会丢失，剩余命令会在玩家再次上线后继续执行
     use: "§f/cdk use <兑换码> §7- 使用CDK"
     use_example: "  §7示例: /cdk use ABC123XYZ789"
     add: "§f/cdk add <id/cdk> <标识符> <数量> §7- 增加使用次数"

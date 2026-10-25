@@ -12,6 +12,7 @@ command:
     player_only: "§cこのコマンドはプレイヤーのみ実行できます。"
     unknown_command: "不明なコマンドです。/cdk help でヘルプを表示してください。"
     invalid_expire: "§c有効期限の形式が無効です。forever または yyyy-MM-dd HH:mm（例: 2026-12-31 23:59）を指定してください。"
+    invalid_sleep: "§c無効な sleep 待機コマンドです: {0}（時間は正の数で指定してください。例: 30、30s、5m、1h、最大30日）"
     none: "なし"
     unknown: "不明"
     yes: "はい"
@@ -153,12 +154,13 @@ command:
       §7[期限]: 有効期限、形式 yyyy-MM-dd HH:mm
       §7[タイプ]: カスタムタイプ識別子
       §7[複数回]: true/false、同じプレイヤーが複数回利用可能か
-      §7例: /cdk create 5 "give %player% diamond 1|say おめでとう" 1 "初心者パック" 2025-12-01 10:00 vip true
+      §7例: /cdk create 5 "give {player} diamond 1|say おめでとう" 1 "初心者パック" 2025-12-01 10:00 vip true
     sleep: |
       §f[sleep待機制御] §7- コマンド間に遅延を挿入（一時付与に便利）
-      §7構文: コマンド列に sleep <時間> を書く。時間は秒指定、または単位 30s/5m/1h 付き
+      §7構文: コマンド列に sleep <時間> を書く。時間は秒指定、または単位 30s/5m/1h 付き（最大30日）
       §7例: /cdk create 1 "give {player} diamond 1|sleep 60|clear {player} diamond 1" 1 "一時ダイヤ"
       §7説明: 利用時にダイヤを付与し、60秒後に回収して「一時付与」を実現
+      §7待機中にプレイヤーがログオフしたりサーバーが再起動しても失われず、再ログイン時に続きから実行されます
     use: "§f/cdk use <コード> §7- CDKを利用"
     use_example: "  §7例: /cdk use ABC123XYZ789"
     add: "§f/cdk add <id/cdk> <識別子> <数量> §7- 利用回数を追加"
