@@ -44,6 +44,10 @@ public class MainCommandExecutor implements CommandExecutor, TabCompleter {
         this.setExecutor = new SetCommandExecutor(plugin);
     }
 
+    public UseCommandExecutor getUseExecutor() {
+        return useExecutor;
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {

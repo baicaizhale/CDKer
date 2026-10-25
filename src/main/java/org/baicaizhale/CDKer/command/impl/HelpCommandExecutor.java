@@ -15,6 +15,7 @@ public class HelpCommandExecutor extends AbstractSubCommand {
         sendHelpLine(sender, "command.help.header");
         sendHelpLine(sender, "command.help.create");
         sendHelpLines(sender, "command.help.create_params");
+        sendHelpLine(sender, "command.help.sleep");
         sendHelpLine(sender, "command.help.use");
         sendHelpLine(sender, "command.help.use_example");
         sendHelpLine(sender, "command.help.add");

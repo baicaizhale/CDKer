@@ -114,9 +114,22 @@ public class DatabaseManager {
             "FOREIGN KEY (cdk_code) REFERENCES %srecords(cdk_code)" +
             ")", prefix, autoIncrement, prefix);
 
+        // 挂起序列表：sleep 等待期间玩家离线/服务器重启后，剩余命令与到期时间落库，玩家上线恢复执行
+        String createPendingTable = String.format(
+            "CREATE TABLE IF NOT EXISTS %spending_sequences (" +
+            "id INTEGER PRIMARY KEY %s," +
+            "player_uuid VARCHAR(36) NOT NULL," +
+            "cdk_code VARCHAR(50) NOT NULL," +
+            "cdk_type VARCHAR(50) DEFAULT ''," +
+            "remaining_commands TEXT NOT NULL," +
+            "had_failure BOOLEAN DEFAULT FALSE," +
+            "resume_at BIGINT NOT NULL" +
+            ")", prefix, autoIncrement);
+
         try (Connection conn = getConnection()) {
             conn.createStatement().execute(createCdkTable);
             conn.createStatement().execute(createLogTable);
+            conn.createStatement().execute(createPendingTable);
             plugin.getLogger().info("成功初始化数据库表!");
         }
     }

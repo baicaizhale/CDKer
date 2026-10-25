@@ -61,7 +61,14 @@ public class SetCommandExecutor extends AbstractSubCommand {
                     record.setRemainingUses(newUses);
                     break;
                 case "commands":
-                    record.setCommands(CommandUtils.parseCommands(value));
+                    List<String> newCommands = CommandUtils.parseCommands(value);
+                    // sleep 语法在修改时就校验掉，与 create 入口保持一致
+                    String invalidSleep = CommandUtils.findInvalidSleepCommand(newCommands);
+                    if (invalidSleep != null) {
+                        CommandUtils.sendMessage(sender, getMsg("command.common.invalid_sleep", invalidSleep));
+                        return true;
+                    }
+                    record.setCommands(newCommands);
                     break;
                 case "expire_time":
                     if (!CommandUtils.isValidExpireTime(value)) {

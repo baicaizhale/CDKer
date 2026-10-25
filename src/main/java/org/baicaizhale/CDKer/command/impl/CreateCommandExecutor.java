@@ -58,6 +58,13 @@ public class CreateCommandExecutor extends AbstractSubCommand {
                 return true;
             }
 
+            // sleep 语法在创建时就校验掉，避免兑换时才发现拼写错误（运行时只会跳过等待）
+            String invalidSleep = CommandUtils.findInvalidSleepCommand(commands);
+            if (invalidSleep != null) {
+                CommandUtils.sendMessage(sender, getMsg("command.common.invalid_sleep", invalidSleep));
+                return true;
+            }
+
             String[] optionalArgs = parseArguments(remainingArgsString);
             int uses = plugin.getConfig().getInt("cdk.default-uses", 1);
             String note = "";
