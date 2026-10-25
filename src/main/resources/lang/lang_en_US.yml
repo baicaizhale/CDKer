@@ -156,11 +156,11 @@ command:
       §7[multi-use]: true/false, allow same player to redeem multiple times
       §7Example: /cdk create 5 "give {player} diamond 1|say Congrats" 1 "Starter Pack" 2025-12-01 10:00 vip true
     sleep: |
-      §f[sleep wait control] §7- Insert a delay between commands (useful for temporary grants)
+      §f[sleep delay] §7- Insert a delay between commands (useful for temporary grants)
       §7Syntax: write sleep <duration> in the command sequence; duration is seconds by default or with unit 30s/5m/1h, max 30 days
       §7Example: /cdk create 1 "give {player} diamond 1|sleep 60|clear {player} diamond 1" 1 "Temp Diamond"
-      §7Note: player gets a diamond on redeem, then it is removed after 60s, achieving a "temporary grant"
-      §7If the player logs off or the server restarts during the wait, the remaining commands resume when the player joins again
+      §7Note: the player receives a diamond on redeem and it is removed after 60 seconds (a "temporary grant")
+      §7If the player logs off or the server restarts during the wait, the remaining commands are saved and resume when the player rejoins
     use: "§f/cdk use <code> §7- Use a CDK"
     use_example: "  §7Example: /cdk use ABC123XYZ789"
     add: "§f/cdk add <id/cdk> <identifier> <amount> §7- Add uses"
