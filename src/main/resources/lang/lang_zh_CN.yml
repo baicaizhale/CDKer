@@ -154,6 +154,11 @@ command:
       §7[类型]: 自定义类型标识
       §7[允许多次使用]: true/false，是否允许同一玩家多次兑换
       §7示例: /cdk create 5 "give %player% diamond 1|say 恭喜获得钻石" 1 "新手礼包" 2025-12-01 10:00 vip true
+    sleep: |
+      §f[sleep 等待控制] §7- 在多条命令之间插入延迟（常用于临时给予）
+      §7语法: 在命令序列中写入 sleep <时长>，时长可为纯数字(秒)或带单位 30s/5m/1h
+      §7示例: /cdk create 1 "give {player} diamond 1|sleep 60|clear {player} diamond 1" 1 "临时钻石"
+      §7说明: 玩家兑换后先获得钻石，60秒后再被收回，实现"临时给予"效果
     use: "§f/cdk use <兑换码> §7- 使用CDK"
     use_example: "  §7示例: /cdk use ABC123XYZ789"
     add: "§f/cdk add <id/cdk> <标识符> <数量> §7- 增加使用次数"

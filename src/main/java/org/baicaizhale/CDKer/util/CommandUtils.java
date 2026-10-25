@@ -83,4 +83,38 @@ public class CommandUtils {
                     .filter(s -> !s.isEmpty())
                     .collect(Collectors.toList());
     }
+
+    /**
+     * 判断是否为 sleep 等待控制指令。
+     * sleep 用于在多条绑定命令之间插入延迟，例如"临时给予"场景：
+     * 先发放道具，等待一段时间后再收回。
+     * 语法: sleep <时长>，其中时长可为纯数字（单位秒）或带单位 30s / 5m / 1h。
+     */
+    public static boolean isSleepCommand(String command) {
+        if (command == null) return false;
+        return command.trim().toLowerCase().startsWith("sleep ");
+    }
+
+    /**
+     * 解析 sleep 指令的等待时长（单位秒）。非法格式返回 0（表示不等待）。
+     */
+    public static long parseSleepSeconds(String command) {
+        if (command == null) return 0;
+        String rest = command.trim().substring("sleep ".length()).trim().toLowerCase();
+        if (rest.isEmpty()) return 0;
+
+        long multiplier = 1;
+        String numPart = rest;
+        char unit = rest.charAt(rest.length() - 1);
+        if (unit == 's' || unit == 'm' || unit == 'h') {
+            multiplier = unit == 's' ? 1 : (unit == 'm' ? 60 : 3600);
+            numPart = rest.substring(0, rest.length() - 1);
+        }
+        try {
+            long value = Long.parseLong(numPart.trim());
+            return value * multiplier;
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 }
